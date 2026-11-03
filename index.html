@@ -273,10 +273,10 @@
       color: var(--cyan);
     }
 
-    /* Row 2: Hero Progress + Segmented Bar + Categories */
+    /* Row 2: Hero Progress + Segmented Bar */
     .hero-progress-row {
       display: grid;
-      grid-template-columns: auto 1fr auto;
+      grid-template-columns: auto 1fr;
       align-items: center;
       gap: 16px;
       margin-top: 8px;
@@ -347,33 +347,6 @@
     @keyframes shimmerSweep {
       0% { left: -100%; }
       50%, 100% { left: 200%; }
-    }
-
-    /* Category Mini Bars */
-    .category-mini-pills {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      overflow-x: auto;
-      max-width: 440px;
-    }
-
-    .cat-mini-pill {
-      font-size: 11px;
-      font-family: var(--font-mono);
-      padding: 2px 7px;
-      border-radius: 4px;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .cat-mini-pill.complete {
-      border-color: rgba(16, 185, 129, 0.4);
-      color: var(--status-pass);
     }
 
     /* COLLAPSIBLE TELEMETRY ROW (SPEED · QUALITY · ACTIVITY) */
@@ -738,6 +711,8 @@
       animation: cardStagger 0.35s ease-out forwards;
       animation-delay: calc(var(--stagger, 0) * 35ms);
       opacity: 0;
+      transform-style: preserve-3d;
+      will-change: transform;
     }
     @keyframes cardStagger {
       from { opacity: 0; transform: translateY(8px); }
@@ -745,19 +720,36 @@
     }
 
     .asset-card:hover {
-      transform: translateY(-2px);
       border-color: var(--border-light);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5);
     }
     .asset-card.is-flagged {
       border-color: var(--status-flagged);
     }
     .asset-card.new-arrival {
-      animation: arrivalPulse 2s ease-out;
+      animation: cardStagger 0.35s ease-out forwards, arrivalPulse 2s ease-out;
     }
     @keyframes arrivalPulse {
       0% { box-shadow: 0 0 0 2px var(--cyan); }
       100% { box-shadow: none; }
+    }
+
+    /* Subtle Specular Glare Overlay for 3D Tilt */
+    .card-glare {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      border-radius: inherit;
+      z-index: 10;
+      opacity: 0;
+      transition: opacity 0.25s ease-out;
+      mix-blend-mode: overlay;
+    }
+
+    /* Magnetic Action Buttons */
+    .btn-magnetic {
+      transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2), background 0.15s, border-color 0.15s, color 0.15s;
+      will-change: transform;
     }
 
     /* Checkerboard backdrop for transparency */
@@ -940,47 +932,18 @@
     }
 
     /* Mini PSNR Meter Bar */
-    .psnr-meter-wrapper {
-      position: relative;
+    .card-metrics-line {
       display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .psnr-meter-track {
-      width: 100%;
-      height: 4px;
-      background: #182030;
-      border-radius: 2px;
-      overflow: hidden;
-      display: flex;
-    }
-    .psnr-meter-fill {
-      height: 100%;
-      border-radius: 2px;
-    }
-    .psnr-meter-fill.pass { background: var(--status-pass); }
-    .psnr-meter-fill.marginal { background: var(--status-marginal); }
-    .psnr-meter-fill.review { background: var(--status-review); }
-    .psnr-meter-fill.warn { background: var(--status-warn); }
-
-    .psnr-meter-wrapper:hover .psnr-meter-tooltip {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(-2px);
-    }
-    .psnr-meter-tooltip {
-      position: absolute;
-      bottom: calc(100% + 4px);
-      left: 0;
-      background: #090d16;
-      border: 1px solid var(--border-light);
-      padding: 3px 7px;
-      border-radius: 4px;
+      align-items: center;
+      gap: 6px;
       font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--text);
-      white-space: nowrap;
-      opacity: 0;
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .metrics-dot {
+      opacity: 0.35;
+    }
       visibility: hidden;
       pointer-events: none;
       transition: all 0.15s ease;
@@ -1110,41 +1073,62 @@
 
     .lightbox-canvas-holder {
       position: relative;
-      max-width: 90vw;
-      max-height: 80vh;
+      max-width: 98vw;
+      max-height: calc(100vh - 90px);
       transform-origin: center center;
       transition: transform 0.05s ease-out;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      --split-pos: 50%;
+    }
+
+    .comp-mode-slider .lightbox-canvas-holder {
+      cursor: ew-resize;
     }
 
     .lb-img-after {
       display: block;
-      max-width: 90vw;
-      max-height: 80vh;
+      max-width: 98vw;
+      max-height: calc(100vh - 90px);
       width: auto;
       height: auto;
       object-fit: contain;
+      user-select: none;
     }
 
-    .lb-before-clip {
-      position: absolute;
-      top: 0; left: 0; bottom: 0;
-      width: 50%;
-      overflow: hidden;
-      border-right: 2px solid var(--cyan);
-    }
     .lb-img-before {
-      display: block;
-      max-width: none;
-      max-height: 80vh;
+      position: absolute;
+      inset: 0;
+      width: 100%;
       height: 100%;
       object-fit: contain;
+      image-rendering: pixelated;
+      image-rendering: -moz-crisp-edges;
+      image-rendering: crisp-edges;
+      clip-path: inset(0 calc(100% - var(--split-pos, 50%)) 0 0);
+      pointer-events: none;
+      user-select: none;
     }
 
-    /* Slider divider handle */
+    /* Slider divider line & handle */
+    .lb-slider-line {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: var(--split-pos, 50%);
+      width: 2px;
+      background: var(--cyan);
+      box-shadow: 0 0 16px rgba(0, 210, 255, 0.8), 0 0 4px #ffffff;
+      pointer-events: none;
+      transform: translateX(-50%);
+      z-index: 10;
+    }
+
     .lb-slider-handle {
       position: absolute;
       top: 50%;
-      left: 50%;
+      left: var(--split-pos, 50%);
       transform: translate(-50%, -50%);
       width: 32px;
       height: 32px;
@@ -1156,45 +1140,73 @@
       align-items: center;
       justify-content: center;
       pointer-events: none;
-      box-shadow: 0 0 12px var(--cyan-glow);
+      box-shadow: 0 0 16px var(--cyan-glow);
       font-size: 14px;
+      z-index: 11;
     }
-    .lb-range-slider {
+
+    .lb-split-tag {
       position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      opacity: 0;
-      cursor: ew-resize;
-      z-index: 20;
+      top: 14px;
+      padding: 3px 8px;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 4px;
+      backdrop-filter: blur(8px);
+      background: rgba(11, 13, 19, 0.75);
+      border: 1px solid var(--border);
+      pointer-events: none;
+      z-index: 12;
+      font-family: var(--font-mono);
+      letter-spacing: 0.5px;
+    }
+    .lb-split-orig {
+      left: 14px;
+      color: var(--text-muted);
+    }
+    .lb-split-up {
+      right: 14px;
+      color: var(--cyan);
+      border-color: rgba(0, 210, 255, 0.3);
     }
 
     /* Side-by-side mode */
     .comp-mode-side .lightbox-canvas-holder {
       display: flex;
-      gap: 12px;
+      gap: 16px;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
     }
-    .comp-mode-side .lb-before-clip {
+    .comp-mode-side .lb-img-after {
+      max-width: 48vw;
+      max-height: calc(100vh - 90px);
+    }
+    .comp-mode-side .lb-img-before {
       position: relative;
+      inset: auto;
+      max-width: 48vw;
+      max-height: calc(100vh - 90px);
       width: auto;
-      overflow: visible;
-      border-right: none;
+      height: auto;
+      clip-path: none;
     }
-    .comp-mode-side .lb-slider-handle,
-    .comp-mode-side .lb-range-slider {
+    .comp-mode-side .lb-slider-line,
+    .comp-mode-side .lb-slider-handle {
       display: none;
     }
 
     /* Flicker mode */
-    .comp-mode-flicker .lb-slider-handle,
-    .comp-mode-flicker .lb-range-slider {
+    .comp-mode-flicker .lb-slider-line,
+    .comp-mode-flicker .lb-slider-handle {
       display: none;
     }
-    .comp-mode-flicker .lb-before-clip {
-      width: 100%;
-      border-right: none;
+    .comp-mode-flicker .lb-img-before {
+      clip-path: none;
       opacity: 0;
-      transition: opacity 0.15s ease;
+      transition: opacity 0.12s ease;
     }
-    .lightbox-stage-viewport.flicker-active .lb-before-clip {
+    .lightbox-stage-viewport.flicker-active .lb-img-before {
       opacity: 1;
     }
 
@@ -1250,7 +1262,6 @@
       .header-right-telemetry { margin-left: 0; width: 100%; flex-wrap: wrap; gap: 6px; }
       .hero-progress-row { grid-template-columns: 1fr; gap: 6px; }
       .hero-counts-inline { flex-wrap: wrap; font-size: 11px; }
-      .category-mini-pills { max-width: 100%; overflow-x: auto; padding-bottom: 2px; }
       .telemetry-drawer-inner { grid-template-columns: 1fr; padding: 10px 12px 14px; }
       .sticky-toolbar { padding: 8px 12px; gap: 8px; flex-direction: column; align-items: stretch; }
       .toolbar-left { width: 100%; max-width: 100%; flex-wrap: wrap; gap: 6px; }
@@ -1284,12 +1295,7 @@
     <div class="header-row">
       <div class="brand-group">
         <div class="brand-title">
-          <svg class="brand-katana-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14.5 17.5 3 6V3h3l11.5 11.5"/>
-            <path d="m13 19 6-6"/>
-            <path d="m16 16 4 4"/>
-            <path d="m19 21 2-2"/>
-          </svg>
+          <img src="logo.png" alt="Avatar" class="brand-avatar" style="width: 24px; height: 24px; border-radius: 4px; object-fit: cover;">
           MURAMASA 2K
         </div>
         <div class="system-chips">
@@ -1327,31 +1333,20 @@
       </div>
     </div>
 
-    <!-- Row 2: Hero Percentage + Segmented Bar + Categories -->
+    <!-- Row 2: Hero Percentage + Progress Bar -->
     <div class="hero-progress-row">
       <div class="hero-metric-group">
         <div class="hero-big-percent">
           <span id="hero-percent-val">0.0</span><span class="unit">%</span>
         </div>
         <div class="hero-counts-inline">
-          <span id="hero-finished-cnt">0</span> / <span id="hero-total-cnt">0</span>
-          &bull; <strong class="stat-pass" id="hero-pass-cnt">0 pass</strong>
-          &bull; <strong class="stat-marginal" id="hero-marginal-cnt">0 marginal</strong>
-          &bull; <strong class="stat-review" id="hero-review-cnt">0 review</strong>
-          &bull; <strong class="stat-fail" id="hero-fail-cnt">0 fail</strong>
+          <strong id="hero-finished-cnt" style="color: #ffffff;">0</strong> / <span id="hero-total-cnt">0</span> Assets Completed
         </div>
       </div>
 
-      <!-- Segmented Bar -->
+      <!-- Single Modern Progress Bar -->
       <div class="segmented-progress-track fresh-shimmer" id="segmented-track" aria-label="Pipeline progress">
-        <div class="seg-fill pass" id="bar-fill-pass" style="width: 0%"></div>
-        <div class="seg-fill marginal" id="bar-fill-marginal" style="width: 0%"></div>
-        <div class="seg-fill review" id="bar-fill-review" style="width: 0%"></div>
-      </div>
-
-      <!-- Category Mini Pills -->
-      <div class="category-mini-pills" id="category-mini-pills">
-        <!-- Injected dynamically -->
+        <div class="seg-fill pass" id="bar-fill-pass" style="width: 0%; background: linear-gradient(90deg, var(--cyan), #38bdf8);"></div>
       </div>
     </div>
   </header>
@@ -1469,21 +1464,11 @@
         <input type="text" id="search-input" class="search-input" placeholder="Search filenames..." oninput="onSearchChange(this.value)" aria-label="Search filenames">
       </div>
 
-      <!-- Status Tier Filter -->
-      <select class="toolbar-select" id="status-filter" onchange="onStatusFilterChange(this.value)" aria-label="Filter by tier">
-        <option value="all">Status: All Tiers</option>
-        <option value="PASS">Pass (&ge;47 dB)</option>
-        <option value="MARGINAL">Marginal (45-47 dB)</option>
-        <option value="REVIEW">Review Needed (&lt;45 dB)</option>
-        <option value="FLAGGED">Flagged for Rerun</option>
-      </select>
-
       <!-- Sort Filter -->
       <select class="toolbar-select" id="sort-select" onchange="onSortChange(this.value)" aria-label="Sort order">
-        <option value="newest">Sort: Newest</option>
-        <option value="slowest">Sort: Slowest Time</option>
-        <option value="lowest_psnr">Sort: Lowest PSNR</option>
-        <option value="highest_psnr">Sort: Highest PSNR</option>
+        <option value="newest">Sort: Newest First</option>
+        <option value="oldest">Sort: Oldest First</option>
+        <option value="name">Sort: Name (A-Z)</option>
       </select>
     </div>
 
@@ -1501,18 +1486,18 @@
 
       <!-- Grid Snap Slider -->
       <div class="grid-snap-control">
-        <span>Grid: <strong id="grid-snap-lbl" style="color: var(--cyan);">Standard</strong></span>
+        <span><strong id="grid-snap-lbl" style="color: var(--cyan);">Standard</strong></span>
         <input type="range" class="grid-snap-slider" min="1" max="4" value="2" step="1" id="grid-snap-slider" oninput="onGridSliderChange(this.value)" aria-label="Snap card grid size">
       </div>
 
       <!-- Spoilers & Names -->
-      <button class="btn-action" onclick="blurAll()" title="Blur all asset thumbnails">
+      <button class="btn-action btn-magnetic" id="btn-blur-all" onclick="blurAll()" title="Blur all asset thumbnails">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
         Blur All
       </button>
-      <button class="btn-action" onclick="revealAll()" title="Reveal all asset thumbnails">
+      <button class="btn-action btn-magnetic" id="btn-reveal-all" onclick="revealAll()" title="Reveal all asset thumbnails">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-        Reveal
+        Reveal All
       </button>
       <button class="btn-action" id="btn-toggle-names" onclick="toggleHideFilenames()" title="Obscure filenames to avoid text spoilers">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
@@ -1556,6 +1541,8 @@
 
     <!-- Viewport Stage -->
     <div class="lightbox-stage-viewport checkerboard comp-mode-slider" id="lb-viewport"
+         onmousemove="onLightboxMouseMove(event)"
+         ontouchmove="onLightboxTouchMove(event)"
          onwheel="onLightboxWheel(event)"
          onmousedown="startPan(event)">
       
@@ -1568,16 +1555,19 @@
       </button>
 
       <div class="lightbox-canvas-holder" id="lb-canvas-holder">
-        <!-- AFTER (Upscaled) -->
+        <!-- AFTER (Upscaled 2K) -->
         <img class="lb-img-after" id="lb-img-after" src="" alt="Upscaled 2K Asset">
 
-        <!-- BEFORE (Original) -->
-        <div class="lb-before-clip" id="lb-before-clip">
-          <img class="lb-img-before" id="lb-img-before" src="" alt="Original Asset">
-        </div>
+        <!-- BEFORE (Original - Pixelated) -->
+        <img class="lb-img-before" id="lb-img-before" src="" alt="Original Asset">
 
+        <!-- Divider Line & Interactive Handle -->
+        <div class="lb-slider-line" id="lb-slider-line"></div>
         <div class="lb-slider-handle" id="lb-slider-handle">&harr;</div>
-        <input type="range" class="lb-range-slider" min="0" max="100" value="50" id="lb-range-slider" oninput="updateLightboxSlider(this.value)" aria-label="Split slider comparison">
+
+        <!-- Split Tags -->
+        <div class="lb-split-tag lb-split-orig" id="lb-tag-orig">ORIGINAL (PIXELATED)</div>
+        <div class="lb-split-tag lb-split-up" id="lb-tag-up">2K REMASTER</div>
       </div>
     </div>
 
@@ -1586,8 +1576,7 @@
       <div>
         <span>PSNR: <strong id="lb-psnr">--</strong> dB</span> &bull; 
         <span>SSIM: <strong id="lb-ssim">--</strong></span> &bull; 
-        <span>Time: <strong id="lb-time">--</strong></span> &bull; 
-        <span>Tier: <strong id="lb-tier">--</strong></span>
+        <span>Time: <strong id="lb-time">--</strong></span>
       </div>
       <div>
         <span>Zoom: <strong id="lb-zoom-val">1.0x</strong> (wheel to zoom, drag to pan)</span>
@@ -1713,9 +1702,10 @@
 
         const prevFinished = dataCache?.summary?.finished || 0;
         const newFinished = data.summary?.finished || 0;
+        const arrivals = (prevFinished > 0 && newFinished > prevFinished) ? (newFinished - prevFinished) : 0;
         dataCache = data;
 
-        updateDashboard(data, newFinished > prevFinished ? (newFinished - prevFinished) : 0);
+        updateDashboard(data, arrivals);
       } catch (err) {
         const dot = document.getElementById('live-dot');
         const text = document.getElementById('live-text');
@@ -1754,20 +1744,9 @@
         if (it.metrics?.ssim !== undefined) ssimList.push(it.metrics.ssim);
       });
 
-      document.getElementById('hero-pass-cnt').textContent = `${passCount} pass`;
-      document.getElementById('hero-marginal-cnt').textContent = `${marginalCount} marginal`;
-      document.getElementById('hero-review-cnt').textContent = `${reviewCount} review`;
-      document.getElementById('hero-fail-cnt').textContent = `${failCount} fail`;
-
-      // Segmented Progress Bar
-      if (total > 0) {
-        const pPass = (passCount / total) * 100;
-        const pMarginal = (marginalCount / total) * 100;
-        const pReview = (reviewCount / total) * 100;
-        document.getElementById('bar-fill-pass').style.width = pPass + '%';
-        document.getElementById('bar-fill-marginal').style.width = pMarginal + '%';
-        document.getElementById('bar-fill-review').style.width = pReview + '%';
-      }
+      // Unified Progress Bar
+      const barPass = document.getElementById('bar-fill-pass');
+      if (barPass) barPass.style.width = percent + '%';
 
       // 4. Live indicator from summary.updated_at
       updateLiveIndicator(s.updated_at);
@@ -1953,48 +1932,9 @@
       `;
     }
 
-    // --- INLINE CATEGORY MINI PILLS ---
+    // --- INLINE CATEGORY MINI PILLS (REMOVED) ---
     function renderCategoryMiniPills(s) {
-      const container = document.getElementById('category-mini-pills');
-      if (!s.categories) return;
-
-      const groups = {
-        'Backgrounds': { total: 0, finished: 0 },
-        'Event CG': { total: 0, finished: 0 },
-        'Sprites': { total: 0, finished: 0 },
-        'UI': { total: 0, finished: 0 },
-        'Effects': { total: 0, finished: 0 }
-      };
-
-      for (const k in s.categories) {
-        const cat = s.categories[k];
-        if (k.startsWith('backgrounds')) {
-          groups['Backgrounds'].total += cat.total || 0;
-          groups['Backgrounds'].finished += cat.finished || 0;
-        } else if (k.startsWith('event_cg')) {
-          groups['Event CG'].total += cat.total || 0;
-          groups['Event CG'].finished += cat.finished || 0;
-        } else if (k.startsWith('sprites')) {
-          groups['Sprites'].total += cat.total || 0;
-          groups['Sprites'].finished += cat.finished || 0;
-        } else if (k.startsWith('ui')) {
-          groups['UI'].total += cat.total || 0;
-          groups['UI'].finished += cat.finished || 0;
-        } else {
-          groups['Effects'].total += cat.total || 0;
-          groups['Effects'].finished += cat.finished || 0;
-        }
-      }
-
-      container.innerHTML = Object.entries(groups).map(([name, v]) => {
-        const isComplete = v.total > 0 && v.finished === v.total;
-        return `
-          <div class="cat-mini-pill ${isComplete ? 'complete' : ''}" title="${name}: ${v.finished}/${v.total}">
-            <span>${name}</span>
-            <strong>${v.finished}/${v.total}</strong>
-          </div>
-        `;
-      }).join('');
+      // Intentionally removed per request
     }
 
     // --- QUALITY HISTOGRAM & AUDIT METRICS ---
@@ -2214,25 +2154,15 @@
         items = items.filter(it => (it.category || '').startsWith(currentCategory));
       }
 
-      // 2. Status Tier Filter
-      if (currentStatus !== 'all') {
-        if (currentStatus === 'FLAGGED') {
-          items = items.filter(it => flaggedSet.has(it.new_path));
-        } else {
-          items = items.filter(it => tier(it) === currentStatus);
-        }
-      }
-
-      // 3. Search Filter
+      // 2. Search Filter
       if (searchQuery) {
         items = items.filter(it => (it.new_path || '').toLowerCase().includes(searchQuery));
       }
 
-      // 4. Sort
+      // 3. Sort
       if (currentSort === 'newest') items.reverse();
-      else if (currentSort === 'slowest') items.sort((a, b) => (b.elapsed_s || 0) - (a.elapsed_s || 0));
-      else if (currentSort === 'lowest_psnr') items.sort((a, b) => (a.metrics?.psnr || 999) - (b.metrics?.psnr || 999));
-      else if (currentSort === 'highest_psnr') items.sort((a, b) => (b.metrics?.psnr || 0) - (a.metrics?.psnr || 0));
+      else if (currentSort === 'oldest') { /* default order in JSON */ }
+      else if (currentSort === 'name') items.sort((a, b) => (a.new_path || '').localeCompare(b.new_path || ''));
 
       currentRenderList = items;
       const totalMatching = items.length;
@@ -2313,20 +2243,14 @@
       const origDims = item.orig_dims ? `${item.orig_dims[0]}×${item.orig_dims[1]}` : '--';
       const upDims = item.upscaled_dims ? `${item.upscaled_dims[0]}×${item.upscaled_dims[1]}` : '--';
 
-      // Badge only when tier !== PASS
-      const tierBadgeHtml = itemTier !== 'PASS' 
-        ? `<span class="badge-tier ${itemTier.toLowerCase()}">&bull; ${itemTier}</span>`
-        : '';
-
       const eyeSvg = isRevealed
         ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>`
         : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`;
 
       card.innerHTML = `
+        <div class="card-glare"></div>
         <div class="card-thumb-wrap checkerboard" 
-             onmousedown="onThumbMouseDown('${encodedKey}', event)"
-             onmouseup="onThumbMouseUp(event)"
-             onmouseleave="onThumbMouseUp(event)">
+             onclick="openLightbox('${encodedKey}')">
           <img class="card-thumb-img ${isRevealed ? '' : 'blurred'}" 
                loading="lazy" 
                src="thumbs/${encodeURIComponent(item.thumb || '')}" 
@@ -2339,16 +2263,9 @@
                 <span class="cat-dot" style="background: ${catColor};"></span>
                 ${catLabel}
               </span>
-              ${tierBadgeHtml}
             </div>
 
             <div class="card-overlay-actions">
-              <button class="card-icon-btn ${isFlagged ? 'is-active-flag' : ''}" 
-                      title="Flag for Re-Processing" 
-                      onclick="toggleFlag('${encodedKey}', event)"
-                      aria-label="Flag asset for re-processing">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-              </button>
               <button class="card-icon-btn" 
                       title="Toggle Spoiler Blur" 
                       onclick="toggleSpoiler('${encodedKey}', event)"
@@ -2369,13 +2286,10 @@
             <span>${origDims} &rarr; <strong>${upDims}</strong></span>
           </div>
 
-          <div class="psnr-meter-wrapper">
-            <div class="psnr-meter-track">
-              <div class="psnr-meter-fill ${itemTier.toLowerCase()}" style="width: ${psnrPct}%"></div>
-            </div>
-            <div class="psnr-meter-tooltip">
-              PSNR: ${psnrVal ? psnrVal.toFixed(2) + ' dB' : '--'} &bull; SSIM: ${ssimVal}
-            </div>
+          <div class="card-metrics-line">
+            <span>PSNR: ${psnrVal ? psnrVal.toFixed(1) + ' dB' : '--'}</span>
+            <span class="metrics-dot">&bull;</span>
+            <span>SSIM: ${ssimVal}</span>
           </div>
         </div>
       `;
@@ -2634,15 +2548,28 @@
       const catLabel = CATEGORY_LABELS[item.category] || item.category || '';
       document.getElementById('lb-meta').textContent = `${catLabel} · ${orig} → ${up}`;
 
+      const origUrl = `/api/img/orig?path=${encodeURIComponent(item.new_path)}`;
+      const upscaledUrl = `/api/img/2k?path=${encodeURIComponent(item.new_path)}`;
       const thumbUrl = `thumbs/${encodeURIComponent(item.thumb || '')}`;
-      document.getElementById('lb-img-after').src = thumbUrl;
-      document.getElementById('lb-img-before').src = thumbUrl;
+
+      const tagOrig = document.getElementById('lb-tag-orig');
+      const tagUp = document.getElementById('lb-tag-up');
+      if (tagOrig) tagOrig.textContent = `ORIGINAL (${orig}) · PIXELATED`;
+      if (tagUp) tagUp.textContent = `2K REMASTER (${up})`;
+
+      const imgAfter = document.getElementById('lb-img-after');
+      const imgBefore = document.getElementById('lb-img-before');
+
+      imgAfter.onerror = function() { this.src = thumbUrl; };
+      imgBefore.onerror = function() { this.src = thumbUrl; };
+
+      imgAfter.src = upscaledUrl;
+      imgBefore.src = origUrl;
 
       const m = item.metrics || {};
       document.getElementById('lb-psnr').textContent = m.psnr !== undefined ? Number(m.psnr).toFixed(2) : '--';
       document.getElementById('lb-ssim').textContent = m.ssim !== undefined ? Number(m.ssim).toFixed(4) : '--';
       document.getElementById('lb-time').textContent = item.elapsed_s ? `${Number(item.elapsed_s).toFixed(1)}s` : '--';
-      document.getElementById('lb-tier').textContent = tier(item);
 
       const isFlagged = flaggedSet.has(item.new_path);
       const flagBtn = document.getElementById('lb-flag-toggle');
@@ -2651,7 +2578,6 @@
         ${isFlagged ? 'Flagged (Remove)' : 'Flag Rerun'}
       `;
 
-      document.getElementById('lb-range-slider').value = 50;
       updateLightboxSlider(50);
     }
 
@@ -2697,8 +2623,26 @@
     }
 
     function updateLightboxSlider(val) {
-      document.getElementById('lb-before-clip').style.width = val + '%';
-      document.getElementById('lb-slider-handle').style.left = val + '%';
+      const holder = document.getElementById('lb-canvas-holder');
+      if (holder) holder.style.setProperty('--split-pos', `${val}%`);
+    }
+
+    function onLightboxMouseMove(e) {
+      if (lbMode !== 'slider' || isPanning) return;
+      const holder = document.getElementById('lb-canvas-holder');
+      if (!holder) return;
+      const rect = holder.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+      updateLightboxSlider(pct.toFixed(2));
+    }
+
+    function onLightboxTouchMove(e) {
+      if (lbMode !== 'slider' || !e.touches || !e.touches[0]) return;
+      const holder = document.getElementById('lb-canvas-holder');
+      if (!holder) return;
+      const rect = holder.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(100, ((e.touches[0].clientX - rect.left) / rect.width) * 100));
+      updateLightboxSlider(pct.toFixed(2));
     }
 
     function onLightboxWheel(e) {
@@ -2711,7 +2655,7 @@
     }
 
     function startPan(e) {
-      if (zoomLevel <= 1.0 || e.target.classList.contains('lb-range-slider')) return;
+      if (zoomLevel <= 1.0) return;
       isPanning = true;
       startX = e.clientX - panX;
       startY = e.clientY - panY;
@@ -2745,7 +2689,71 @@
       if (e.target === document.getElementById('lightbox-modal')) closeLightbox();
     }
 
-    // Initialize Polling
+    // --- 3D TILT & SPECULAR GLARE (MAX 4 DEGREE, HOVERED CARD ONLY) ---
+    function initCardTilt() {
+      const grid = document.getElementById('cards-grid');
+      if (!grid) return;
+
+      grid.addEventListener('mousemove', (e) => {
+        const card = e.target.closest('.asset-card');
+        if (!card) return;
+
+        const rect = card.getBoundingClientRect();
+        // Normalized coordinates from card center (-1 to +1)
+        const normX = Math.max(-1, Math.min(1, (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2)));
+        const normY = Math.max(-1, Math.min(1, (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2)));
+
+        // Max 4 degrees tilt
+        const rotY = (normX * 4).toFixed(2);
+        const rotX = (-normY * 4).toFixed(2);
+
+        card.style.transition = 'transform 0.08s ease-out, border-color 0.2s, box-shadow 0.2s';
+        card.style.transform = `perspective(900px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateY(-2px)`;
+
+        const glare = card.querySelector('.card-glare');
+        if (glare) {
+          const px = Math.round(((e.clientX - rect.left) / rect.width) * 100);
+          const py = Math.round(((e.clientY - rect.top) / rect.height) * 100);
+          glare.style.opacity = '1';
+          glare.style.background = `radial-gradient(circle at ${px}% ${py}%, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 65%)`;
+        }
+      });
+
+      grid.addEventListener('mouseout', (e) => {
+        const card = e.target.closest('.asset-card');
+        if (!card) return;
+        if (!card.contains(e.relatedTarget)) {
+          card.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s, box-shadow 0.2s';
+          card.style.transform = '';
+          const glare = card.querySelector('.card-glare');
+          if (glare) glare.style.opacity = '0';
+        }
+      });
+    }
+
+    // --- MAGNETIC ACTION BUTTONS (STRICTLY ON BLUR ALL / REVEAL ALL) ---
+    function initMagneticButtons() {
+      const btns = [document.getElementById('btn-blur-all'), document.getElementById('btn-reveal-all')].filter(Boolean);
+
+      btns.forEach(btn => {
+        btn.addEventListener('mousemove', (e) => {
+          const rect = btn.getBoundingClientRect();
+          const relX = e.clientX - (rect.left + rect.width / 2);
+          const relY = e.clientY - (rect.top + rect.height / 2);
+          btn.style.transition = 'transform 0.1s ease-out';
+          btn.style.transform = `translate(${relX * 0.35}px, ${relY * 0.35}px) scale(1.04)`;
+        });
+
+        btn.addEventListener('mouseleave', () => {
+          btn.style.transition = 'transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1.2)';
+          btn.style.transform = 'translate(0px, 0px) scale(1)';
+        });
+      });
+    }
+
+    // Initialize Polling & Interactive Systems
+    initCardTilt();
+    initMagneticButtons();
     fetchProgress();
     pollInterval = setInterval(fetchProgress, 3000);
   </script>

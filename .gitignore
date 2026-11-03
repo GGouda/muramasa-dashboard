@@ -1,2 +1,7 @@
 *.bak
-server.py
+cache/
+orig/
+upscaled/
+test_2k.webp
+test_orig.webp
+__pycache__/
