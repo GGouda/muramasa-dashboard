@@ -1295,7 +1295,7 @@
     <div class="header-row">
       <div class="brand-group">
         <div class="brand-title">
-          <img src="logo.png" alt="Avatar" class="brand-avatar" style="width: 24px; height: 24px; border-radius: 4px; object-fit: cover;">
+          <img src="logo.png?v=2" alt="Avatar" class="brand-avatar" style="width: 24px; height: 24px; border-radius: 4px; object-fit: cover;">
           MURAMASA 2K
         </div>
         <div class="system-chips">
@@ -2548,8 +2548,6 @@
       const catLabel = CATEGORY_LABELS[item.category] || item.category || '';
       document.getElementById('lb-meta').textContent = `${catLabel} · ${orig} → ${up}`;
 
-      const origUrl = `/api/img/orig?path=${encodeURIComponent(item.new_path)}`;
-      const upscaledUrl = `/api/img/2k?path=${encodeURIComponent(item.new_path)}`;
       const thumbUrl = `thumbs/${encodeURIComponent(item.thumb || '')}`;
 
       const tagOrig = document.getElementById('lb-tag-orig');
@@ -2560,11 +2558,17 @@
       const imgAfter = document.getElementById('lb-img-after');
       const imgBefore = document.getElementById('lb-img-before');
 
+      const isLocal = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+      if (isLocal) {
+        imgAfter.src = `/api/img/2k?path=${encodeURIComponent(item.new_path)}`;
+        imgBefore.src = `/api/img/orig?path=${encodeURIComponent(item.new_path)}`;
+      } else {
+        imgAfter.src = thumbUrl;
+        imgBefore.src = thumbUrl;
+      }
+
       imgAfter.onerror = function() { this.src = thumbUrl; };
       imgBefore.onerror = function() { this.src = thumbUrl; };
-
-      imgAfter.src = upscaledUrl;
-      imgBefore.src = origUrl;
 
       const m = item.metrics || {};
       document.getElementById('lb-psnr').textContent = m.psnr !== undefined ? Number(m.psnr).toFixed(2) : '--';
