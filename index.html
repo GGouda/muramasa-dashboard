@@ -1073,11 +1073,13 @@
 
     .lightbox-canvas-holder {
       position: relative;
+      width: min(96vw, calc((100vh - 100px) * var(--canvas-aspect, 1.7777)));
+      height: min(calc(96vw / var(--canvas-aspect, 1.7777)), calc(100vh - 100px));
       max-width: 98vw;
       max-height: calc(100vh - 90px);
       transform-origin: center center;
       transition: transform 0.05s ease-out;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       justify-content: center;
       --split-pos: 50%;
@@ -1089,10 +1091,8 @@
 
     .lb-img-after {
       display: block;
-      max-width: 98vw;
-      max-height: calc(100vh - 90px);
-      width: auto;
-      height: auto;
+      width: 100%;
+      height: 100%;
       object-fit: contain;
       user-select: none;
     }
@@ -2547,6 +2547,11 @@
       const up = item.upscaled_dims ? `${item.upscaled_dims[0]}×${item.upscaled_dims[1]}` : '--';
       const catLabel = CATEGORY_LABELS[item.category] || item.category || '';
       document.getElementById('lb-meta').textContent = `${catLabel} · ${orig} → ${up}`;
+
+      const dims = item.upscaled_dims || item.orig_dims || [16, 9];
+      const aspect = (dims[0] && dims[1]) ? (dims[0] / dims[1]) : (16 / 9);
+      const holder = document.getElementById('lb-canvas-holder');
+      if (holder) holder.style.setProperty('--canvas-aspect', aspect.toFixed(4));
 
       const thumbUrl = `thumbs/${encodeURIComponent(item.thumb || '')}`;
 
