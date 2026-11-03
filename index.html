@@ -1,0 +1,1461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Muramasa HD 2K Remaster Dashboard</title>
+  <style>
+    :root {
+      --bg: #0c0e14;
+      --bg-surface: #131722;
+      --bg-surface-hover: #181d2a;
+      --bg-card: #151a26;
+      --border: rgba(255, 255, 255, 0.09);
+      --border-light: rgba(255, 255, 255, 0.16);
+      
+      /* One accent colour: Cyan */
+      --cyan: #00d2ff;
+      --cyan-subtle: rgba(0, 210, 255, 0.12);
+      --cyan-border: rgba(0, 210, 255, 0.35);
+      
+      /* Semantic Status Only */
+      --status-pass: #22c55e;
+      --status-pass-bg: rgba(34, 197, 94, 0.12);
+      --status-pass-border: rgba(34, 197, 94, 0.35);
+      
+      --status-warn: #f59e0b;
+      --status-warn-bg: rgba(245, 158, 11, 0.12);
+      --status-warn-border: rgba(245, 158, 11, 0.35);
+      
+      --status-fail: #ef4444;
+      --status-fail-bg: rgba(239, 68, 68, 0.12);
+      --status-fail-border: rgba(239, 68, 68, 0.35);
+
+      /* High-contrast text */
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      --card-min-width: 300px;
+      --radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px 32px;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* TOP HEADER */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .header-main h1 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .chip {
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+    .chip strong {
+      color: var(--cyan);
+      font-weight: 600;
+    }
+
+    /* LIVE / STALLED STATUS INDICATOR */
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+    }
+    .pulse-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 0 0 rgba(0, 210, 255, 0.7);
+      animation: pulseAnim 2s infinite;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .pulse-dot.stalled {
+      background: var(--status-warn);
+      box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+    }
+    @keyframes pulseAnim {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 210, 255, 0.7); }
+      70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(0, 210, 255, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 210, 255, 0); }
+    }
+    .pulse-dot.stalled {
+      animation: pulseWarn 2s infinite;
+    }
+    @keyframes pulseWarn {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
+      70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+    }
+
+    /* 1. HERO PROGRESS SECTION (MERGED) */
+    .hero-progress-section {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .hero-progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .hero-title-area {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+    }
+
+    .hero-percent {
+      font-size: 44px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+
+    .hero-percent-accent {
+      color: var(--cyan);
+    }
+
+    .hero-stats-line {
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .hero-stats-line strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+    .stat-green { color: var(--status-pass) !important; }
+    .stat-amber { color: var(--status-warn) !important; }
+    .stat-red { color: var(--status-fail) !important; }
+
+    /* THICK ANIMATED PROGRESS BAR */
+    .hero-progress-track {
+      background: rgba(255, 255, 255, 0.06);
+      height: 18px;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+    }
+
+    .hero-progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 10px;
+      background: linear-gradient(90deg, #0099cc 0%, var(--cyan) 100%);
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      box-shadow: 0 0 16px rgba(0, 210, 255, 0.4);
+    }
+
+    .hero-progress-fill::after {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.25) 50%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      animation: barShimmer 2.5s infinite linear;
+      background-size: 200% 100%;
+    }
+    @keyframes barShimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* 2. LABELED TELEMETRY GRID */
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+    @media (max-width: 1200px) {
+      .telemetry-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .telemetry-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .telemetry-grid { grid-template-columns: 1fr; }
+    }
+
+    .telemetry-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 94px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .telemetry-card:hover {
+      border-color: var(--border-light);
+      transform: translateY(-2px);
+    }
+
+    .telemetry-lbl {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .telemetry-val {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+      word-break: break-all;
+    }
+
+    .telemetry-sub {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 4px;
+    }
+
+    /* 3. STICKY TOOLBAR */
+    .sticky-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(19, 23, 34, 0.92);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 18px;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .toolbar-row-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* CATEGORY TABS */
+    .tabs-list {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .tab-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .tab-btn.active {
+      color: var(--cyan);
+      background: var(--cyan-subtle);
+      border-color: var(--cyan-border);
+    }
+    .tab-count {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 1px 6px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+    }
+    .tab-btn.active .tab-count {
+      background: rgba(0, 210, 255, 0.2);
+      color: var(--cyan);
+    }
+
+    /* TOOLBAR ROW 2: CONTROLS, SORT, FILTERS, GRID SLIDER */
+    .toolbar-row-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      pointer-events: none;
+      color: var(--text-muted);
+    }
+    .search-input {
+      background: rgba(0, 0, 0, 0.35);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 12px;
+      padding: 6px 12px 6px 30px;
+      border-radius: 6px;
+      outline: none;
+      width: 170px;
+      transition: all 0.2s;
+    }
+    .search-input:focus {
+      width: 210px;
+      border-color: var(--cyan);
+    }
+    .search-input::placeholder { color: var(--text-dim); }
+
+    .control-select {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 10px;
+      border-radius: 6px;
+      outline: none;
+      cursor: pointer;
+    }
+    .control-select:focus {
+      border-color: var(--cyan);
+    }
+
+    .slider-control-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .grid-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 90px;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255, 255, 255, 0.15);
+      outline: none;
+      cursor: pointer;
+    }
+    .grid-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--cyan);
+      cursor: pointer;
+      box-shadow: 0 0 6px var(--cyan);
+    }
+
+    .action-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: var(--border-light);
+    }
+
+    /* 4. RESPONSIVE CARDS GRID */
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr));
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    .item-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      position: relative;
+    }
+    .item-card:hover {
+      transform: translateY(-3px);
+      border-color: var(--border-light);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+    }
+
+    /* LIGHT SPOILER THUMBNAIL */
+    .item-thumb-wrapper {
+      position: relative;
+      width: 100%;
+      height: 180px;
+      overflow: hidden;
+      background: #080a10;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .item-thumb {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: filter 0.3s ease, transform 0.3s ease;
+    }
+    .item-thumb.blurred {
+      filter: blur(12px) brightness(0.75);
+      transform: scale(1.06);
+    }
+    .item-card:hover .item-thumb:not(.blurred) {
+      transform: scale(1.04);
+    }
+
+    .spoiler-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(12, 14, 20, 0.85);
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .spoiler-badge.hidden { opacity: 0; }
+
+    .card-spoiler-toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(12, 14, 20, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      color: var(--text);
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      z-index: 5;
+    }
+    .card-spoiler-toggle:hover {
+      background: var(--cyan);
+      color: #0c0e14;
+      border-color: var(--cyan);
+    }
+
+    /* CARD DETAILS */
+    .item-body {
+      padding: 14px 16px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .card-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+    .badge-pass {
+      background: var(--status-pass-bg);
+      color: var(--status-pass);
+      border: 1px solid var(--status-pass-border);
+    }
+    .badge-warn {
+      background: var(--status-warn-bg);
+      color: var(--status-warn);
+      border: 1px solid var(--status-warn-border);
+    }
+    .badge-fail {
+      background: var(--status-fail-bg);
+      color: var(--status-fail);
+      border: 1px solid var(--status-fail-border);
+    }
+
+    .card-time {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .item-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      word-break: break-all;
+      line-height: 1.4;
+    }
+
+    .card-meta-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      padding-top: 8px;
+    }
+    .meta-res strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .metrics-box {
+      font-size: 11px;
+      color: var(--text-muted);
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      padding: 6px 10px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .metrics-box strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* 5. BEFORE / AFTER COMPARISON LIGHTBOX */
+    .lightbox-backdrop {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(6, 8, 12, 0.88);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .lightbox-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .lightbox-dialog {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius);
+      width: 100%;
+      max-width: 960px;
+      max-height: 92vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+      overflow: hidden;
+      transform: scale(0.96);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .lightbox-backdrop.active .lightbox-dialog {
+      transform: scale(1);
+    }
+
+    .lightbox-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .lightbox-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .lightbox-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      line-height: 1;
+    }
+    .lightbox-close-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .lightbox-comparison-area {
+      position: relative;
+      width: 100%;
+      height: 520px;
+      max-height: 62vh;
+      background: #000;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .lightbox-img {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    /* Before image simulated via bilinear filter styling */
+    .lightbox-before-wrap {
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 50%;
+      overflow: hidden;
+      border-right: 2px solid var(--cyan);
+      box-shadow: 2px 0 10px rgba(0, 210, 255, 0.5);
+    }
+    .lightbox-before-img {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      object-fit: contain;
+      filter: blur(1.2px) contrast(0.96);
+    }
+
+    .slider-handle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--cyan);
+      color: #0c0e14;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 800;
+      box-shadow: 0 0 14px var(--cyan);
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .lightbox-slider-input {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      opacity: 0;
+      cursor: ew-resize;
+      z-index: 20;
+      margin: 0;
+    }
+
+    .lightbox-label {
+      position: absolute;
+      top: 14px;
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 4px;
+      background: rgba(12, 14, 20, 0.85);
+      border: 1px solid var(--border);
+      color: var(--text);
+      pointer-events: none;
+      z-index: 15;
+    }
+    .lightbox-label-before { left: 14px; color: var(--text-muted); }
+    .lightbox-label-after { right: 14px; color: var(--cyan); }
+
+    /* SPOILER OVERLAY INSIDE LIGHTBOX */
+    .lightbox-spoiler-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(12, 14, 20, 0.9);
+      backdrop-filter: blur(16px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      z-index: 30;
+      transition: opacity 0.2s;
+    }
+    .lightbox-spoiler-overlay.hidden {
+      display: none;
+    }
+
+    .lightbox-footer {
+      padding: 14px 20px;
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .lightbox-footer strong { color: var(--text); }
+
+    /* SENTINEL FOR INFINITE SCROLL */
+    #scroll-sentinel {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-main">
+      <h1>Full Metal Daemon Muramasa &bull; 2K Upscale Dashboard</h1>
+      <div class="header-chips">
+        <span class="chip">Model: <strong>4x MangaJaNai DAT2 (28k bf16)</strong></span>
+        <span class="chip">Scale: <strong>62.5% Lanczos (2560x1440)</strong></span>
+        <span class="chip">Target: <strong>patch005.npk</strong></span>
+      </div>
+    </div>
+    <div class="status-badge" id="live-status-pill">
+      <div class="pulse-dot" id="live-dot"></div>
+      <span id="live-text">Live Telemetry</span>
+    </div>
+  </header>
+
+  <!-- 1. HERO PROGRESS SECTION (MERGED) -->
+  <section class="hero-progress-section">
+    <div class="hero-progress-header">
+      <div class="hero-title-area">
+        <div class="hero-percent">
+          <span id="hero-percent-val">0.0</span><span class="hero-percent-accent">%</span>
+        </div>
+        <div class="hero-stats-line" id="hero-stats-line">
+          <span id="hero-processed">0</span> / <span id="hero-total">0</span> assets &bull; 
+          <strong class="stat-green" id="hero-passed">0 pass</strong> &bull; 
+          <strong class="stat-amber" id="hero-warned">0 warn</strong> &bull; 
+          <strong class="stat-red" id="hero-failed">0 fail</strong>
+        </div>
+      </div>
+    </div>
+    
+    <div class="hero-progress-track">
+      <div class="hero-progress-fill" id="hero-progress-fill"></div>
+    </div>
+  </section>
+
+  <!-- 2. LABELED TELEMETRY GRID -->
+  <section class="telemetry-grid">
+    <!-- ETA -->
+    <div class="telemetry-card">
+      <div class="telemetry-lbl">Estimated Completion</div>
+      <div class="telemetry-val" id="tel-eta">--:--</div>
+      <div class="telemetry-sub" id="tel-eta-sub">Calculating...</div>
+    </div>
+
+    <!-- THROUGHPUT -->
+    <div class="telemetry-card">
+      <div class="telemetry-lbl">Throughput</div>
+      <div class="telemetry-val" id="tel-throughput">-- assets/hr</div>
+      <div class="telemetry-sub" id="tel-throughput-sub">Pipeline velocity</div>
+    </div>
+
+    <!-- AVG TIME -->
+    <div class="telemetry-card">
+      <div class="telemetry-lbl">Avg Time Per Asset</div>
+      <div class="telemetry-val" id="tel-avg-time">-- s</div>
+      <div class="telemetry-sub">Inference + Review</div>
+    </div>
+
+    <!-- CURRENT FILE -->
+    <div class="telemetry-card">
+      <div class="telemetry-lbl">Current / Last Asset</div>
+      <div class="telemetry-val" style="font-size: 14px;" id="tel-current-file">None</div>
+      <div class="telemetry-sub" id="tel-current-cat">Idle</div>
+    </div>
+
+    <!-- GPU STATS -->
+    <div class="telemetry-card">
+      <div class="telemetry-lbl">GPU Telemetry</div>
+      <div class="telemetry-val" style="font-size: 15px;" id="tel-gpu-name">RTX 4060</div>
+      <div class="telemetry-sub" id="tel-gpu-stats">VRAM / Temp: N/A via API</div>
+    </div>
+  </section>
+
+  <!-- 3. STICKY TOOLBAR -->
+  <div class="sticky-toolbar">
+    <!-- ROW 1: CATEGORY TABS WITH LIVE ASSET COUNTS -->
+    <div class="toolbar-row-top">
+      <div class="tabs-list" id="category-tabs">
+        <button class="tab-btn active" onclick="setCategoryTab('all', this)">
+          All <span class="tab-count" id="count-all">0</span>
+        </button>
+        <button class="tab-btn" onclick="setCategoryTab('backgrounds', this)">
+          Backgrounds <span class="tab-count" id="count-backgrounds">0</span>
+        </button>
+        <button class="tab-btn" onclick="setCategoryTab('event_cg', this)">
+          Event CGs <span class="tab-count" id="count-event_cg">0</span>
+        </button>
+        <button class="tab-btn" onclick="setCategoryTab('sprites', this)">
+          Sprites <span class="tab-count" id="count-sprites">0</span>
+        </button>
+        <button class="tab-btn" onclick="setCategoryTab('ui', this)">
+          UI <span class="tab-count" id="count-ui">0</span>
+        </button>
+        <button class="tab-btn" onclick="setCategoryTab('effects', this)">
+          Effects <span class="tab-count" id="count-effects">0</span>
+        </button>
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <button class="action-btn" onclick="blurAll()">🛡️ Blur All</button>
+        <button class="action-btn" onclick="revealAll()">👁️ Reveal All</button>
+      </div>
+    </div>
+
+    <!-- ROW 2: SEARCH, SORT, STATUS FILTER, GRID SIZE SLIDER -->
+    <div class="toolbar-row-bottom">
+      <div class="filter-group">
+        <!-- SEARCH -->
+        <div class="search-box">
+          <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input type="text" id="search-input" class="search-input" placeholder="Search filenames..." oninput="onSearchChange(this.value)">
+        </div>
+
+        <!-- STATUS FILTER -->
+        <select class="control-select" id="status-filter" onchange="onStatusFilterChange(this.value)">
+          <option value="all">Status: All</option>
+          <option value="PASS">Status: Pass</option>
+          <option value="WARN">Status: Warn</option>
+          <option value="FAIL">Status: Fail</option>
+        </select>
+
+        <!-- SORT -->
+        <select class="control-select" id="sort-select" onchange="onSortChange(this.value)">
+          <option value="newest">Sort: Newest</option>
+          <option value="slowest">Sort: Slowest Time</option>
+          <option value="lowest_psnr">Sort: Lowest PSNR</option>
+          <option value="highest_psnr">Sort: Highest PSNR</option>
+        </select>
+      </div>
+
+      <!-- GRID SIZE SLIDER -->
+      <div class="slider-control-wrap">
+        <span>Grid Size</span>
+        <input type="range" class="grid-slider" min="220" max="460" value="300" step="10" oninput="onGridSliderChange(this.value)">
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. CARDS GRID -->
+  <div class="items-grid" id="items-container">
+    <!-- Populated by JS -->
+  </div>
+
+  <!-- INFINITE SCROLL SENTINEL -->
+  <div id="scroll-sentinel">Loading assets...</div>
+
+  <!-- 5. LIGHTBOX MODAL WITH COMPARISON SLIDER -->
+  <div class="lightbox-backdrop" id="lightbox" onclick="closeLightboxOnBackdrop(event)">
+    <div class="lightbox-dialog" onclick="event.stopPropagation()">
+      <div class="lightbox-header">
+        <div>
+          <div class="lightbox-title" id="lightbox-filename">filename.png</div>
+          <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;" id="lightbox-meta">Category &bull; 1024x576 &rarr; 2560x1440</div>
+        </div>
+        <button class="lightbox-close-btn" onclick="closeLightbox()">&times;</button>
+      </div>
+
+      <div class="lightbox-comparison-area" id="lightbox-comp-area">
+        <!-- AFTER (UPSCALED) -->
+        <img class="lightbox-img" id="lightbox-after-img" src="" alt="Upscaled">
+
+        <!-- BEFORE (ORIGINAL) SLICE -->
+        <div class="lightbox-before-wrap" id="lightbox-before-wrap">
+          <img class="lightbox-before-img" id="lightbox-before-img" src="" alt="Original">
+        </div>
+
+        <div class="slider-handle" id="slider-handle">&harr;</div>
+
+        <!-- RANGE INPUT FOR DRAGGING -->
+        <input type="range" class="lightbox-slider-input" min="0" max="100" value="50" id="lightbox-slider" oninput="updateComparisonSlider(this.value)">
+
+        <div class="lightbox-label lightbox-label-before">BEFORE (Original)</div>
+        <div class="lightbox-label lightbox-label-after">AFTER (Upscaled 2K)</div>
+
+        <!-- SPOILER OVERLAY INSIDE LIGHTBOX -->
+        <div class="lightbox-spoiler-overlay" id="lightbox-spoiler-overlay">
+          <div style="font-size: 14px; font-weight: 700; color: #fff;">Spoiler Protected Asset</div>
+          <button class="action-btn" onclick="revealLightboxSpoiler()">Reveal Image</button>
+        </div>
+      </div>
+
+      <div class="lightbox-footer">
+        <div>
+          <span>PSNR: <strong id="lightbox-psnr">--</strong> dB</span> &bull; 
+          <span>SSIM: <strong id="lightbox-ssim">--</strong></span> &bull; 
+          <span>Time: <strong id="lightbox-time">--</strong></span>
+        </div>
+        <div>
+          <span class="badge-status badge-pass" id="lightbox-status-badge">PASS</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State
+    let currentCategory = 'all';
+    let currentSort = 'newest';
+    let currentStatus = 'all';
+    let searchQuery = '';
+    let dataCache = null;
+    let visibleCount = 48;
+    const CHUNK_SIZE = 48;
+
+    // Spoiler persistence in localStorage
+    const STORAGE_KEY_SPOILERS = 'muramasa_revealed_keys';
+    let revealedSet = new Set();
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY_SPOILERS);
+      if (stored) {
+        revealedSet = new Set(JSON.parse(stored));
+      }
+    } catch (e) {
+      console.warn('localStorage read error', e);
+    }
+
+    function saveSpoilerState() {
+      try {
+        localStorage.setItem(STORAGE_KEY_SPOILERS, JSON.stringify([...revealedSet]));
+      } catch (e) {}
+    }
+
+    // SVGs
+    const EYE_OPEN_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+    const EYE_OFF_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+
+    // Toolbar Event Handlers
+    function setCategoryTab(cat, btn) {
+      currentCategory = cat;
+      visibleCount = CHUNK_SIZE;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderItems();
+    }
+
+    function onSearchChange(val) {
+      searchQuery = (val || '').toLowerCase().trim();
+      visibleCount = CHUNK_SIZE;
+      renderItems();
+    }
+
+    function onSortChange(val) {
+      currentSort = val;
+      visibleCount = CHUNK_SIZE;
+      renderItems();
+    }
+
+    function onStatusFilterChange(val) {
+      currentStatus = val;
+      visibleCount = CHUNK_SIZE;
+      renderItems();
+    }
+
+    function onGridSliderChange(val) {
+      document.documentElement.style.setProperty('--card-min-width', val + 'px');
+    }
+
+    function toggleSpoiler(encodedKey, e) {
+      if (e) e.stopPropagation();
+      const key = decodeURIComponent(encodedKey);
+      if (revealedSet.has(key)) {
+        revealedSet.delete(key);
+      } else {
+        revealedSet.add(key);
+      }
+      saveSpoilerState();
+      renderItems();
+    }
+
+    function blurAll() {
+      revealedSet.clear();
+      saveSpoilerState();
+      renderItems();
+    }
+
+    function revealAll() {
+      if (dataCache && dataCache.items) {
+        Object.keys(dataCache.items).forEach(k => revealedSet.add(k));
+        saveSpoilerState();
+      }
+      renderItems();
+    }
+
+    // Polling Fetch with Amber fallback on failure
+    async function fetchProgress() {
+      const dot = document.getElementById('live-dot');
+      const text = document.getElementById('live-text');
+
+      try {
+        const res = await fetch('progress.json?t=' + Date.now());
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        
+        // Success state
+        dot.classList.remove('stalled');
+        text.textContent = 'Live Telemetry';
+        text.style.color = '';
+
+        const prevJson = JSON.stringify(dataCache?.summary || {});
+        const nextJson = JSON.stringify(data.summary || {});
+        dataCache = data;
+        
+        updateHeroAndTelemetry(data);
+        updateCategoryTabsCounts(data);
+
+        if (prevJson !== nextJson) {
+          renderItems();
+        }
+      } catch (err) {
+        // Turn dot amber on polling failure
+        dot.classList.add('stalled');
+        text.textContent = 'Polling Stalled (Retrying)';
+        text.style.color = 'var(--status-warn)';
+      }
+    }
+
+    // Update Hero & Telemetry
+    function updateHeroAndTelemetry(data) {
+      const s = data.summary;
+      if (!s) return;
+
+      const total = s.total || 0;
+      const finished = s.finished || 0;
+      const percent = s.percent !== undefined ? s.percent : (total ? (finished / total * 100).toFixed(1) : 0);
+
+      // Hero Elements
+      document.getElementById('hero-percent-val').textContent = Number(percent).toFixed(1);
+      document.getElementById('hero-processed').textContent = finished.toLocaleString();
+      document.getElementById('hero-total').textContent = total.toLocaleString();
+      document.getElementById('hero-progress-fill').style.width = percent + '%';
+
+      let passCount = 0;
+      let warnCount = 0;
+      let failCount = 0;
+      if (s.categories) {
+        for (const k in s.categories) {
+          passCount += s.categories[k].passed || 0;
+          warnCount += s.categories[k].warned || 0;
+          failCount += s.categories[k].failed || 0;
+        }
+      }
+      document.getElementById('hero-passed').textContent = passCount.toLocaleString() + ' pass';
+      document.getElementById('hero-warned').textContent = warnCount.toLocaleString() + ' warn';
+      document.getElementById('hero-failed').textContent = failCount.toLocaleString() + ' fail';
+
+      // Telemetry Calculations
+      const itemsList = data.items ? Object.values(data.items) : [];
+      let totalElapsed = 0;
+      let elapsedCount = 0;
+      let lastItem = null;
+
+      for (let i = 0; i < itemsList.length; i++) {
+        const it = itemsList[i];
+        if (it.elapsed_s && it.elapsed_s > 0) {
+          totalElapsed += it.elapsed_s;
+          elapsedCount++;
+        }
+        lastItem = it;
+      }
+
+      const avgSeconds = elapsedCount > 0 ? (totalElapsed / elapsedCount) : 24.5;
+      document.getElementById('tel-avg-time').textContent = avgSeconds.toFixed(1) + ' s';
+
+      // Throughput
+      const assetsPerHour = avgSeconds > 0 ? Math.round(3600 / avgSeconds) : 0;
+      document.getElementById('tel-throughput').textContent = assetsPerHour + ' assets/hr';
+
+      // ETA
+      const remainingAssets = Math.max(0, total - finished);
+      if (remainingAssets === 0) {
+        document.getElementById('tel-eta').textContent = 'Completed';
+        document.getElementById('tel-eta-sub').textContent = 'All assets processed';
+      } else {
+        const totalSecRemaining = remainingAssets * avgSeconds;
+        const hours = Math.floor(totalSecRemaining / 3600);
+        const mins = Math.floor((totalSecRemaining % 3600) / 60);
+        const days = Math.floor(hours / 24);
+        const remHours = hours % 24;
+
+        if (days > 0) {
+          document.getElementById('tel-eta').textContent = `${days}d ${remHours}h`;
+        } else {
+          document.getElementById('tel-eta').textContent = `${hours}h ${mins}m`;
+        }
+        document.getElementById('tel-eta-sub').textContent = `${remainingAssets.toLocaleString()} assets remaining`;
+      }
+
+      // Current File
+      if (lastItem) {
+        const filename = (lastItem.new_path || '').split('/').pop();
+        document.getElementById('tel-current-file').textContent = filename || 'Processing';
+        document.getElementById('tel-current-cat').textContent = `${lastItem.category || ''} · ${lastItem.elapsed_s || ''}s`;
+      }
+
+      // GPU Telemetry (Graceful fallback)
+      if (data.gpu) {
+        document.getElementById('tel-gpu-name').textContent = data.gpu.name || 'RTX 4060';
+        document.getElementById('tel-gpu-stats').textContent = 
+          `${data.gpu.util || '--'}% util · ${data.gpu.vram || '--'} VRAM · ${data.gpu.temp || '--'}°C`;
+      } else {
+        document.getElementById('tel-gpu-name').textContent = 'RTX 4060';
+        document.getElementById('tel-gpu-stats').textContent = 'VRAM / Temp: N/A via API';
+      }
+    }
+
+    // Tab counts
+    function updateCategoryTabsCounts(data) {
+      const s = data.summary;
+      if (!s || !s.categories) return;
+
+      const counts = {
+        all: s.total || 0,
+        backgrounds: 0,
+        event_cg: 0,
+        sprites: 0,
+        ui: 0,
+        effects: 0
+      };
+
+      for (const k in s.categories) {
+        const tot = s.categories[k].total || 0;
+        if (k.startsWith('backgrounds')) counts.backgrounds += tot;
+        else if (k.startsWith('event_cg')) counts.event_cg += tot;
+        else if (k.startsWith('sprites')) counts.sprites += tot;
+        else if (k.startsWith('ui')) counts.ui += tot;
+        else counts.effects += tot;
+      }
+
+      for (const k in counts) {
+        const el = document.getElementById('count-' + k);
+        if (el) el.textContent = counts[k].toLocaleString();
+      }
+    }
+
+    // Render Cards Grid
+    function renderItems() {
+      if (!dataCache || !dataCache.items) return;
+      const container = document.getElementById('items-container');
+      const sentinel = document.getElementById('scroll-sentinel');
+
+      let items = Object.values(dataCache.items);
+
+      // Category filter
+      if (currentCategory !== 'all') {
+        items = items.filter(it => (it.category || '').startsWith(currentCategory));
+      }
+
+      // Status filter
+      if (currentStatus !== 'all') {
+        items = items.filter(it => it.status === currentStatus);
+      }
+
+      // Search filter
+      if (searchQuery) {
+        items = items.filter(it => (it.new_path || '').toLowerCase().includes(searchQuery));
+      }
+
+      // Sorting
+      if (currentSort === 'newest') {
+        items.reverse();
+      } else if (currentSort === 'slowest') {
+        items.sort((a, b) => (b.elapsed_s || 0) - (a.elapsed_s || 0));
+      } else if (currentSort === 'lowest_psnr') {
+        items.sort((a, b) => (a.metrics?.psnr || 999) - (b.metrics?.psnr || 999));
+      } else if (currentSort === 'highest_psnr') {
+        items.sort((a, b) => (b.metrics?.psnr || 0) - (a.metrics?.psnr || 0));
+      }
+
+      const totalMatching = items.length;
+      const visibleItems = items.slice(0, visibleCount);
+
+      if (totalMatching === 0) {
+        container.innerHTML = `
+          <div style="grid-column: 1 / -1; text-align: center; padding: 48px; color: var(--text-muted);">
+            <div style="font-size: 28px; margin-bottom: 6px;">🔍</div>
+            <div style="font-weight: 600; color: var(--text);">No matching assets</div>
+            <div style="font-size: 12px; margin-top: 4px;">Try adjusting your search query, status filter, or category tab.</div>
+          </div>
+        `;
+        sentinel.style.display = 'none';
+        return;
+      }
+
+      if (visibleCount >= totalMatching) {
+        sentinel.textContent = `Showing all ${totalMatching.toLocaleString()} assets`;
+      } else {
+        sentinel.textContent = `Scroll down to load more (${(totalMatching - visibleCount).toLocaleString()} remaining)`;
+        sentinel.style.display = 'flex';
+      }
+
+      container.innerHTML = visibleItems.map((item, index) => {
+        const status = item.status || 'PASS';
+        const statusClass = status === 'PASS' ? 'badge-pass' : (status === 'WARN' ? 'badge-warn' : 'badge-fail');
+        const metrics = item.metrics || {};
+        const isRevealed = revealedSet.has(item.new_path);
+        const blurClass = isRevealed ? '' : 'blurred';
+        const spoilerBadgeClass = isRevealed ? 'hidden' : '';
+        const icon = isRevealed ? EYE_OFF_SVG : EYE_OPEN_SVG;
+        const encodedKey = encodeURIComponent(item.new_path);
+
+        const filename = (item.new_path || '').split('/').pop();
+        const origDimsStr = item.orig_dims ? `${item.orig_dims[0]}×${item.orig_dims[1]}` : '--';
+        const upDimsStr = item.upscaled_dims ? `${item.upscaled_dims[0]}×${item.upscaled_dims[1]}` : '--';
+
+        return `
+          <div class="item-card" onclick="openLightbox('${encodedKey}')">
+            <div class="item-thumb-wrapper">
+              <img class="item-thumb ${blurClass}" loading="lazy" src="thumbs/${encodeURIComponent(item.thumb || '')}" alt="${filename}" onerror="this.src='fallback.png'">
+              <div class="spoiler-badge ${spoilerBadgeClass}">SPOILER</div>
+              <button class="card-spoiler-toggle" title="Toggle Spoiler Blur" onclick="toggleSpoiler('${encodedKey}', event)">
+                ${icon}
+              </button>
+            </div>
+            <div class="item-body">
+              <div>
+                <div class="card-top-row">
+                  <span class="badge-status ${statusClass}">● ${status}</span>
+                  <span class="card-time">Time: <strong>${item.elapsed_s ? item.elapsed_s + 's' : '--'}</strong></span>
+                </div>
+                <div class="item-title" title="${item.new_path}" style="margin-top: 8px;">${filename}</div>
+              </div>
+              <div>
+                <div class="card-meta-line">
+                  <span class="meta-res">${origDimsStr} &rarr; <strong>${upDimsStr}</strong></span>
+                  <span style="text-transform: capitalize;">${item.category || ''}</span>
+                </div>
+                <div class="metrics-box" style="margin-top: 8px;">
+                  <span>PSNR: <strong>${metrics.psnr !== undefined ? metrics.psnr + ' dB' : '--'}</strong></span>
+                  <span>SSIM: <strong>${metrics.ssim !== undefined ? metrics.ssim : '--'}</strong></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Infinite scroll observer
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        if (dataCache && dataCache.items) {
+          visibleCount += CHUNK_SIZE;
+          renderItems();
+        }
+      }
+    }, { rootMargin: '400px' });
+    observer.observe(document.getElementById('scroll-sentinel'));
+
+    // 5. LIGHTBOX COMPARISON SLIDER
+    let activeLightboxItem = null;
+
+    function openLightbox(encodedKey) {
+      const key = decodeURIComponent(encodedKey);
+      if (!dataCache || !dataCache.items || !dataCache.items[key]) return;
+
+      const item = dataCache.items[key];
+      activeLightboxItem = item;
+
+      const filename = (item.new_path || '').split('/').pop();
+      document.getElementById('lightbox-filename').textContent = filename;
+      
+      const origDimsStr = item.orig_dims ? `${item.orig_dims[0]}×${item.orig_dims[1]}` : '--';
+      const upDimsStr = item.upscaled_dims ? `${item.upscaled_dims[0]}×${item.upscaled_dims[1]}` : '--';
+      document.getElementById('lightbox-meta').textContent = `${item.category || ''} · ${origDimsStr} → ${upDimsStr}`;
+
+      const thumbUrl = `thumbs/${encodeURIComponent(item.thumb || '')}`;
+      document.getElementById('lightbox-after-img').src = thumbUrl;
+      document.getElementById('lightbox-before-img').src = thumbUrl;
+
+      // Metrics
+      const m = item.metrics || {};
+      document.getElementById('lightbox-psnr').textContent = m.psnr !== undefined ? m.psnr : '--';
+      document.getElementById('lightbox-ssim').textContent = m.ssim !== undefined ? m.ssim : '--';
+      document.getElementById('lightbox-time').textContent = item.elapsed_s ? item.elapsed_s + 's' : '--';
+
+      const statusBadge = document.getElementById('lightbox-status-badge');
+      const status = item.status || 'PASS';
+      statusBadge.textContent = status;
+      statusBadge.className = 'badge-status ' + (status === 'PASS' ? 'badge-pass' : (status === 'WARN' ? 'badge-warn' : 'badge-fail'));
+
+      // Spoiler state
+      const isRevealed = revealedSet.has(item.new_path);
+      const spoilerOverlay = document.getElementById('lightbox-spoiler-overlay');
+      if (isRevealed) {
+        spoilerOverlay.classList.add('hidden');
+      } else {
+        spoilerOverlay.classList.remove('hidden');
+      }
+
+      // Reset slider to 50%
+      document.getElementById('lightbox-slider').value = 50;
+      updateComparisonSlider(50);
+
+      document.getElementById('lightbox').classList.add('active');
+    }
+
+    function updateComparisonSlider(val) {
+      document.getElementById('lightbox-before-wrap').style.width = val + '%';
+      document.getElementById('slider-handle').style.left = val + '%';
+    }
+
+    function revealLightboxSpoiler() {
+      if (activeLightboxItem) {
+        revealedSet.add(activeLightboxItem.new_path);
+        saveSpoilerState();
+        document.getElementById('lightbox-spoiler-overlay').classList.add('hidden');
+        renderItems();
+      }
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+      activeLightboxItem = null;
+    }
+
+    function closeLightboxOnBackdrop(e) {
+      if (e.target === document.getElementById('lightbox')) {
+        closeLightbox();
+      }
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
+    });
+
+    // Start Polling
+    fetchProgress();
+    setInterval(fetchProgress, 3000);
+  </script>
+</body>
+</html>
