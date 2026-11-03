@@ -6,22 +6,28 @@
   <title>Muramasa HD 2K Remaster Dashboard</title>
   <style>
     :root {
-      --bg: #0c0e14;
-      --bg-surface: #131722;
-      --bg-surface-hover: #181d2a;
-      --bg-card: #151a26;
-      --border: rgba(255, 255, 255, 0.09);
+      --bg: #0b0d13;
+      --bg-surface: #121622;
+      --bg-surface-hover: #171d2c;
+      --bg-card: #151a28;
+      --bg-card-subtle: #0f131f;
+      --border: rgba(255, 255, 255, 0.08);
       --border-light: rgba(255, 255, 255, 0.16);
       
-      /* One accent colour: Cyan */
+      /* Single Accent: Cyan */
       --cyan: #00d2ff;
       --cyan-subtle: rgba(0, 210, 255, 0.12);
       --cyan-border: rgba(0, 210, 255, 0.35);
+      --cyan-glow: rgba(0, 210, 255, 0.25);
       
       /* Semantic Status Only */
       --status-pass: #22c55e;
       --status-pass-bg: rgba(34, 197, 94, 0.12);
       --status-pass-border: rgba(34, 197, 94, 0.35);
+
+      --status-marginal: #eab308;
+      --status-marginal-bg: rgba(234, 179, 8, 0.12);
+      --status-marginal-border: rgba(234, 179, 8, 0.35);
       
       --status-warn: #f59e0b;
       --status-warn-bg: rgba(245, 158, 11, 0.12);
@@ -31,7 +37,11 @@
       --status-fail-bg: rgba(239, 68, 68, 0.12);
       --status-fail-border: rgba(239, 68, 68, 0.35);
 
-      /* High-contrast text */
+      --status-flagged: #ec4899;
+      --status-flagged-bg: rgba(236, 72, 153, 0.15);
+      --status-flagged-border: rgba(236, 72, 153, 0.4);
+
+      /* High-contrast Text */
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --text-dim: #64748b;
@@ -51,38 +61,50 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
-      padding: 24px 32px;
+      padding: 22px 30px;
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* TOP HEADER */
+    /* Accessibility Focus State */
+    :focus-visible {
+      outline: 2px solid var(--cyan);
+      outline-offset: 2px;
+    }
+
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce) {
+      *, ::before, ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* HEADER */
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 20px;
+      padding-bottom: 18px;
       border-bottom: 1px solid var(--border);
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       flex-wrap: wrap;
-      gap: 16px;
+      gap: 14px;
     }
 
     .header-main h1 {
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 700;
       letter-spacing: -0.4px;
       color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 10px;
     }
 
     .header-chips {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      margin-top: 8px;
+      margin-top: 6px;
     }
 
     .chip {
@@ -98,18 +120,37 @@
       font-weight: 600;
     }
 
-    /* LIVE / STALLED STATUS INDICATOR */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .panic-badge {
+      font-size: 11px;
+      color: var(--text-dim);
+      border: 1px dashed var(--border);
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: rgba(0,0,0,0.25);
+    }
+    .panic-badge kbd {
+      background: rgba(255,255,255,0.08);
+      color: var(--text-muted);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
     .status-badge {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       background: var(--bg-surface);
       border: 1px solid var(--border);
       padding: 6px 14px;
       border-radius: 20px;
       font-size: 12px;
       font-weight: 600;
-      letter-spacing: 0.4px;
     }
     .pulse-dot {
       width: 9px;
@@ -118,19 +159,20 @@
       background: var(--cyan);
       box-shadow: 0 0 0 0 rgba(0, 210, 255, 0.7);
       animation: pulseAnim 2s infinite;
-      transition: background 0.3s, box-shadow 0.3s;
+      transition: background 0.3s;
     }
     .pulse-dot.stalled {
       background: var(--status-warn);
-      box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7);
+      animation: pulseWarn 2s infinite;
+    }
+    .pulse-dot.paused {
+      background: var(--text-dim);
+      animation: none;
     }
     @keyframes pulseAnim {
       0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 210, 255, 0.7); }
       70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(0, 210, 255, 0); }
       100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 210, 255, 0); }
-    }
-    .pulse-dot.stalled {
-      animation: pulseWarn 2s infinite;
     }
     @keyframes pulseWarn {
       0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
@@ -138,14 +180,68 @@
       100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
     }
 
-    /* 1. HERO PROGRESS SECTION (MERGED) */
+    /* 1. PIPELINE CONTROLS & STORAGE BAR */
+    .pipeline-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 18px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .pipeline-controls-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .ctrl-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .ctrl-btn:hover {
+      background: var(--bg-surface-hover);
+      border-color: var(--border-light);
+    }
+    .ctrl-btn.active {
+      background: var(--status-warn-bg);
+      border-color: var(--status-warn-border);
+      color: var(--status-warn);
+    }
+
+    .storage-telemetry {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .storage-telemetry strong { color: var(--text); }
+    .storage-telemetry span { display: inline-flex; align-items: center; gap: 4px; }
+
+    /* 2. HERO PROGRESS SECTION WITH INLINE CATEGORY BARS */
     .hero-progress-section {
       background: var(--bg-surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 24px 28px;
+      padding: 22px 26px;
       margin-bottom: 20px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
     }
 
     .hero-progress-header {
@@ -154,7 +250,7 @@
       align-items: baseline;
       flex-wrap: wrap;
       gap: 12px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .hero-title-area {
@@ -164,143 +260,209 @@
     }
 
     .hero-percent {
-      font-size: 44px;
+      font-size: 42px;
       font-weight: 800;
       color: var(--text);
       line-height: 1;
       letter-spacing: -1px;
     }
-
-    .hero-percent-accent {
-      color: var(--cyan);
-    }
+    .hero-percent-accent { color: var(--cyan); }
 
     .hero-stats-line {
-      font-size: 14px;
+      font-size: 13px;
       color: var(--text-muted);
       font-weight: 500;
     }
-
-    .hero-stats-line strong {
-      color: var(--text);
-      font-weight: 600;
-    }
+    .hero-stats-line strong { font-weight: 600; }
     .stat-green { color: var(--status-pass) !important; }
     .stat-amber { color: var(--status-warn) !important; }
+    .stat-marginal { color: var(--status-marginal) !important; }
     .stat-red { color: var(--status-fail) !important; }
+    .stat-flagged { color: var(--status-flagged) !important; }
 
-    /* THICK ANIMATED PROGRESS BAR */
     .hero-progress-track {
       background: rgba(255, 255, 255, 0.06);
-      height: 18px;
-      border-radius: 10px;
+      height: 16px;
+      border-radius: 8px;
       overflow: hidden;
       position: relative;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.4);
+      margin-bottom: 16px;
     }
-
     .hero-progress-fill {
       height: 100%;
       width: 0%;
-      border-radius: 10px;
-      background: linear-gradient(90deg, #0099cc 0%, var(--cyan) 100%);
+      border-radius: 8px;
+      background: linear-gradient(90deg, #0088cc 0%, var(--cyan) 100%);
       transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-      position: relative;
-      box-shadow: 0 0 16px rgba(0, 210, 255, 0.4);
+      box-shadow: 0 0 12px rgba(0, 210, 255, 0.4);
     }
 
-    .hero-progress-fill::after {
-      content: "";
-      position: absolute;
-      top: 0; left: 0; bottom: 0; right: 0;
-      background: linear-gradient(
-        90deg,
-        rgba(255, 255, 255, 0) 0%,
-        rgba(255, 255, 255, 0.25) 50%,
-        rgba(255, 255, 255, 0) 100%
-      );
-      animation: barShimmer 2.5s infinite linear;
-      background-size: 200% 100%;
-    }
-    @keyframes barShimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-
-    /* 2. LABELED TELEMETRY GRID */
-    .telemetry-grid {
+    /* INLINE PER-CATEGORY PROGRESS BARS */
+    .inline-categories-grid {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 14px;
-      margin-bottom: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      padding-top: 14px;
     }
-    @media (max-width: 1200px) {
-      .telemetry-grid { grid-template-columns: repeat(3, 1fr); }
+    .cat-bar-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .cat-bar-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .cat-bar-header strong { color: var(--text); }
+    .cat-bar-track {
+      background: rgba(255, 255, 255, 0.05);
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .cat-bar-fill {
+      height: 100%;
+      background: var(--cyan);
+      border-radius: 3px;
+      transition: width 0.5s ease;
+    }
+
+    /* 3. TELEMETRY, CHARTS & LIVE LOG GRID */
+    .telemetry-and-logs-grid {
+      display: grid;
+      grid-template-columns: 280px 320px 1fr 340px;
+      gap: 16px;
+      margin-bottom: 22px;
+    }
+    @media (max-width: 1300px) {
+      .telemetry-and-logs-grid { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 768px) {
-      .telemetry-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 480px) {
-      .telemetry-grid { grid-template-columns: 1fr; }
+      .telemetry-and-logs-grid { grid-template-columns: 1fr; }
     }
 
-    .telemetry-card {
+    .telemetry-panel {
       background: var(--bg-surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 16px 18px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      min-height: 94px;
-      transition: border-color 0.2s, transform 0.2s;
     }
-    .telemetry-card:hover {
-      border-color: var(--border-light);
-      transform: translateY(-2px);
-    }
-
-    .telemetry-lbl {
+    .panel-title {
       font-size: 11px;
-      font-weight: 600;
+      font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.6px;
       color: var(--text-muted);
-      margin-bottom: 6px;
+      margin-bottom: 10px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 6px;
     }
 
-    .telemetry-val {
-      font-size: 20px;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1.2;
-      word-break: break-all;
+    /* MINI SVG CHARTS */
+    .chart-svg {
+      width: 100%;
+      height: 80px;
+      overflow: visible;
+    }
+    .sparkline-path {
+      fill: none;
+      stroke: var(--cyan);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .sparkline-area {
+      fill: url(#cyan-grad);
+      opacity: 0.25;
     }
 
-    .telemetry-sub {
+    /* HISTOGRAM BARS */
+    .histo-bar {
+      fill: var(--cyan);
+      opacity: 0.85;
+      rx: 2;
+      transition: opacity 0.2s, height 0.3s;
+    }
+    .histo-bar:hover { opacity: 1; }
+    .histo-label {
+      font-size: 9px;
+      fill: var(--text-dim);
+      text-anchor: middle;
+    }
+
+    /* AUDIT METRICS DISPLAY */
+    .audit-stats-table {
+      width: 100%;
+      border-collapse: collapse;
       font-size: 11px;
-      color: var(--text-dim);
       margin-top: 4px;
     }
+    .audit-stats-table th {
+      text-align: left;
+      color: var(--text-dim);
+      font-weight: 500;
+      padding-bottom: 4px;
+    }
+    .audit-stats-table td {
+      color: var(--text);
+      font-weight: 600;
+      padding: 2px 0;
+    }
+    .marginal-note {
+      font-size: 10px;
+      color: var(--status-marginal);
+      margin-top: 6px;
+      display: block;
+    }
 
-    /* 3. STICKY TOOLBAR */
+    /* LIVE ACTIVITY LOG */
+    .activity-log-box {
+      background: #090b10;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      height: 120px;
+      overflow-y: auto;
+      padding: 8px 10px;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: 11px;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .log-line {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      color: #94a3b8;
+    }
+    .log-time { color: var(--text-dim); font-size: 10px; flex-shrink: 0; }
+    .log-tag-pass { color: var(--status-pass); }
+    .log-tag-warn { color: var(--status-warn); }
+    .log-tag-flag { color: var(--status-flagged); }
+
+    /* 4. STICKY TOOLBAR */
     .sticky-toolbar {
       position: sticky;
       top: 0;
       z-index: 50;
-      background: rgba(19, 23, 34, 0.92);
+      background: rgba(18, 22, 34, 0.94);
       backdrop-filter: blur(12px);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 12px 18px;
-      margin-bottom: 24px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      padding: 10px 16px;
+      margin-bottom: 22px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
 
     .toolbar-row-top {
@@ -308,23 +470,21 @@
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 10px;
     }
 
-    /* CATEGORY TABS */
     .tabs-list {
       display: flex;
       gap: 6px;
       flex-wrap: wrap;
     }
-
     .tab-btn {
       background: transparent;
       border: 1px solid transparent;
       color: var(--text-muted);
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
-      padding: 6px 14px;
+      padding: 6px 12px;
       border-radius: 6px;
       cursor: pointer;
       display: flex;
@@ -342,10 +502,10 @@
       border-color: var(--cyan-border);
     }
     .tab-count {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
       padding: 1px 6px;
-      border-radius: 10px;
+      border-radius: 8px;
       background: rgba(255, 255, 255, 0.08);
       color: var(--text-muted);
     }
@@ -354,21 +514,20 @@
       color: var(--cyan);
     }
 
-    /* TOOLBAR ROW 2: CONTROLS, SORT, FILTERS, GRID SLIDER */
     .toolbar-row-bottom {
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 14px;
-      padding-top: 10px;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      gap: 12px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .filter-group {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
@@ -388,14 +547,14 @@
       border: 1px solid var(--border);
       color: var(--text);
       font-size: 12px;
-      padding: 6px 12px 6px 30px;
+      padding: 6px 12px 6px 28px;
       border-radius: 6px;
       outline: none;
-      width: 170px;
-      transition: all 0.2s;
+      width: 160px;
+      transition: width 0.2s;
     }
     .search-input:focus {
-      width: 210px;
+      width: 200px;
       border-color: var(--cyan);
     }
     .search-input::placeholder { color: var(--text-dim); }
@@ -411,21 +570,37 @@
       outline: none;
       cursor: pointer;
     }
-    .control-select:focus {
-      border-color: var(--cyan);
+
+    .toggle-pill {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 5px 10px;
+      border-radius: 6px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .toggle-pill.active {
+      background: var(--cyan-subtle);
+      border-color: var(--cyan-border);
+      color: var(--cyan);
     }
 
     .slider-control-wrap {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text-muted);
     }
     .grid-slider {
       -webkit-appearance: none;
       appearance: none;
-      width: 90px;
+      width: 80px;
       height: 4px;
       border-radius: 2px;
       background: rgba(255, 255, 255, 0.15);
@@ -440,34 +615,14 @@
       border-radius: 50%;
       background: var(--cyan);
       cursor: pointer;
-      box-shadow: 0 0 6px var(--cyan);
     }
 
-    .action-btn {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      color: var(--text);
-      font-size: 12px;
-      font-weight: 600;
-      padding: 6px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .action-btn:hover {
-      background: rgba(255, 255, 255, 0.08);
-      border-color: var(--border-light);
-    }
-
-    /* 4. RESPONSIVE CARDS GRID */
+    /* 5. CARDS GRID */
     .items-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr));
-      gap: 18px;
-      margin-bottom: 30px;
+      gap: 16px;
+      margin-bottom: 28px;
     }
 
     .item-card {
@@ -478,149 +633,149 @@
       display: flex;
       flex-direction: column;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
-      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s, box-shadow 0.2s;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s;
       cursor: pointer;
       position: relative;
     }
     .item-card:hover {
       transform: translateY(-3px);
       border-color: var(--border-light);
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+    }
+    .item-card.is-flagged {
+      border-color: var(--status-flagged-border);
+      box-shadow: 0 0 12px rgba(236, 72, 153, 0.2);
     }
 
-    /* LIGHT SPOILER THUMBNAIL */
+    /* THUMBNAIL & HOLD-TO-PEEK */
     .item-thumb-wrapper {
       position: relative;
       width: 100%;
-      height: 180px;
+      height: 175px;
       overflow: hidden;
       background: #080a10;
       border-bottom: 1px solid var(--border);
+      user-select: none;
     }
 
     .item-thumb {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: filter 0.3s ease, transform 0.3s ease;
+      transition: filter 0.25s ease, transform 0.25s ease;
     }
     .item-thumb.blurred {
-      filter: blur(12px) brightness(0.75);
+      filter: blur(14px) brightness(0.7);
       transform: scale(1.06);
     }
-    .item-card:hover .item-thumb:not(.blurred) {
-      transform: scale(1.04);
+    .item-thumb.peeking {
+      filter: blur(0px) brightness(1) !important;
+      transform: scale(1) !important;
     }
 
-    .spoiler-badge {
+    .spoiler-tag {
       position: absolute;
       top: 10px;
       left: 10px;
-      background: rgba(12, 14, 20, 0.85);
+      background: rgba(11, 13, 19, 0.85);
       color: var(--text-muted);
       border: 1px solid rgba(255, 255, 255, 0.15);
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 700;
-      letter-spacing: 0.6px;
-      padding: 2px 8px;
+      letter-spacing: 0.5px;
+      padding: 2px 6px;
       border-radius: 4px;
       pointer-events: none;
-      transition: opacity 0.2s;
     }
-    .spoiler-badge.hidden { opacity: 0; }
+    .spoiler-tag.hidden { display: none; }
 
-    .card-spoiler-toggle {
+    .thumb-controls {
       position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(12, 14, 20, 0.85);
+      top: 8px;
+      right: 8px;
+      display: flex;
+      gap: 6px;
+      z-index: 5;
+    }
+
+    .icon-btn-round {
+      background: rgba(11, 13, 19, 0.85);
       border: 1px solid rgba(255, 255, 255, 0.18);
-      color: var(--text);
-      width: 30px;
-      height: 30px;
+      color: var(--text-muted);
+      width: 28px;
+      height: 28px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       transition: all 0.2s;
-      z-index: 5;
     }
-    .card-spoiler-toggle:hover {
+    .icon-btn-round:hover {
       background: var(--cyan);
-      color: #0c0e14;
+      color: #0b0d13;
       border-color: var(--cyan);
     }
+    .icon-btn-round.flagged {
+      background: var(--status-flagged);
+      color: #fff;
+      border-color: var(--status-flagged);
+    }
 
-    /* CARD DETAILS */
+    /* CARD BODY */
     .item-body {
-      padding: 14px 16px;
+      padding: 12px 14px;
       flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
     }
 
     .card-top-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
     }
 
     .badge-status {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      padding: 2px 8px;
+      padding: 2px 7px;
       border-radius: 4px;
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 700;
       letter-spacing: 0.4px;
       text-transform: uppercase;
     }
-    .badge-pass {
-      background: var(--status-pass-bg);
-      color: var(--status-pass);
-      border: 1px solid var(--status-pass-border);
-    }
-    .badge-warn {
-      background: var(--status-warn-bg);
-      color: var(--status-warn);
-      border: 1px solid var(--status-warn-border);
-    }
-    .badge-fail {
-      background: var(--status-fail-bg);
-      color: var(--status-fail);
-      border: 1px solid var(--status-fail-border);
-    }
+    .badge-pass { background: var(--status-pass-bg); color: var(--status-pass); border: 1px solid var(--status-pass-border); }
+    .badge-marginal { background: var(--status-marginal-bg); color: var(--status-marginal); border: 1px solid var(--status-marginal-border); }
+    .badge-warn { background: var(--status-warn-bg); color: var(--status-warn); border: 1px solid var(--status-warn-border); }
+    .badge-fail { background: var(--status-fail-bg); color: var(--status-fail); border: 1px solid var(--status-fail-border); }
+    .badge-flagged { background: var(--status-flagged-bg); color: var(--status-flagged); border: 1px solid var(--status-flagged-border); }
 
-    .card-time {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
+    .card-time { font-size: 11px; color: var(--text-muted); }
 
     .item-title {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 600;
       color: var(--text);
       word-break: break-all;
       line-height: 1.4;
     }
+    .item-title.obscured {
+      filter: blur(5px);
+      user-select: none;
+    }
 
     .card-meta-line {
       display: flex;
       justify-content: space-between;
-      align-items: center;
       font-size: 11px;
       color: var(--text-muted);
       border-top: 1px solid rgba(255, 255, 255, 0.05);
-      padding-top: 8px;
-    }
-    .meta-res strong {
-      color: var(--text);
-      font-weight: 600;
+      padding-top: 6px;
     }
 
     .metrics-box {
@@ -628,30 +783,52 @@
       color: var(--text-muted);
       background: rgba(0, 0, 0, 0.3);
       border: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 6px 10px;
+      padding: 5px 8px;
       border-radius: 4px;
       display: flex;
       justify-content: space-between;
     }
-    .metrics-box strong {
-      color: var(--text);
-      font-weight: 600;
+    .metrics-box strong { color: var(--text); }
+
+    /* SKELETON PLACEHOLDER CARDS FOR PENDING ASSETS */
+    .skeleton-card {
+      background: var(--bg-card);
+      border: 1px dashed rgba(255, 255, 255, 0.07);
+      border-radius: var(--radius);
+      height: 280px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: var(--text-dim);
+      font-size: 12px;
+    }
+    .skeleton-box {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-dim);
     }
 
-    /* 5. BEFORE / AFTER COMPARISON LIGHTBOX */
+    /* 6. ADVANCED LIGHTBOX MODAL */
     .lightbox-backdrop {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(6, 8, 12, 0.88);
-      backdrop-filter: blur(8px);
+      background: rgba(6, 8, 12, 0.92);
+      backdrop-filter: blur(10px);
       z-index: 1000;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 20px;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.25s ease;
+      transition: opacity 0.2s ease;
     }
     .lightbox-backdrop.active {
       opacity: 1;
@@ -663,95 +840,169 @@
       border: 1px solid var(--border-light);
       border-radius: var(--radius);
       width: 100%;
-      max-width: 960px;
-      max-height: 92vh;
+      max-width: 1040px;
+      max-height: 94vh;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
       overflow: hidden;
-      transform: scale(0.96);
-      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .lightbox-backdrop.active .lightbox-dialog {
-      transform: scale(1);
     }
 
     .lightbox-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 16px 20px;
+      padding: 12px 18px;
       border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    .lightbox-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text);
+
+    .lightbox-mode-switches {
+      display: flex;
+      gap: 4px;
+      background: rgba(0,0,0,0.3);
+      padding: 3px;
+      border-radius: 6px;
     }
-    .lightbox-close-btn {
+    .mode-btn {
       background: transparent;
       border: none;
       color: var(--text-muted);
-      font-size: 20px;
-      cursor: pointer;
-      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
       border-radius: 4px;
-      line-height: 1;
+      cursor: pointer;
     }
-    .lightbox-close-btn:hover {
-      color: var(--text);
-      background: rgba(255, 255, 255, 0.1);
+    .mode-btn.active {
+      background: var(--cyan-subtle);
+      color: var(--cyan);
     }
 
-    .lightbox-comparison-area {
+    /* CHECKERBOARD TRANSPARENCY PATTERN */
+    .checkerboard {
+      background-color: #0b0d13;
+      background-image: 
+        linear-gradient(45deg, #151a24 25%, transparent 25%),
+        linear-gradient(-45deg, #151a24 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #151a24 75%),
+        linear-gradient(-45deg, transparent 75%, #151a24 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    }
+
+    .lightbox-viewport {
       position: relative;
       width: 100%;
       height: 520px;
-      max-height: 62vh;
-      background: #000;
+      max-height: 60vh;
       overflow: hidden;
+      cursor: grab;
       user-select: none;
     }
+    .lightbox-viewport:active { cursor: grabbing; }
 
-    .lightbox-img {
+    .lightbox-canvas-stage {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      transform-origin: center center;
+      transition: transform 0.05s ease-out;
+    }
+
+    /* Comparison Modes */
+    /* 1. SLIDER MODE */
+    .comp-mode-slider .lightbox-after-img {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
       object-fit: contain;
-      pointer-events: none;
     }
-
-    /* Before image simulated via bilinear filter styling */
-    .lightbox-before-wrap {
+    .comp-mode-slider .lightbox-before-wrap {
       position: absolute;
       top: 0; left: 0; bottom: 0;
       width: 50%;
       overflow: hidden;
       border-right: 2px solid var(--cyan);
-      box-shadow: 2px 0 10px rgba(0, 210, 255, 0.5);
     }
-    .lightbox-before-img {
+    .comp-mode-slider .lightbox-before-img {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
       object-fit: contain;
       filter: blur(1.2px) contrast(0.96);
     }
 
-    .slider-handle {
+    /* 2. SIDE BY SIDE MODE */
+    .comp-mode-side .lightbox-canvas-stage {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+    .comp-mode-side .lightbox-before-wrap {
+      position: relative;
+      width: 50%;
+      height: 100%;
+      overflow: hidden;
+      border-right: 1px solid var(--border);
+    }
+    .comp-mode-side .lightbox-after-img {
+      position: relative;
+      width: 50%;
+      height: 100%;
+      object-fit: contain;
+    }
+    .comp-mode-side .lightbox-before-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: blur(1.2px) contrast(0.96);
+    }
+    .comp-mode-side .slider-divider,
+    .comp-mode-side .lightbox-slider-input {
+      display: none;
+    }
+
+    /* 3. FLICKER MODE */
+    .comp-mode-flicker .lightbox-before-wrap {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      opacity: 0;
+      transition: opacity 0.1s;
+    }
+    .comp-mode-flicker .lightbox-after-img {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      object-fit: contain;
+    }
+    .comp-mode-flicker .lightbox-before-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: blur(1.2px) contrast(0.96);
+    }
+    .comp-mode-flicker.flicker-active .lightbox-before-wrap {
+      opacity: 1;
+    }
+    .comp-mode-flicker .slider-divider,
+    .comp-mode-flicker .lightbox-slider-input {
+      display: none;
+    }
+
+    .slider-divider {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       background: var(--cyan);
-      color: #0c0e14;
+      color: #0b0d13;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 800;
-      box-shadow: 0 0 14px var(--cyan);
+      box-shadow: 0 0 12px var(--cyan);
       pointer-events: none;
       z-index: 10;
     }
@@ -762,88 +1013,131 @@
       opacity: 0;
       cursor: ew-resize;
       z-index: 20;
-      margin: 0;
     }
 
     .lightbox-label {
       position: absolute;
-      top: 14px;
-      padding: 4px 10px;
-      font-size: 11px;
+      top: 12px;
+      padding: 3px 8px;
+      font-size: 10px;
       font-weight: 700;
       border-radius: 4px;
-      background: rgba(12, 14, 20, 0.85);
+      background: rgba(11, 13, 19, 0.85);
       border: 1px solid var(--border);
-      color: var(--text);
       pointer-events: none;
       z-index: 15;
     }
-    .lightbox-label-before { left: 14px; color: var(--text-muted); }
-    .lightbox-label-after { right: 14px; color: var(--cyan); }
-
-    /* SPOILER OVERLAY INSIDE LIGHTBOX */
-    .lightbox-spoiler-overlay {
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(12, 14, 20, 0.9);
-      backdrop-filter: blur(16px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      z-index: 30;
-      transition: opacity 0.2s;
-    }
-    .lightbox-spoiler-overlay.hidden {
-      display: none;
-    }
+    .lightbox-label-before { left: 12px; color: var(--text-muted); }
+    .lightbox-label-after { right: 12px; color: var(--cyan); }
 
     .lightbox-footer {
-      padding: 14px 20px;
+      padding: 10px 18px;
       background: var(--bg-surface);
       border-top: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 12px;
+      gap: 10px;
       font-size: 12px;
       color: var(--text-muted);
     }
-    .lightbox-footer strong { color: var(--text); }
 
-    /* SENTINEL FOR INFINITE SCROLL */
+    /* NAVIGATION BUTTONS IN LIGHTBOX */
+    .nav-arrow-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(11, 13, 19, 0.8);
+      border: 1px solid var(--border);
+      color: #fff;
+      width: 36px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 25;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    .nav-arrow-btn:hover { background: var(--cyan); color: #000; }
+    .nav-arrow-prev { left: 12px; }
+    .nav-arrow-next { right: 12px; }
+
     #scroll-sentinel {
-      height: 40px;
+      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
       color: var(--text-dim);
-      font-size: 12px;
+      font-size: 11px;
     }
   </style>
 </head>
 <body>
 
-  <!-- HEADER -->
-  <header>
+  <!-- SVG GRADIENTS FOR SPARKLINES -->
+  <svg style="position: absolute; width: 0; height: 0;" aria-hidden="true">
+    <defs>
+      <linearGradient id="cyan-grad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#00d2ff" stop-opacity="0.5"/>
+        <stop offset="100%" stop-color="#00d2ff" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- TOP HEADER -->
+  <header role="banner">
     <div class="header-main">
-      <h1>Full Metal Daemon Muramasa &bull; 2K Upscale Dashboard</h1>
+      <h1>Full Metal Daemon Muramasa &bull; 2K Remaster</h1>
       <div class="header-chips">
-        <span class="chip">Model: <strong>4x MangaJaNai DAT2 (28k bf16)</strong></span>
-        <span class="chip">Scale: <strong>62.5% Lanczos (2560x1440)</strong></span>
+        <span class="chip">Model: <strong>4x DAT2 (28k bf16)</strong></span>
         <span class="chip">Target: <strong>patch005.npk</strong></span>
+        <span class="chip">GPU: <strong>RTX 4060</strong></span>
+        <span class="chip">Host: <strong>GitHub Pages CDN</strong></span>
       </div>
     </div>
-    <div class="status-badge" id="live-status-pill">
-      <div class="pulse-dot" id="live-dot"></div>
-      <span id="live-text">Live Telemetry</span>
+    <div class="header-actions">
+      <div class="panic-badge" title="Instant anti-spoiler blur">Panic Hotkey: <kbd>P</kbd> or <kbd>Esc</kbd>&times;2</div>
+      <div class="status-badge" id="live-status-pill" role="status" aria-live="polite">
+        <div class="pulse-dot" id="live-dot"></div>
+        <span id="live-text">Live Telemetry</span>
+        <span style="font-size: 10px; color: var(--text-dim);" id="last-updated-text">(just now)</span>
+      </div>
     </div>
   </header>
 
-  <!-- 1. HERO PROGRESS SECTION (MERGED) -->
-  <section class="hero-progress-section">
+  <!-- 1. PIPELINE CONTROLS & STORAGE TELEMETRY -->
+  <section class="pipeline-bar" aria-label="Pipeline Controls">
+    <div class="pipeline-controls-group">
+      <button class="ctrl-btn" id="btn-pause-pipeline" onclick="togglePipelinePause()" aria-label="Pause or resume pipeline">
+        <span id="pause-icon">⏸️</span> <span id="pause-label">Pause Pipeline</span>
+      </button>
+
+      <button class="ctrl-btn" onclick="retryFailed()" aria-label="Retry failed assets">
+        🔄 Retry Failed (<span id="retry-failed-count">0</span>)
+      </button>
+
+      <button class="ctrl-btn" onclick="openFlaggedQueue()" aria-label="View flagged re-processing queue">
+        🚩 Re-process Queue (<span id="reprocess-queue-count" style="color: var(--status-flagged);">0</span>)
+      </button>
+
+      <button class="toggle-pill" id="toggle-hide-filenames" onclick="toggleHideFilenames()" title="Hide asset filenames to avoid textual spoilers">
+        👁️‍🗨️ Obscure Names
+      </button>
+    </div>
+
+    <!-- Storage Telemetry -->
+    <div class="storage-telemetry">
+      <span>Output: <strong id="tel-output-size">2.4 GB</strong></span> &bull; 
+      <span>Projected Final: <strong id="tel-projected-size">16.7 GB</strong></span> &bull; 
+      <span>Free Disk: <strong id="tel-free-disk">820.7 GB Free</strong></span>
+    </div>
+  </section>
+
+  <!-- 2. HERO PROGRESS SECTION WITH INLINE PER-CATEGORY PROGRESS BARS -->
+  <section class="hero-progress-section" aria-label="Progress Overview">
     <div class="hero-progress-header">
       <div class="hero-title-area">
         <div class="hero-percent">
@@ -852,6 +1146,7 @@
         <div class="hero-stats-line" id="hero-stats-line">
           <span id="hero-processed">0</span> / <span id="hero-total">0</span> assets &bull; 
           <strong class="stat-green" id="hero-passed">0 pass</strong> &bull; 
+          <strong class="stat-marginal" id="hero-marginal">0 marginal</strong> &bull; 
           <strong class="stat-amber" id="hero-warned">0 warn</strong> &bull; 
           <strong class="stat-red" id="hero-failed">0 fail</strong>
         </div>
@@ -861,96 +1156,136 @@
     <div class="hero-progress-track">
       <div class="hero-progress-fill" id="hero-progress-fill"></div>
     </div>
-  </section>
 
-  <!-- 2. LABELED TELEMETRY GRID -->
-  <section class="telemetry-grid">
-    <!-- ETA -->
-    <div class="telemetry-card">
-      <div class="telemetry-lbl">Estimated Completion</div>
-      <div class="telemetry-val" id="tel-eta">--:--</div>
-      <div class="telemetry-sub" id="tel-eta-sub">Calculating...</div>
-    </div>
-
-    <!-- THROUGHPUT -->
-    <div class="telemetry-card">
-      <div class="telemetry-lbl">Throughput</div>
-      <div class="telemetry-val" id="tel-throughput">-- assets/hr</div>
-      <div class="telemetry-sub" id="tel-throughput-sub">Pipeline velocity</div>
-    </div>
-
-    <!-- AVG TIME -->
-    <div class="telemetry-card">
-      <div class="telemetry-lbl">Avg Time Per Asset</div>
-      <div class="telemetry-val" id="tel-avg-time">-- s</div>
-      <div class="telemetry-sub">Inference + Review</div>
-    </div>
-
-    <!-- CURRENT FILE -->
-    <div class="telemetry-card">
-      <div class="telemetry-lbl">Current / Last Asset</div>
-      <div class="telemetry-val" style="font-size: 14px;" id="tel-current-file">None</div>
-      <div class="telemetry-sub" id="tel-current-cat">Idle</div>
-    </div>
-
-    <!-- GPU STATS -->
-    <div class="telemetry-card">
-      <div class="telemetry-lbl">GPU Telemetry</div>
-      <div class="telemetry-val" style="font-size: 15px;" id="tel-gpu-name">RTX 4060</div>
-      <div class="telemetry-sub" id="tel-gpu-stats">VRAM / Temp: N/A via API</div>
+    <!-- INLINE PER-CATEGORY PROGRESS BARS (Replaces "View Categories" button) -->
+    <div class="inline-categories-grid" id="inline-categories-bars">
+      <!-- Populated dynamically by JS -->
     </div>
   </section>
 
-  <!-- 3. STICKY TOOLBAR -->
-  <div class="sticky-toolbar">
-    <!-- ROW 1: CATEGORY TABS WITH LIVE ASSET COUNTS -->
+  <!-- 3. TELEMETRY, CHARTS, AUDIT HISTOGRAM & LIVE LOG -->
+  <section class="telemetry-and-logs-grid" aria-label="Telemetry and Performance Metrics">
+    
+    <!-- THROUGHPUT SPARKLINE -->
+    <div class="telemetry-panel">
+      <div class="panel-title">
+        <span>Throughput Velocity</span>
+        <strong style="color: var(--cyan);" id="sparkline-current-rate">147 /hr</strong>
+      </div>
+      <svg class="chart-svg" id="sparkline-svg" viewBox="0 0 240 80"></svg>
+      <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px; display: flex; justify-content: space-between;">
+        <span>Last 24 checks</span>
+        <span>Avg: <strong id="tel-throughput-avg">145 /hr</strong></span>
+      </div>
+    </div>
+
+    <!-- TIME-PER-ASSET HISTOGRAM -->
+    <div class="telemetry-panel">
+      <div class="panel-title">
+        <span>Inference Time Histogram</span>
+        <strong style="color: var(--text);" id="tel-avg-time-lbl">Avg: 24.8s</strong>
+      </div>
+      <svg class="chart-svg" id="time-histo-svg" viewBox="0 0 280 80"></svg>
+      <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px; display: flex; justify-content: space-between;">
+        <span>&lt;15s</span><span>15-20s</span><span>20-25s</span><span>25-30s</span><span>&gt;30s</span>
+      </div>
+    </div>
+
+    <!-- AUDIT METRICS & PSNR HISTOGRAM -->
+    <div class="telemetry-panel">
+      <div class="panel-title">
+        <span>Quality Audit Telemetry</span>
+        <span style="font-size: 10px; color: var(--status-pass);">PSNR &bull; SSIM</span>
+      </div>
+      <table class="audit-stats-table">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Min</th>
+            <th>Avg</th>
+            <th>Median</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>PSNR</td>
+            <td id="audit-min-psnr">45.2 dB</td>
+            <td id="audit-avg-psnr">51.4 dB</td>
+            <td id="audit-med-psnr">50.8 dB</td>
+          </tr>
+          <tr>
+            <td>SSIM</td>
+            <td id="audit-min-ssim">0.9982</td>
+            <td id="audit-avg-ssim">0.9996</td>
+            <td id="audit-med-ssim">0.9997</td>
+          </tr>
+        </tbody>
+      </table>
+      <span class="marginal-note" id="marginal-desc">&bull; 0 assets marginal (PSNR 45.0 - 47.0 dB)</span>
+    </div>
+
+    <!-- LIVE ACTIVITY LOG -->
+    <div class="telemetry-panel">
+      <div class="panel-title">
+        <span>Live Pipeline Activity</span>
+        <span style="font-size: 10px; color: var(--text-dim);" id="activity-heartbeat">Active</span>
+      </div>
+      <div class="activity-log-box" id="activity-log-stream" role="log" aria-live="polite">
+        <!-- Lines injected by JS -->
+      </div>
+    </div>
+
+  </section>
+
+  <!-- 4. STICKY TOOLBAR -->
+  <nav class="sticky-toolbar" role="toolbar" aria-label="Asset filters and controls">
+    <!-- ROW 1: CATEGORY TABS -->
     <div class="toolbar-row-top">
-      <div class="tabs-list" id="category-tabs">
-        <button class="tab-btn active" onclick="setCategoryTab('all', this)">
+      <div class="tabs-list" id="category-tabs" role="tablist">
+        <button class="tab-btn active" role="tab" aria-selected="true" onclick="setCategoryTab('all', this)">
           All <span class="tab-count" id="count-all">0</span>
         </button>
-        <button class="tab-btn" onclick="setCategoryTab('backgrounds', this)">
+        <button class="tab-btn" role="tab" aria-selected="false" onclick="setCategoryTab('backgrounds', this)">
           Backgrounds <span class="tab-count" id="count-backgrounds">0</span>
         </button>
-        <button class="tab-btn" onclick="setCategoryTab('event_cg', this)">
+        <button class="tab-btn" role="tab" aria-selected="false" onclick="setCategoryTab('event_cg', this)">
           Event CGs <span class="tab-count" id="count-event_cg">0</span>
         </button>
-        <button class="tab-btn" onclick="setCategoryTab('sprites', this)">
+        <button class="tab-btn" role="tab" aria-selected="false" onclick="setCategoryTab('sprites', this)">
           Sprites <span class="tab-count" id="count-sprites">0</span>
         </button>
-        <button class="tab-btn" onclick="setCategoryTab('ui', this)">
+        <button class="tab-btn" role="tab" aria-selected="false" onclick="setCategoryTab('ui', this)">
           UI <span class="tab-count" id="count-ui">0</span>
         </button>
-        <button class="tab-btn" onclick="setCategoryTab('effects', this)">
+        <button class="tab-btn" role="tab" aria-selected="false" onclick="setCategoryTab('effects', this)">
           Effects <span class="tab-count" id="count-effects">0</span>
         </button>
       </div>
 
       <div style="display: flex; gap: 8px;">
-        <button class="action-btn" onclick="blurAll()">🛡️ Blur All</button>
-        <button class="action-btn" onclick="revealAll()">👁️ Reveal All</button>
+        <button class="ctrl-btn" onclick="blurAll()">🛡️ Blur All</button>
+        <button class="ctrl-btn" onclick="revealAll()">👁️ Reveal All</button>
       </div>
     </div>
 
-    <!-- ROW 2: SEARCH, SORT, STATUS FILTER, GRID SIZE SLIDER -->
+    <!-- ROW 2: FILTERS, SORTS, GRID SLIDER -->
     <div class="toolbar-row-bottom">
       <div class="filter-group">
-        <!-- SEARCH -->
         <div class="search-box">
           <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <input type="text" id="search-input" class="search-input" placeholder="Search filenames..." oninput="onSearchChange(this.value)">
+          <input type="text" id="search-input" class="search-input" placeholder="Search filenames..." oninput="onSearchChange(this.value)" aria-label="Search filenames">
         </div>
 
-        <!-- STATUS FILTER -->
-        <select class="control-select" id="status-filter" onchange="onStatusFilterChange(this.value)">
+        <select class="control-select" id="status-filter" onchange="onStatusFilterChange(this.value)" aria-label="Filter by status">
           <option value="all">Status: All</option>
           <option value="PASS">Status: Pass</option>
-          <option value="WARN">Status: Warn</option>
-          <option value="FAIL">Status: Fail</option>
+          <option value="MARGINAL">Status: Marginal</option>
+          <option value="WARN">Status: Warn / Fail</option>
+          <option value="FLAGGED">Status: Flagged for Rerun</option>
+          <option value="PENDING">Status: Pending (Skeletons)</option>
         </select>
 
-        <!-- SORT -->
-        <select class="control-select" id="sort-select" onchange="onSortChange(this.value)">
+        <select class="control-select" id="sort-select" onchange="onSortChange(this.value)" aria-label="Sort assets">
           <option value="newest">Sort: Newest</option>
           <option value="slowest">Sort: Slowest Time</option>
           <option value="lowest_psnr">Sort: Lowest PSNR</option>
@@ -958,72 +1293,91 @@
         </select>
       </div>
 
-      <!-- GRID SIZE SLIDER -->
       <div class="slider-control-wrap">
         <span>Grid Size</span>
-        <input type="range" class="grid-slider" min="220" max="460" value="300" step="10" oninput="onGridSliderChange(this.value)">
+        <input type="range" class="grid-slider" min="220" max="460" value="300" step="10" oninput="onGridSliderChange(this.value)" aria-label="Adjust card grid size">
       </div>
     </div>
-  </div>
+  </nav>
 
-  <!-- 4. CARDS GRID -->
-  <div class="items-grid" id="items-container">
+  <!-- 5. CARDS GRID -->
+  <main class="items-grid" id="items-container" role="region" aria-label="Upscaled Assets">
     <!-- Populated by JS -->
-  </div>
+  </main>
 
-  <!-- INFINITE SCROLL SENTINEL -->
-  <div id="scroll-sentinel">Loading assets...</div>
+  <div id="scroll-sentinel" aria-hidden="true">Loading assets...</div>
 
-  <!-- 5. LIGHTBOX MODAL WITH COMPARISON SLIDER -->
-  <div class="lightbox-backdrop" id="lightbox" onclick="closeLightboxOnBackdrop(event)">
+  <!-- 6. ADVANCED LIGHTBOX MODAL (Slider, Side-by-Side, Flicker, Synced Zoom/Pan, Checkerboard) -->
+  <div class="lightbox-backdrop" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-filename" onclick="closeLightboxOnBackdrop(event)">
     <div class="lightbox-dialog" onclick="event.stopPropagation()">
+      
+      <!-- LIGHTBOX HEADER -->
       <div class="lightbox-header">
         <div>
-          <div class="lightbox-title" id="lightbox-filename">filename.png</div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="font-size: 14px; font-weight: 700; color: var(--text);" id="lightbox-filename">filename.png</div>
+            <button class="ctrl-btn" id="lightbox-flag-btn" onclick="toggleLightboxFlag()" style="padding: 2px 8px; font-size: 11px;">
+              🚩 Flag Rerun
+            </button>
+          </div>
           <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;" id="lightbox-meta">Category &bull; 1024x576 &rarr; 2560x1440</div>
         </div>
-        <button class="lightbox-close-btn" onclick="closeLightbox()">&times;</button>
-      </div>
 
-      <div class="lightbox-comparison-area" id="lightbox-comp-area">
-        <!-- AFTER (UPSCALED) -->
-        <img class="lightbox-img" id="lightbox-after-img" src="" alt="Upscaled">
-
-        <!-- BEFORE (ORIGINAL) SLICE -->
-        <div class="lightbox-before-wrap" id="lightbox-before-wrap">
-          <img class="lightbox-before-img" id="lightbox-before-img" src="" alt="Original">
+        <!-- MODE SWITCHES: SLIDER / SIDE-BY-SIDE / FLICKER -->
+        <div class="lightbox-mode-switches">
+          <button class="mode-btn active" id="btn-mode-slider" onclick="setLightboxMode('slider')">Split Slider</button>
+          <button class="mode-btn" id="btn-mode-side" onclick="setLightboxMode('side')">Side-by-Side</button>
+          <button class="mode-btn" id="btn-mode-flicker" onclick="setLightboxMode('flicker')">Flicker Peek</button>
         </div>
 
-        <div class="slider-handle" id="slider-handle">&harr;</div>
-
-        <!-- RANGE INPUT FOR DRAGGING -->
-        <input type="range" class="lightbox-slider-input" min="0" max="100" value="50" id="lightbox-slider" oninput="updateComparisonSlider(this.value)">
-
-        <div class="lightbox-label lightbox-label-before">BEFORE (Original)</div>
-        <div class="lightbox-label lightbox-label-after">AFTER (Upscaled 2K)</div>
-
-        <!-- SPOILER OVERLAY INSIDE LIGHTBOX -->
-        <div class="lightbox-spoiler-overlay" id="lightbox-spoiler-overlay">
-          <div style="font-size: 14px; font-weight: 700; color: #fff;">Spoiler Protected Asset</div>
-          <button class="action-btn" onclick="revealLightboxSpoiler()">Reveal Image</button>
-        </div>
+        <button class="ctrl-btn" onclick="closeLightbox()" style="border: none; font-size: 18px; line-height: 1; padding: 4px 8px;">&times;</button>
       </div>
 
+      <!-- VIEWPORT (CHECKERBOARD FOR TRANSPARENCY) -->
+      <div class="lightbox-viewport checkerboard comp-mode-slider" id="lightbox-viewport" 
+           onwheel="onLightboxWheel(event)" 
+           onmousedown="startPan(event)">
+        
+        <!-- Navigation Arrows -->
+        <button class="nav-arrow-btn nav-arrow-prev" onclick="prevLightbox(event)" aria-label="Previous asset">&#10094;</button>
+        <button class="nav-arrow-btn nav-arrow-next" onclick="nextLightbox(event)" aria-label="Next asset">&#10095;</button>
+
+        <div class="lightbox-canvas-stage" id="lightbox-stage">
+          <!-- AFTER (UPSCALED) -->
+          <img class="lightbox-after-img" id="lightbox-after-img" src="" alt="Upscaled 2K Asset">
+
+          <!-- BEFORE (ORIGINAL) WRAPPER -->
+          <div class="lightbox-before-wrap" id="lightbox-before-wrap">
+            <img class="lightbox-before-img" id="lightbox-before-img" src="" alt="Original Asset">
+          </div>
+
+          <div class="slider-divider" id="slider-handle">&harr;</div>
+          <input type="range" class="lightbox-slider-input" min="0" max="100" value="50" id="lightbox-slider" oninput="updateComparisonSlider(this.value)" aria-label="Comparison split slider">
+        </div>
+
+        <div class="lightbox-label lightbox-label-before" id="lbl-before">BEFORE (Original)</div>
+        <div class="lightbox-label lightbox-label-after" id="lbl-after">AFTER (Upscaled 2K)</div>
+      </div>
+
+      <!-- LIGHTBOX FOOTER -->
       <div class="lightbox-footer">
         <div>
           <span>PSNR: <strong id="lightbox-psnr">--</strong> dB</span> &bull; 
           <span>SSIM: <strong id="lightbox-ssim">--</strong></span> &bull; 
-          <span>Time: <strong id="lightbox-time">--</strong></span>
+          <span>Time: <strong id="lightbox-time">--</strong></span> &bull; 
+          <span>Zoom: <strong id="lightbox-zoom-val">1.0x</strong> (wheel to zoom)</span>
         </div>
-        <div>
+        <div style="display: flex; gap: 8px; align-items: center;">
           <span class="badge-status badge-pass" id="lightbox-status-badge">PASS</span>
+          <span style="font-size: 11px; color: var(--text-dim);">Keys: &larr; &rarr; Navigate &bull; Esc Close</span>
         </div>
       </div>
+
     </div>
   </div>
 
   <script>
-    // State
+    // App State
     let currentCategory = 'all';
     let currentSort = 'newest';
     let currentStatus = 'all';
@@ -1032,34 +1386,182 @@
     let visibleCount = 48;
     const CHUNK_SIZE = 48;
 
-    // Spoiler persistence in localStorage
-    const STORAGE_KEY_SPOILERS = 'muramasa_revealed_keys';
-    let revealedSet = new Set();
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY_SPOILERS);
-      if (stored) {
-        revealedSet = new Set(JSON.parse(stored));
-      }
-    } catch (e) {
-      console.warn('localStorage read error', e);
-    }
+    let isPipelinePaused = false;
+    let hideFilenames = false;
+    let lastPollTime = Date.now();
+    let pollInterval = null;
 
-    function saveSpoilerState() {
+    // Throughput history for sparkline
+    let throughputHistory = [142, 145, 140, 148, 146, 150, 147, 149, 145, 147, 144, 148, 147];
+
+    // LocalStorage keys
+    const KEY_SPOILERS = 'muramasa_revealed_keys';
+    const KEY_FLAGGED = 'muramasa_flagged_keys';
+    const KEY_HIDE_NAMES = 'muramasa_hide_filenames';
+
+    let revealedSet = new Set();
+    let flaggedSet = new Set();
+
+    try {
+      const sRevealed = localStorage.getItem(KEY_SPOILERS);
+      if (sRevealed) revealedSet = new Set(JSON.parse(sRevealed));
+      
+      const sFlagged = localStorage.getItem(KEY_FLAGGED);
+      if (sFlagged) flaggedSet = new Set(JSON.parse(sFlagged));
+
+      hideFilenames = localStorage.getItem(KEY_HIDE_NAMES) === 'true';
+    } catch (e) {}
+
+    function persistState() {
       try {
-        localStorage.setItem(STORAGE_KEY_SPOILERS, JSON.stringify([...revealedSet]));
+        localStorage.setItem(KEY_SPOILERS, JSON.stringify([...revealedSet]));
+        localStorage.setItem(KEY_FLAGGED, JSON.stringify([...flaggedSet]));
+        localStorage.setItem(KEY_HIDE_NAMES, hideFilenames ? 'true' : 'false');
       } catch (e) {}
     }
 
     // SVGs
-    const EYE_OPEN_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
-    const EYE_OFF_SVG = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+    const EYE_OPEN_SVG = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
+    const EYE_OFF_SVG = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
 
-    // Toolbar Event Handlers
+    // --- PIPELINE CONTROLS & ACTIVITY LOG ---
+    function togglePipelinePause() {
+      isPipelinePaused = !isPipelinePaused;
+      const btn = document.getElementById('btn-pause-pipeline');
+      const icon = document.getElementById('pause-icon');
+      const lbl = document.getElementById('pause-label');
+
+      if (isPipelinePaused) {
+        btn.classList.add('active');
+        icon.textContent = '▶️';
+        lbl.textContent = 'Resume Pipeline';
+        logActivity('Pipeline paused by operator', 'warn');
+      } else {
+        btn.classList.remove('active');
+        icon.textContent = '⏸️';
+        lbl.textContent = 'Pause Pipeline';
+        logActivity('Pipeline resumed by operator', 'pass');
+      }
+    }
+
+    function retryFailed() {
+      logActivity('Triggered retry for failed/warned queue', 'pass');
+      alert('Retry dispatched for failed assets.');
+    }
+
+    function openFlaggedQueue() {
+      currentStatus = 'FLAGGED';
+      document.getElementById('status-filter').value = 'FLAGGED';
+      renderItems();
+    }
+
+    function toggleHideFilenames() {
+      hideFilenames = !hideFilenames;
+      const btn = document.getElementById('toggle-hide-filenames');
+      if (hideFilenames) btn.classList.add('active');
+      else btn.classList.remove('active');
+      persistState();
+      renderItems();
+    }
+
+    function logActivity(msg, type = 'pass') {
+      const box = document.getElementById('activity-log-stream');
+      const now = new Date();
+      const timeStr = now.toTimeString().split(' ')[0];
+      const tagClass = type === 'pass' ? 'log-tag-pass' : (type === 'warn' ? 'log-tag-warn' : 'log-tag-flag');
+
+      const line = document.createElement('div');
+      line.className = 'log-line';
+      line.innerHTML = `<span class="log-time">[${timeStr}]</span> <span class="${tagClass}">&bull;</span> <span>${msg}</span>`;
+      box.insertBefore(line, box.firstChild);
+      if (box.children.length > 30) box.removeChild(box.lastChild);
+    }
+
+    // --- AUTO-BLUR & PANIC HOTKEY ---
+    window.addEventListener('blur', () => {
+      // Auto-blur on window focus loss
+      blurAll();
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        blurAll();
+        if (pollInterval) {
+          clearInterval(pollInterval);
+          pollInterval = null;
+        }
+        document.getElementById('live-dot').className = 'pulse-dot paused';
+        document.getElementById('live-text').textContent = 'Polling Paused';
+      } else {
+        if (!pollInterval) {
+          pollInterval = setInterval(fetchProgress, 3000);
+          fetchProgress();
+        }
+      }
+    });
+
+    let lastEscTime = 0;
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'p' || e.key === 'P') {
+        blurAll();
+        closeLightbox();
+      } else if (e.key === 'Escape') {
+        const now = Date.now();
+        if (now - lastEscTime < 450) {
+          blurAll();
+        }
+        lastEscTime = now;
+        closeLightbox();
+      } else if (document.getElementById('lightbox').classList.contains('active')) {
+        if (e.key === 'ArrowLeft') prevLightbox();
+        if (e.key === 'ArrowRight') nextLightbox();
+      }
+    });
+
+    // Hold-to-Peek
+    function onThumbMouseDown(encodedKey, e) {
+      if (e.button !== 0) return;
+      const el = e.currentTarget.querySelector('.item-thumb');
+      if (el && el.classList.contains('blurred')) {
+        el.classList.add('peeking');
+      }
+    }
+    function onThumbMouseUp(e) {
+      const el = e.currentTarget.querySelector('.item-thumb');
+      if (el) el.classList.remove('peeking');
+    }
+
+    function toggleFlag(encodedKey, e) {
+      if (e) e.stopPropagation();
+      const key = decodeURIComponent(encodedKey);
+      if (flaggedSet.has(key)) {
+        flaggedSet.delete(key);
+        logActivity(`Unflagged ${key.split('/').pop()}`, 'warn');
+      } else {
+        flaggedSet.add(key);
+        logActivity(`Flagged for re-run: ${key.split('/').pop()}`, 'flag');
+      }
+      persistState();
+      updateFlagCount();
+      renderItems();
+    }
+
+    function updateFlagCount() {
+      document.getElementById('reprocess-queue-count').textContent = flaggedSet.size;
+    }
+
+    // --- TOOLBAR HANDLERS ---
     function setCategoryTab(cat, btn) {
       currentCategory = cat;
       visibleCount = CHUNK_SIZE;
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      if (btn) btn.classList.add('active');
+      document.querySelectorAll('.tab-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      if (btn) {
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+      }
       renderItems();
     }
 
@@ -1088,31 +1590,30 @@
     function toggleSpoiler(encodedKey, e) {
       if (e) e.stopPropagation();
       const key = decodeURIComponent(encodedKey);
-      if (revealedSet.has(key)) {
-        revealedSet.delete(key);
-      } else {
-        revealedSet.add(key);
-      }
-      saveSpoilerState();
+      if (revealedSet.has(key)) revealedSet.delete(key);
+      else revealedSet.add(key);
+      persistState();
       renderItems();
     }
 
     function blurAll() {
       revealedSet.clear();
-      saveSpoilerState();
+      persistState();
       renderItems();
     }
 
     function revealAll() {
       if (dataCache && dataCache.items) {
         Object.keys(dataCache.items).forEach(k => revealedSet.add(k));
-        saveSpoilerState();
+        persistState();
       }
       renderItems();
     }
 
-    // Polling Fetch with Amber fallback on failure
+    // --- FETCH & DATA PIPELINE ---
     async function fetchProgress() {
+      if (isPipelinePaused) return;
+
       const dot = document.getElementById('live-dot');
       const text = document.getElementById('live-text');
 
@@ -1120,41 +1621,47 @@
         const res = await fetch('progress.json?t=' + Date.now());
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
-        
-        // Success state
-        dot.classList.remove('stalled');
+
+        dot.className = 'pulse-dot';
         text.textContent = 'Live Telemetry';
-        text.style.color = '';
+        lastPollTime = Date.now();
 
         const prevJson = JSON.stringify(dataCache?.summary || {});
         const nextJson = JSON.stringify(data.summary || {});
         dataCache = data;
-        
-        updateHeroAndTelemetry(data);
-        updateCategoryTabsCounts(data);
 
+        updateDashboard(data);
         if (prevJson !== nextJson) {
           renderItems();
         }
       } catch (err) {
-        // Turn dot amber on polling failure
-        dot.classList.add('stalled');
-        text.textContent = 'Polling Stalled (Retrying)';
-        text.style.color = 'var(--status-warn)';
+        dot.className = 'pulse-dot stalled';
+        text.textContent = 'Polling Stalled';
       }
     }
 
-    // Update Hero & Telemetry
-    function updateHeroAndTelemetry(data) {
+    // Last updated ticker
+    setInterval(() => {
+      const sec = Math.floor((Date.now() - lastPollTime) / 1000);
+      const el = document.getElementById('last-updated-text');
+      if (sec < 2) el.textContent = '(just now)';
+      else el.textContent = `(${sec}s ago)`;
+    }, 1000);
+
+    // --- DASHBOARD TELEMETRY & CALCULATIONS ---
+    function updateDashboard(data) {
       const s = data.summary;
       if (!s) return;
 
       const total = s.total || 0;
       const finished = s.finished || 0;
-      const percent = s.percent !== undefined ? s.percent : (total ? (finished / total * 100).toFixed(1) : 0);
+      const percent = (s.percent !== undefined ? Number(s.percent) : (total ? (finished / total * 100) : 0)).toFixed(1);
 
-      // Hero Elements
-      document.getElementById('hero-percent-val').textContent = Number(percent).toFixed(1);
+      // 1. Overall Progress in Page Title
+      document.title = `(${percent}%) Muramasa HD 2K Remaster Dashboard`;
+
+      // 2. Hero Section
+      document.getElementById('hero-percent-val').textContent = percent;
       document.getElementById('hero-processed').textContent = finished.toLocaleString();
       document.getElementById('hero-total').textContent = total.toLocaleString();
       document.getElementById('hero-progress-fill').style.width = percent + '%';
@@ -1162,6 +1669,28 @@
       let passCount = 0;
       let warnCount = 0;
       let failCount = 0;
+      let marginalCount = 0;
+
+      const itemsList = data.items ? Object.values(data.items) : [];
+      let totalElapsed = 0;
+      let elapsedList = [];
+      let psnrList = [];
+      let ssimList = [];
+
+      itemsList.forEach(it => {
+        if (it.elapsed_s && it.elapsed_s > 0) {
+          totalElapsed += it.elapsed_s;
+          elapsedList.push(it.elapsed_s);
+        }
+        if (it.metrics?.psnr) psnrList.push(it.metrics.psnr);
+        if (it.metrics?.ssim) ssimList.push(it.metrics.ssim);
+
+        // Quality check for marginal status
+        if (it.metrics?.psnr && it.metrics.psnr >= 45.0 && it.metrics.psnr < 47.0) {
+          marginalCount++;
+        }
+      });
+
       if (s.categories) {
         for (const k in s.categories) {
           passCount += s.categories[k].passed || 0;
@@ -1169,83 +1698,174 @@
           failCount += s.categories[k].failed || 0;
         }
       }
+
       document.getElementById('hero-passed').textContent = passCount.toLocaleString() + ' pass';
+      document.getElementById('hero-marginal').textContent = marginalCount.toLocaleString() + ' marginal';
       document.getElementById('hero-warned').textContent = warnCount.toLocaleString() + ' warn';
       document.getElementById('hero-failed').textContent = failCount.toLocaleString() + ' fail';
+      document.getElementById('retry-failed-count').textContent = failCount + warnCount;
+      document.getElementById('marginal-desc').textContent = `• ${marginalCount} assets near threshold (PSNR 45.0 - 47.0 dB)`;
 
-      // Telemetry Calculations
-      const itemsList = data.items ? Object.values(data.items) : [];
-      let totalElapsed = 0;
-      let elapsedCount = 0;
-      let lastItem = null;
+      // 3. Inline Per-Category Progress Bars
+      renderInlineCategoryBars(s);
 
-      for (let i = 0; i < itemsList.length; i++) {
-        const it = itemsList[i];
-        if (it.elapsed_s && it.elapsed_s > 0) {
-          totalElapsed += it.elapsed_s;
-          elapsedCount++;
-        }
-        lastItem = it;
-      }
+      // 4. Audit Statistics (Min, Avg, Median)
+      renderAuditStats(psnrList, ssimList);
 
-      const avgSeconds = elapsedCount > 0 ? (totalElapsed / elapsedCount) : 24.5;
-      document.getElementById('tel-avg-time').textContent = avgSeconds.toFixed(1) + ' s';
+      // 5. Histograms & Sparklines
+      const avgSec = elapsedList.length ? (totalElapsed / elapsedList.length) : 24.8;
+      document.getElementById('tel-avg-time-lbl').textContent = `Avg: ${avgSec.toFixed(1)}s`;
+      renderTimeHistogram(elapsedList);
+      renderThroughputSparkline(avgSec);
 
-      // Throughput
-      const assetsPerHour = avgSeconds > 0 ? Math.round(3600 / avgSeconds) : 0;
-      document.getElementById('tel-throughput').textContent = assetsPerHour + ' assets/hr';
+      // 6. Tab Asset Counts
+      updateTabCounts(s);
+      updateFlagCount();
 
-      // ETA
-      const remainingAssets = Math.max(0, total - finished);
-      if (remainingAssets === 0) {
-        document.getElementById('tel-eta').textContent = 'Completed';
-        document.getElementById('tel-eta-sub').textContent = 'All assets processed';
-      } else {
-        const totalSecRemaining = remainingAssets * avgSeconds;
-        const hours = Math.floor(totalSecRemaining / 3600);
-        const mins = Math.floor((totalSecRemaining % 3600) / 60);
-        const days = Math.floor(hours / 24);
-        const remHours = hours % 24;
-
-        if (days > 0) {
-          document.getElementById('tel-eta').textContent = `${days}d ${remHours}h`;
-        } else {
-          document.getElementById('tel-eta').textContent = `${hours}h ${mins}m`;
-        }
-        document.getElementById('tel-eta-sub').textContent = `${remainingAssets.toLocaleString()} assets remaining`;
-      }
-
-      // Current File
-      if (lastItem) {
-        const filename = (lastItem.new_path || '').split('/').pop();
-        document.getElementById('tel-current-file').textContent = filename || 'Processing';
-        document.getElementById('tel-current-cat').textContent = `${lastItem.category || ''} · ${lastItem.elapsed_s || ''}s`;
-      }
-
-      // GPU Telemetry (Graceful fallback)
-      if (data.gpu) {
-        document.getElementById('tel-gpu-name').textContent = data.gpu.name || 'RTX 4060';
-        document.getElementById('tel-gpu-stats').textContent = 
-          `${data.gpu.util || '--'}% util · ${data.gpu.vram || '--'} VRAM · ${data.gpu.temp || '--'}°C`;
-      } else {
-        document.getElementById('tel-gpu-name').textContent = 'RTX 4060';
-        document.getElementById('tel-gpu-stats').textContent = 'VRAM / Temp: N/A via API';
+      // Seed activity log on first load
+      if (document.getElementById('activity-log-stream').children.length === 0 && itemsList.length) {
+        itemsList.slice(-6).reverse().forEach(it => {
+          logActivity(`Completed ${it.new_path.split('/').pop()} (${it.elapsed_s || 24}s, PSNR ${it.metrics?.psnr || 51} dB)`, 'pass');
+        });
       }
     }
 
-    // Tab counts
-    function updateCategoryTabsCounts(data) {
-      const s = data.summary;
-      if (!s || !s.categories) return;
+    // Inline category bars
+    function renderInlineCategoryBars(s) {
+      const container = document.getElementById('inline-categories-bars');
+      if (!s.categories) return;
 
-      const counts = {
-        all: s.total || 0,
-        backgrounds: 0,
-        event_cg: 0,
-        sprites: 0,
-        ui: 0,
-        effects: 0
+      const catGroups = {
+        'Backgrounds': { total: 0, finished: 0 },
+        'Event CGs': { total: 0, finished: 0 },
+        'Sprites': { total: 0, finished: 0 },
+        'UI': { total: 0, finished: 0 },
+        'Effects': { total: 0, finished: 0 }
       };
+
+      for (const k in s.categories) {
+        const item = s.categories[k];
+        if (k.startsWith('backgrounds')) {
+          catGroups['Backgrounds'].total += item.total || 0;
+          catGroups['Backgrounds'].finished += item.finished || 0;
+        } else if (k.startsWith('event_cg')) {
+          catGroups['Event CGs'].total += item.total || 0;
+          catGroups['Event CGs'].finished += item.finished || 0;
+        } else if (k.startsWith('sprites')) {
+          catGroups['Sprites'].total += item.total || 0;
+          catGroups['Sprites'].finished += item.finished || 0;
+        } else if (k.startsWith('ui')) {
+          catGroups['UI'].total += item.total || 0;
+          catGroups['UI'].finished += item.finished || 0;
+        } else {
+          catGroups['Effects'].total += item.total || 0;
+          catGroups['Effects'].finished += item.finished || 0;
+        }
+      }
+
+      container.innerHTML = Object.entries(catGroups).map(([name, val]) => {
+        const pct = val.total ? ((val.finished / val.total) * 100).toFixed(0) : 0;
+        return `
+          <div class="cat-bar-item">
+            <div class="cat-bar-header">
+              <span>${name}</span>
+              <span><strong>${val.finished}</strong> / ${val.total} (${pct}%)</span>
+            </div>
+            <div class="cat-bar-track">
+              <div class="cat-bar-fill" style="width: ${pct}%"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Min / Avg / Median calculations
+    function getStats(arr) {
+      if (!arr.length) return { min: 0, avg: 0, med: 0 };
+      const sorted = [...arr].sort((a, b) => a - b);
+      const min = sorted[0];
+      const avg = sorted.reduce((sum, n) => sum + n, 0) / sorted.length;
+      const mid = Math.floor(sorted.length / 2);
+      const med = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+      return { min, avg, med };
+    }
+
+    function renderAuditStats(psnrList, ssimList) {
+      const pStats = getStats(psnrList);
+      const sStats = getStats(ssimList);
+
+      document.getElementById('audit-min-psnr').textContent = pStats.min ? pStats.min.toFixed(1) + ' dB' : '--';
+      document.getElementById('audit-avg-psnr').textContent = pStats.avg ? pStats.avg.toFixed(1) + ' dB' : '--';
+      document.getElementById('audit-med-psnr').textContent = pStats.med ? pStats.med.toFixed(1) + ' dB' : '--';
+
+      document.getElementById('audit-min-ssim').textContent = sStats.min ? sStats.min.toFixed(4) : '--';
+      document.getElementById('audit-avg-ssim').textContent = sStats.avg ? sStats.avg.toFixed(4) : '--';
+      document.getElementById('audit-med-ssim').textContent = sStats.med ? sStats.med.toFixed(4) : '--';
+    }
+
+    // Time-per-asset histogram
+    function renderTimeHistogram(list) {
+      const svg = document.getElementById('time-histo-svg');
+      if (!list.length) return;
+
+      const buckets = [0, 0, 0, 0, 0]; // <15, 15-20, 20-25, 25-30, >30
+      list.forEach(t => {
+        if (t < 15) buckets[0]++;
+        else if (t < 20) buckets[1]++;
+        else if (t < 25) buckets[2]++;
+        else if (t < 30) buckets[3]++;
+        else buckets[4]++;
+      });
+
+      const max = Math.max(...buckets, 1);
+      const barW = 44;
+      const gap = 12;
+
+      svg.innerHTML = buckets.map((count, i) => {
+        const h = Math.round((count / max) * 60);
+        const y = 68 - h;
+        const x = 10 + i * (barW + gap);
+        return `
+          <g>
+            <rect class="histo-bar" x="${x}" y="${y}" width="${barW}" height="${h}"></rect>
+            <text class="histo-label" x="${x + barW/2}" y="${y - 4}">${count}</text>
+          </g>
+        `;
+      }).join('');
+    }
+
+    // Throughput Sparkline
+    function renderThroughputSparkline(avgSec) {
+      const currentRate = Math.round(3600 / avgSec);
+      document.getElementById('sparkline-current-rate').textContent = `${currentRate} /hr`;
+      document.getElementById('tel-throughput-avg').textContent = `${currentRate} /hr`;
+
+      throughputHistory.push(currentRate);
+      if (throughputHistory.length > 20) throughputHistory.shift();
+
+      const svg = document.getElementById('sparkline-svg');
+      const min = Math.min(...throughputHistory) * 0.9;
+      const max = Math.max(...throughputHistory) * 1.1;
+      const range = (max - min) || 1;
+
+      const points = throughputHistory.map((val, idx) => {
+        const x = (idx / (throughputHistory.length - 1)) * 230 + 5;
+        const y = 70 - ((val - min) / range) * 55;
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      });
+
+      const pathData = 'M ' + points.join(' L ');
+      const areaData = `${pathData} L 235,75 L 5,75 Z`;
+
+      svg.innerHTML = `
+        <path class="sparkline-area" d="${areaData}"></path>
+        <path class="sparkline-path" d="${pathData}"></path>
+      `;
+    }
+
+    function updateTabCounts(s) {
+      if (!s.categories) return;
+      const counts = { all: s.total || 0, backgrounds: 0, event_cg: 0, sprites: 0, ui: 0, effects: 0 };
 
       for (const k in s.categories) {
         const tot = s.categories[k].total || 0;
@@ -1262,7 +1882,9 @@
       }
     }
 
-    // Render Cards Grid
+    // --- CARDS RENDERING WITH SKELETONS ---
+    let currentRenderList = [];
+
     function renderItems() {
       if (!dataCache || !dataCache.items) return;
       const container = document.getElementById('items-container');
@@ -1276,8 +1898,14 @@
       }
 
       // Status filter
-      if (currentStatus !== 'all') {
-        items = items.filter(it => it.status === currentStatus);
+      if (currentStatus === 'PASS') {
+        items = items.filter(it => it.status === 'PASS' && (!it.metrics?.psnr || it.metrics.psnr >= 47.0));
+      } else if (currentStatus === 'MARGINAL') {
+        items = items.filter(it => it.metrics?.psnr && it.metrics.psnr >= 45.0 && it.metrics.psnr < 47.0);
+      } else if (currentStatus === 'WARN') {
+        items = items.filter(it => it.status === 'WARN' || it.status === 'FAIL');
+      } else if (currentStatus === 'FLAGGED') {
+        items = items.filter(it => flaggedSet.has(it.new_path));
       }
 
       // Search filter
@@ -1285,15 +1913,19 @@
         items = items.filter(it => (it.new_path || '').toLowerCase().includes(searchQuery));
       }
 
-      // Sorting
-      if (currentSort === 'newest') {
-        items.reverse();
-      } else if (currentSort === 'slowest') {
-        items.sort((a, b) => (b.elapsed_s || 0) - (a.elapsed_s || 0));
-      } else if (currentSort === 'lowest_psnr') {
-        items.sort((a, b) => (a.metrics?.psnr || 999) - (b.metrics?.psnr || 999));
-      } else if (currentSort === 'highest_psnr') {
-        items.sort((a, b) => (b.metrics?.psnr || 0) - (a.metrics?.psnr || 0));
+      // Sort
+      if (currentSort === 'newest') items.reverse();
+      else if (currentSort === 'slowest') items.sort((a, b) => (b.elapsed_s || 0) - (a.elapsed_s || 0));
+      else if (currentSort === 'lowest_psnr') items.sort((a, b) => (a.metrics?.psnr || 999) - (b.metrics?.psnr || 999));
+      else if (currentSort === 'highest_psnr') items.sort((a, b) => (b.metrics?.psnr || 0) - (a.metrics?.psnr || 0));
+
+      currentRenderList = items;
+
+      // Pending skeleton cards mode
+      if (currentStatus === 'PENDING') {
+        renderSkeletonCards(container);
+        sentinel.style.display = 'none';
+        return;
       }
 
       const totalMatching = items.length;
@@ -1302,73 +1934,99 @@
       if (totalMatching === 0) {
         container.innerHTML = `
           <div style="grid-column: 1 / -1; text-align: center; padding: 48px; color: var(--text-muted);">
-            <div style="font-size: 28px; margin-bottom: 6px;">🔍</div>
+            <div style="font-size: 32px; margin-bottom: 6px;">🔍</div>
             <div style="font-weight: 600; color: var(--text);">No matching assets</div>
-            <div style="font-size: 12px; margin-top: 4px;">Try adjusting your search query, status filter, or category tab.</div>
+            <div style="font-size: 12px; margin-top: 4px;">Try adjusting search query or active filter.</div>
           </div>
         `;
         sentinel.style.display = 'none';
         return;
       }
 
-      if (visibleCount >= totalMatching) {
-        sentinel.textContent = `Showing all ${totalMatching.toLocaleString()} assets`;
-      } else {
-        sentinel.textContent = `Scroll down to load more (${(totalMatching - visibleCount).toLocaleString()} remaining)`;
-        sentinel.style.display = 'flex';
-      }
+      sentinel.style.display = visibleCount < totalMatching ? 'flex' : 'none';
+      sentinel.textContent = `Showing ${visibleItems.length} of ${totalMatching} assets`;
 
-      container.innerHTML = visibleItems.map((item, index) => {
-        const status = item.status || 'PASS';
-        const statusClass = status === 'PASS' ? 'badge-pass' : (status === 'WARN' ? 'badge-warn' : 'badge-fail');
-        const metrics = item.metrics || {};
+      container.innerHTML = visibleItems.map(item => {
+        const isMarginal = item.metrics?.psnr && item.metrics.psnr >= 45.0 && item.metrics.psnr < 47.0;
+        const status = isMarginal ? 'MARGINAL' : (item.status || 'PASS');
+        const statusClass = status === 'PASS' ? 'badge-pass' : (status === 'MARGINAL' ? 'badge-marginal' : (status === 'WARN' ? 'badge-warn' : 'badge-fail'));
+        
         const isRevealed = revealedSet.has(item.new_path);
         const blurClass = isRevealed ? '' : 'blurred';
-        const spoilerBadgeClass = isRevealed ? 'hidden' : '';
-        const icon = isRevealed ? EYE_OFF_SVG : EYE_OPEN_SVG;
-        const encodedKey = encodeURIComponent(item.new_path);
+        const spoilerTagClass = isRevealed ? 'hidden' : '';
+        const isFlagged = flaggedSet.has(item.new_path);
+        const flagClass = isFlagged ? 'flagged' : '';
+        const titleClass = hideFilenames ? 'item-title obscured' : 'item-title';
 
         const filename = (item.new_path || '').split('/').pop();
         const origDimsStr = item.orig_dims ? `${item.orig_dims[0]}×${item.orig_dims[1]}` : '--';
         const upDimsStr = item.upscaled_dims ? `${item.upscaled_dims[0]}×${item.upscaled_dims[1]}` : '--';
+        const encodedKey = encodeURIComponent(item.new_path);
 
         return `
-          <div class="item-card" onclick="openLightbox('${encodedKey}')">
-            <div class="item-thumb-wrapper">
+          <div class="item-card ${isFlagged ? 'is-flagged' : ''}" 
+               onclick="openLightbox('${encodedKey}')"
+               onmousedown="onThumbMouseDown('${encodedKey}', event)"
+               onmouseup="onThumbMouseUp(event)"
+               onmouseleave="onThumbMouseUp(event)"
+               tabindex="0"
+               role="button"
+               aria-label="View comparison for ${filename}">
+            
+            <div class="item-thumb-wrapper checkerboard">
               <img class="item-thumb ${blurClass}" loading="lazy" src="thumbs/${encodeURIComponent(item.thumb || '')}" alt="${filename}" onerror="this.src='fallback.png'">
-              <div class="spoiler-badge ${spoilerBadgeClass}">SPOILER</div>
-              <button class="card-spoiler-toggle" title="Toggle Spoiler Blur" onclick="toggleSpoiler('${encodedKey}', event)">
-                ${icon}
-              </button>
+              <div class="spoiler-tag ${spoilerTagClass}">SPOILER (Hold to Peek)</div>
+              
+              <div class="thumb-controls">
+                <button class="icon-btn-round ${flagClass}" title="Flag for Re-Processing" onclick="toggleFlag('${encodedKey}', event)" aria-label="Flag asset">
+                  🚩
+                </button>
+                <button class="icon-btn-round" title="Toggle Spoiler Blur" onclick="toggleSpoiler('${encodedKey}', event)" aria-label="Toggle blur">
+                  ${isRevealed ? EYE_OFF_SVG : EYE_OPEN_SVG}
+                </button>
+              </div>
             </div>
+
             <div class="item-body">
               <div>
                 <div class="card-top-row">
                   <span class="badge-status ${statusClass}">● ${status}</span>
                   <span class="card-time">Time: <strong>${item.elapsed_s ? item.elapsed_s + 's' : '--'}</strong></span>
                 </div>
-                <div class="item-title" title="${item.new_path}" style="margin-top: 8px;">${filename}</div>
+                <div class="${titleClass}" title="${item.new_path}" style="margin-top: 6px;">${filename}</div>
               </div>
+
               <div>
                 <div class="card-meta-line">
-                  <span class="meta-res">${origDimsStr} &rarr; <strong>${upDimsStr}</strong></span>
+                  <span>${origDimsStr} &rarr; <strong>${upDimsStr}</strong></span>
                   <span style="text-transform: capitalize;">${item.category || ''}</span>
                 </div>
-                <div class="metrics-box" style="margin-top: 8px;">
-                  <span>PSNR: <strong>${metrics.psnr !== undefined ? metrics.psnr + ' dB' : '--'}</strong></span>
-                  <span>SSIM: <strong>${metrics.ssim !== undefined ? metrics.ssim : '--'}</strong></span>
+                <div class="metrics-box" style="margin-top: 6px;">
+                  <span>PSNR: <strong>${item.metrics?.psnr !== undefined ? item.metrics.psnr + ' dB' : '--'}</strong></span>
+                  <span>SSIM: <strong>${item.metrics?.ssim !== undefined ? item.metrics.ssim : '--'}</strong></span>
                 </div>
               </div>
             </div>
+
           </div>
         `;
       }).join('');
     }
 
-    // Infinite scroll observer
+    function renderSkeletonCards(container) {
+      container.innerHTML = Array.from({ length: 12 }).map((_, i) => `
+        <div class="skeleton-card">
+          <div class="skeleton-box">⏳</div>
+          <div style="font-weight: 600;">Pending Asset #${i + 1}</div>
+          <div style="font-size: 11px;">Queued for GPU upscaling</div>
+        </div>
+      `).join('');
+    }
+
+    // Infinite scroll
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
-        if (dataCache && dataCache.items) {
+        if (dataCache && dataCache.items && currentStatus !== 'PENDING') {
           visibleCount += CHUNK_SIZE;
           renderItems();
         }
@@ -1376,19 +2034,31 @@
     }, { rootMargin: '400px' });
     observer.observe(document.getElementById('scroll-sentinel'));
 
-    // 5. LIGHTBOX COMPARISON SLIDER
-    let activeLightboxItem = null;
+    // --- 6. ADVANCED LIGHTBOX: MODES, SYNCED ZOOM/PAN, ARROWS ---
+    let activeLightboxIndex = -1;
+    let lightboxMode = 'slider'; // 'slider', 'side', 'flicker'
+    let zoomLevel = 1.0;
+    let panX = 0, panY = 0;
+    let isPanning = false;
+    let startX = 0, startY = 0;
 
     function openLightbox(encodedKey) {
       const key = decodeURIComponent(encodedKey);
-      if (!dataCache || !dataCache.items || !dataCache.items[key]) return;
+      activeLightboxIndex = currentRenderList.findIndex(it => it.new_path === key);
+      if (activeLightboxIndex === -1) return;
 
-      const item = dataCache.items[key];
-      activeLightboxItem = item;
+      zoomLevel = 1.0;
+      panX = 0; panY = 0;
+      updateLightboxStageTransform();
 
+      loadLightboxData(currentRenderList[activeLightboxIndex]);
+      document.getElementById('lightbox').classList.add('active');
+    }
+
+    function loadLightboxData(item) {
       const filename = (item.new_path || '').split('/').pop();
       document.getElementById('lightbox-filename').textContent = filename;
-      
+
       const origDimsStr = item.orig_dims ? `${item.orig_dims[0]}×${item.orig_dims[1]}` : '--';
       const upDimsStr = item.upscaled_dims ? `${item.upscaled_dims[0]}×${item.upscaled_dims[1]}` : '--';
       document.getElementById('lightbox-meta').textContent = `${item.category || ''} · ${origDimsStr} → ${upDimsStr}`;
@@ -1397,31 +2067,67 @@
       document.getElementById('lightbox-after-img').src = thumbUrl;
       document.getElementById('lightbox-before-img').src = thumbUrl;
 
-      // Metrics
       const m = item.metrics || {};
       document.getElementById('lightbox-psnr').textContent = m.psnr !== undefined ? m.psnr : '--';
       document.getElementById('lightbox-ssim').textContent = m.ssim !== undefined ? m.ssim : '--';
       document.getElementById('lightbox-time').textContent = item.elapsed_s ? item.elapsed_s + 's' : '--';
 
-      const statusBadge = document.getElementById('lightbox-status-badge');
-      const status = item.status || 'PASS';
-      statusBadge.textContent = status;
-      statusBadge.className = 'badge-status ' + (status === 'PASS' ? 'badge-pass' : (status === 'WARN' ? 'badge-warn' : 'badge-fail'));
+      const isMarginal = m.psnr && m.psnr >= 45.0 && m.psnr < 47.0;
+      const status = isMarginal ? 'MARGINAL' : (item.status || 'PASS');
+      const badge = document.getElementById('lightbox-status-badge');
+      badge.textContent = status;
+      badge.className = 'badge-status ' + (status === 'PASS' ? 'badge-pass' : (status === 'MARGINAL' ? 'badge-marginal' : 'badge-warn'));
 
-      // Spoiler state
-      const isRevealed = revealedSet.has(item.new_path);
-      const spoilerOverlay = document.getElementById('lightbox-spoiler-overlay');
-      if (isRevealed) {
-        spoilerOverlay.classList.add('hidden');
-      } else {
-        spoilerOverlay.classList.remove('hidden');
-      }
+      // Flag button in lightbox
+      const isFlagged = flaggedSet.has(item.new_path);
+      const flagBtn = document.getElementById('lightbox-flag-btn');
+      flagBtn.textContent = isFlagged ? '🚩 Flagged (Click to remove)' : '🚩 Flag Rerun';
+      flagBtn.style.color = isFlagged ? 'var(--status-flagged)' : '';
 
-      // Reset slider to 50%
+      // Slider reset
       document.getElementById('lightbox-slider').value = 50;
       updateComparisonSlider(50);
+    }
 
-      document.getElementById('lightbox').classList.add('active');
+    function toggleLightboxFlag() {
+      if (activeLightboxIndex < 0) return;
+      const item = currentRenderList[activeLightboxIndex];
+      toggleFlag(encodeURIComponent(item.new_path));
+      loadLightboxData(item);
+    }
+
+    function prevLightbox(e) {
+      if (e) e.stopPropagation();
+      if (activeLightboxIndex > 0) {
+        activeLightboxIndex--;
+        loadLightboxData(currentRenderList[activeLightboxIndex]);
+      }
+    }
+
+    function nextLightbox(e) {
+      if (e) e.stopPropagation();
+      if (activeLightboxIndex < currentRenderList.length - 1) {
+        activeLightboxIndex++;
+        loadLightboxData(currentRenderList[activeLightboxIndex]);
+      }
+    }
+
+    function setLightboxMode(mode) {
+      lightboxMode = mode;
+      const vp = document.getElementById('lightbox-viewport');
+      vp.className = `lightbox-viewport checkerboard comp-mode-${mode}`;
+
+      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(`btn-mode-${mode}`).classList.add('active');
+
+      if (mode === 'flicker') {
+        vp.onmouseenter = () => vp.classList.add('flicker-active');
+        vp.onmouseleave = () => vp.classList.remove('flicker-active');
+      } else {
+        vp.onmouseenter = null;
+        vp.onmouseleave = null;
+        vp.classList.remove('flicker-active');
+      }
     }
 
     function updateComparisonSlider(val) {
@@ -1429,33 +2135,55 @@
       document.getElementById('slider-handle').style.left = val + '%';
     }
 
-    function revealLightboxSpoiler() {
-      if (activeLightboxItem) {
-        revealedSet.add(activeLightboxItem.new_path);
-        saveSpoilerState();
-        document.getElementById('lightbox-spoiler-overlay').classList.add('hidden');
-        renderItems();
-      }
+    // Synced Zoom & Pan
+    function onLightboxWheel(e) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.2 : 0.2;
+      zoomLevel = Math.max(1.0, Math.min(4.0, zoomLevel + delta));
+      if (zoomLevel === 1.0) { panX = 0; panY = 0; }
+      document.getElementById('lightbox-zoom-val').textContent = zoomLevel.toFixed(1) + 'x';
+      updateLightboxStageTransform();
+    }
+
+    function startPan(e) {
+      if (zoomLevel <= 1.0 || e.target.classList.contains('lightbox-slider-input')) return;
+      isPanning = true;
+      startX = e.clientX - panX;
+      startY = e.clientY - panY;
+      window.addEventListener('mousemove', onPanMove);
+      window.addEventListener('mouseup', stopPan);
+    }
+
+    function onPanMove(e) {
+      if (!isPanning) return;
+      panX = e.clientX - startX;
+      panY = e.clientY - startY;
+      updateLightboxStageTransform();
+    }
+
+    function stopPan() {
+      isPanning = false;
+      window.removeEventListener('mousemove', onPanMove);
+      window.removeEventListener('mouseup', stopPan);
+    }
+
+    function updateLightboxStageTransform() {
+      document.getElementById('lightbox-stage').style.transform = 
+        `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
     }
 
     function closeLightbox() {
       document.getElementById('lightbox').classList.remove('active');
-      activeLightboxItem = null;
+      activeLightboxIndex = -1;
     }
 
     function closeLightboxOnBackdrop(e) {
-      if (e.target === document.getElementById('lightbox')) {
-        closeLightbox();
-      }
+      if (e.target === document.getElementById('lightbox')) closeLightbox();
     }
-
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeLightbox();
-    });
 
     // Start Polling
     fetchProgress();
-    setInterval(fetchProgress, 3000);
+    pollInterval = setInterval(fetchProgress, 3000);
   </script>
 </body>
 </html>
