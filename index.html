@@ -1294,8 +1294,14 @@
       </div>
 
       <div class="slider-control-wrap">
-        <span>Grid Size</span>
-        <input type="range" class="grid-slider" min="220" max="460" value="300" step="10" oninput="onGridSliderChange(this.value)" aria-label="Adjust card grid size">
+        <span>Grid: <strong id="grid-level-name" style="color: var(--cyan);">Standard</strong></span>
+        <input type="range" class="grid-slider" min="1" max="4" value="2" step="1" list="grid-ticks" id="grid-level-slider" oninput="onGridSliderChange(this.value)" aria-label="Snap card grid size">
+        <datalist id="grid-ticks">
+          <option value="1" label="Compact"></option>
+          <option value="2" label="Standard"></option>
+          <option value="3" label="Large"></option>
+          <option value="4" label="Max"></option>
+        </datalist>
       </div>
     </div>
   </nav>
@@ -1583,9 +1589,32 @@
       renderItems();
     }
 
+    const GRID_LEVELS = {
+      1: { width: '220px', name: 'Compact' },
+      2: { width: '300px', name: 'Standard' },
+      3: { width: '380px', name: 'Large' },
+      4: { width: '480px', name: 'Max' }
+    };
+
     function onGridSliderChange(val) {
-      document.documentElement.style.setProperty('--card-min-width', val + 'px');
+      const lvl = GRID_LEVELS[val] || GRID_LEVELS[2];
+      document.documentElement.style.setProperty('--card-min-width', lvl.width);
+      const nameEl = document.getElementById('grid-level-name');
+      if (nameEl) nameEl.textContent = lvl.name;
+      try { localStorage.setItem('muramasa_grid_level', val); } catch (e) {}
     }
+
+    // Restore saved grid level on load
+    try {
+      const savedLvl = localStorage.getItem('muramasa_grid_level');
+      if (savedLvl && GRID_LEVELS[savedLvl]) {
+        document.addEventListener('DOMContentLoaded', () => {
+          const slider = document.getElementById('grid-level-slider');
+          if (slider) slider.value = savedLvl;
+          onGridSliderChange(savedLvl);
+        });
+      }
+    } catch (e) {}
 
     function toggleSpoiler(encodedKey, e) {
       if (e) e.stopPropagation();
