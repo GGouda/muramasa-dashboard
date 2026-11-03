@@ -22764,13 +22764,1347 @@
         ]
       },
       "thumb": "ev211_大仏の上に立つ銀星号_c.png"
+    },
+    "event_cg/ev212_二世村正戦闘体勢.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev212_二世村正戦闘体勢.png",
+      "new_path": "event_cg/ev212_二世村正戦闘体勢.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 43.78,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 49.43,
+        "ssim": 0.9999,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev212_二世村正戦闘体勢.png"
+    },
+    "event_cg/ev213_景明と村正の結縁_a.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev213_景明と村正の結縁_a.png",
+      "new_path": "event_cg/ev213_景明と村正の結縁_a.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 29.18,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 51.44,
+        "ssim": 1.0,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev213_景明と村正の結縁_a.png"
+    },
+    "event_cg/ev213_景明と村正の結縁_b.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev213_景明と村正の結縁_b.png",
+      "new_path": "event_cg/ev213_景明と村正の結縁_b.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 27.21,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 51.45,
+        "ssim": 1.0,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev213_景明と村正の結縁_b.png"
+    },
+    "event_cg/ev214_足利護氏の行列.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev214_足利護氏の行列.png",
+      "new_path": "event_cg/ev214_足利護氏の行列.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 27.64,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 47.78,
+        "ssim": 0.9999,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev214_足利護氏の行列.png"
+    },
+    "event_cg/ev215_髭切に翻弄される村正.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev215_髭切に翻弄される村正.png",
+      "new_path": "event_cg/ev215_髭切に翻弄される村正.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 43.71,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 48.11,
+        "ssim": 0.9999,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev215_髭切に翻弄される村正.png"
+    },
+    "event_cg/ev216_光降臨_a.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev216_光降臨_a.png",
+      "new_path": "event_cg/ev216_光降臨_a.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 28.68,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 48.17,
+        "ssim": 0.9999,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev216_光降臨_a.png"
+    },
+    "event_cg/ev216_光降臨_b.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev216_光降臨_b.png",
+      "new_path": "event_cg/ev216_光降臨_b.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 28.83,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 47.21,
+        "ssim": 0.9999,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev216_光降臨_b.png"
+    },
+    "event_cg/ev216_光降臨_c.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev216_光降臨_c.png",
+      "new_path": "event_cg/ev216_光降臨_c.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 28.97,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 48.83,
+        "ssim": 1.0,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev216_光降臨_c.png"
+    },
+    "event_cg/ev216_光降臨_d.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev216_光降臨_d.png",
+      "new_path": "event_cg/ev216_光降臨_d.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 39.09,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 48.77,
+        "ssim": 1.0,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev216_光降臨_d.png"
+    },
+    "event_cg/ev216_光降臨_e.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev216_光降臨_e.png",
+      "new_path": "event_cg/ev216_光降臨_e.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 33.74,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 48.37,
+        "ssim": 1.0,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev216_光降臨_e.png"
+    },
+    "event_cg/ev218_茶々丸と同衾する景明_a.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev218_茶々丸と同衾する景明_a.png",
+      "new_path": "event_cg/ev218_茶々丸と同衾する景明_a.png",
+      "orig_dims": [
+        1024,
+        1152
+      ],
+      "upscaled_dims": [
+        2560,
+        2880
+      ],
+      "elapsed_s": 56.13,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 42.34,
+        "ssim": 0.9996,
+        "orig_size": [
+          1024,
+          1152
+        ],
+        "upscaled_size": [
+          2560,
+          2880
+        ]
+      },
+      "thumb": "ev218_茶々丸と同衾する景明_a.png"
+    },
+    "event_cg/ev218_茶々丸と同衾する景明_b.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev218_茶々丸と同衾する景明_b.png",
+      "new_path": "event_cg/ev218_茶々丸と同衾する景明_b.png",
+      "orig_dims": [
+        1024,
+        1152
+      ],
+      "upscaled_dims": [
+        2560,
+        2880
+      ],
+      "elapsed_s": 56.43,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 48.51,
+        "ssim": 0.9997,
+        "orig_size": [
+          1024,
+          1152
+        ],
+        "upscaled_size": [
+          2560,
+          2880
+        ]
+      },
+      "thumb": "ev218_茶々丸と同衾する景明_b.png"
+    },
+    "event_cg/ev220_茶々丸の世界.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev220_茶々丸の世界.png",
+      "new_path": "event_cg/ev220_茶々丸の世界.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 31.89,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 48.16,
+        "ssim": 0.9999,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev220_茶々丸の世界.png"
+    },
+    "event_cg/ev221_月明かりを浴びて立つ光_a.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev221_月明かりを浴びて立つ光_a.png",
+      "new_path": "event_cg/ev221_月明かりを浴びて立つ光_a.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 33.89,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 49.71,
+        "ssim": 1.0,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev221_月明かりを浴びて立つ光_a.png"
+    },
+    "event_cg/ev221_月明かりを浴びて立つ光_b.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev221_月明かりを浴びて立つ光_b.png",
+      "new_path": "event_cg/ev221_月明かりを浴びて立つ光_b.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 24.98,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 46.1,
+        "ssim": 0.9999,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev221_月明かりを浴びて立つ光_b.png"
+    },
+    "event_cg/ev222_茶々丸Ｈ_a.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev222_茶々丸Ｈ_a.png",
+      "new_path": "event_cg/ev222_茶々丸Ｈ_a.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 25.05,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 46.74,
+        "ssim": 0.9999,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev222_茶々丸Ｈ_a.png"
+    },
+    "event_cg/ev222_茶々丸Ｈ_b.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev222_茶々丸Ｈ_b.png",
+      "new_path": "event_cg/ev222_茶々丸Ｈ_b.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 24.92,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 46.79,
+        "ssim": 0.9999,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev222_茶々丸Ｈ_b.png"
+    },
+    "event_cg/ev222_茶々丸Ｈ_c.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev222_茶々丸Ｈ_c.png",
+      "new_path": "event_cg/ev222_茶々丸Ｈ_c.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 24.63,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 42.11,
+        "ssim": 0.9997,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev222_茶々丸Ｈ_c.png"
+    },
+    "event_cg/ev222_茶々丸Ｈ_d.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev222_茶々丸Ｈ_d.png",
+      "new_path": "event_cg/ev222_茶々丸Ｈ_d.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 24.7,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 42.39,
+        "ssim": 0.9997,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev222_茶々丸Ｈ_d.png"
+    },
+    "event_cg/ev224_建長寺を包囲する軍勢.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev224_建長寺を包囲する軍勢.png",
+      "new_path": "event_cg/ev224_建長寺を包囲する軍勢.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 25.55,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 48.64,
+        "ssim": 0.9998,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev224_建長寺を包囲する軍勢.png"
+    },
+    "event_cg/ev225_技術解説地摺り青眼_a.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev225_技術解説地摺り青眼_a.png",
+      "new_path": "event_cg/ev225_技術解説地摺り青眼_a.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 25.36,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 51.97,
+        "ssim": 0.9997,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev225_技術解説地摺り青眼_a.png"
+    },
+    "event_cg/ev225_技術解説地摺り青眼_b.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev225_技術解説地摺り青眼_b.png",
+      "new_path": "event_cg/ev225_技術解説地摺り青眼_b.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 25.43,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 51.78,
+        "ssim": 0.9998,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev225_技術解説地摺り青眼_b.png"
+    },
+    "event_cg/ev225_技術解説地摺り青眼_c.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev225_技術解説地摺り青眼_c.png",
+      "new_path": "event_cg/ev225_技術解説地摺り青眼_c.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 25.42,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 51.73,
+        "ssim": 0.9997,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev225_技術解説地摺り青眼_c.png"
+    },
+    "event_cg/ev225_技術解説地摺り青眼_d.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev225_技術解説地摺り青眼_d.png",
+      "new_path": "event_cg/ev225_技術解説地摺り青眼_d.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 25.66,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 51.93,
+        "ssim": 0.9997,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev225_技術解説地摺り青眼_d.png"
+    },
+    "event_cg/ev226_景明ＶＳ黒瀬_a.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev226_景明ＶＳ黒瀬_a.png",
+      "new_path": "event_cg/ev226_景明ＶＳ黒瀬_a.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 25.37,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 47.79,
+        "ssim": 0.9995,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev226_景明ＶＳ黒瀬_a.png"
+    },
+    "event_cg/ev226_景明ＶＳ黒瀬_b.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev226_景明ＶＳ黒瀬_b.png",
+      "new_path": "event_cg/ev226_景明ＶＳ黒瀬_b.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 27.65,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 50.6,
+        "ssim": 0.9999,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev226_景明ＶＳ黒瀬_b.png"
+    },
+    "event_cg/ev228_白銀の軍団_a.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev228_白銀の軍団_a.png",
+      "new_path": "event_cg/ev228_白銀の軍団_a.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 27.36,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 49.78,
+        "ssim": 0.9998,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev228_白銀の軍団_a.png"
+    },
+    "event_cg/ev228_白銀の軍団_b.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev228_白銀の軍団_b.png",
+      "new_path": "event_cg/ev228_白銀の軍団_b.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 26.15,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 47.87,
+        "ssim": 0.9998,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev228_白銀の軍団_b.png"
+    },
+    "event_cg/ev228_白銀の軍団_c.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev228_白銀の軍団_c.png",
+      "new_path": "event_cg/ev228_白銀の軍団_c.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 26.2,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 48.14,
+        "ssim": 0.9998,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev228_白銀の軍団_c.png"
+    },
+    "event_cg/ev228_白銀の軍団_d.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev228_白銀の軍団_d.png",
+      "new_path": "event_cg/ev228_白銀の軍団_d.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 26.53,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 50.79,
+        "ssim": 0.9999,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev228_白銀の軍団_d.png"
+    },
+    "event_cg/ev228_白銀の軍団_e.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev228_白銀の軍団_e.png",
+      "new_path": "event_cg/ev228_白銀の軍団_e.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 27.7,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 49.63,
+        "ssim": 0.9998,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev228_白銀の軍団_e.png"
+    },
+    "event_cg/ev229_茶々丸ＥＤ.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev229_茶々丸ＥＤ.png",
+      "new_path": "event_cg/ev229_茶々丸ＥＤ.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 44.17,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 50.35,
+        "ssim": 0.9999,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev229_茶々丸ＥＤ.png"
+    },
+    "event_cg/ev230_泣きじゃくる村正.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev230_泣きじゃくる村正.png",
+      "new_path": "event_cg/ev230_泣きじゃくる村正.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 48.85,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 49.55,
+        "ssim": 1.0,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev230_泣きじゃくる村正.png"
+    },
+    "event_cg/ev231_茶々丸変身_a.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev231_茶々丸変身_a.png",
+      "new_path": "event_cg/ev231_茶々丸変身_a.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 27.4,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 49.66,
+        "ssim": 0.9999,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev231_茶々丸変身_a.png"
+    },
+    "event_cg/ev231_茶々丸変身_b.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev231_茶々丸変身_b.png",
+      "new_path": "event_cg/ev231_茶々丸変身_b.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 27.2,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 49.54,
+        "ssim": 0.9999,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev231_茶々丸変身_b.png"
+    },
+    "event_cg/ev231_茶々丸変身_c.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev231_茶々丸変身_c.png",
+      "new_path": "event_cg/ev231_茶々丸変身_c.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 27.75,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 49.31,
+        "ssim": 0.9999,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev231_茶々丸変身_c.png"
+    },
+    "event_cg/ev231_茶々丸変身_d.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev231_茶々丸変身_d.png",
+      "new_path": "event_cg/ev231_茶々丸変身_d.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 26.84,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 49.41,
+        "ssim": 0.9999,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev231_茶々丸変身_d.png"
+    },
+    "event_cg/ev231_茶々丸変身_e.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev231_茶々丸変身_e.png",
+      "new_path": "event_cg/ev231_茶々丸変身_e.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 33.49,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 43.93,
+        "ssim": 0.9997,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev231_茶々丸変身_e.png"
+    },
+    "event_cg/ev232_村正ＶＳ茶々丸１.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev232_村正ＶＳ茶々丸１.png",
+      "new_path": "event_cg/ev232_村正ＶＳ茶々丸１.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 43.74,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 48.74,
+        "ssim": 1.0,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev232_村正ＶＳ茶々丸１.png"
+    },
+    "event_cg/ev233_村正ＶＳ茶々丸２_a.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev233_村正ＶＳ茶々丸２_a.png",
+      "new_path": "event_cg/ev233_村正ＶＳ茶々丸２_a.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 33.66,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 47.99,
+        "ssim": 0.9999,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev233_村正ＶＳ茶々丸２_a.png"
+    },
+    "event_cg/ev233_村正ＶＳ茶々丸２_b.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev233_村正ＶＳ茶々丸２_b.png",
+      "new_path": "event_cg/ev233_村正ＶＳ茶々丸２_b.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 38.26,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 42.84,
+        "ssim": 0.9996,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev233_村正ＶＳ茶々丸２_b.png"
+    },
+    "event_cg/ev234_座る茶々姫.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev234_座る茶々姫.png",
+      "new_path": "event_cg/ev234_座る茶々姫.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 76.51,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 47.69,
+        "ssim": 0.9998,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev234_座る茶々姫.png"
+    },
+    "event_cg/ev235_迫る鍛造雷弾_a.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev235_迫る鍛造雷弾_a.png",
+      "new_path": "event_cg/ev235_迫る鍛造雷弾_a.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 59.77,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 51.01,
+        "ssim": 1.0,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev235_迫る鍛造雷弾_a.png"
+    },
+    "event_cg/ev235_迫る鍛造雷弾_b.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev235_迫る鍛造雷弾_b.png",
+      "new_path": "event_cg/ev235_迫る鍛造雷弾_b.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 66.81,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 49.85,
+        "ssim": 1.0,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev235_迫る鍛造雷弾_b.png"
+    },
+    "event_cg/ev235_迫る鍛造雷弾_c.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev235_迫る鍛造雷弾_c.png",
+      "new_path": "event_cg/ev235_迫る鍛造雷弾_c.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 46.74,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 49.97,
+        "ssim": 1.0,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev235_迫る鍛造雷弾_c.png"
+    },
+    "event_cg/ev235_迫る鍛造雷弾_d.png": {
+      "category": "event_cg",
+      "original_path": "media/cg/ev/ev235_迫る鍛造雷弾_d.png",
+      "new_path": "event_cg/ev235_迫る鍛造雷弾_d.png",
+      "orig_dims": [
+        1024,
+        576
+      ],
+      "upscaled_dims": [
+        2560,
+        1440
+      ],
+      "elapsed_s": 35.4,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 49.02,
+        "ssim": 1.0,
+        "orig_size": [
+          1024,
+          576
+        ],
+        "upscaled_size": [
+          2560,
+          1440
+        ]
+      },
+      "thumb": "ev235_迫る鍛造雷弾_d.png"
     }
   },
   "categories": {},
   "summary": {
     "total": 5464,
-    "finished": 785,
-    "percent": 14.4,
+    "finished": 831,
+    "percent": 15.2,
     "categories": {
       "effects/anime": {
         "total": 176,
@@ -22823,8 +24157,8 @@
       },
       "event_cg": {
         "total": 600,
-        "finished": 302,
-        "passed": 302,
+        "finished": 348,
+        "passed": 348,
         "warned": 0,
         "failed": 0
       },
@@ -22878,6 +24212,8 @@
         "failed": 0
       }
     },
-    "updated_at": "2026-11-03 13:24:26"
+    "updated_at": "2026-11-03T21:43:49.836663+02:00",
+    "output_bytes": 2619288570,
+    "free_bytes": 880923406336
   }
 }

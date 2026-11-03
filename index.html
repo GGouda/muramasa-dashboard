@@ -4,50 +4,81 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Muramasa HD 2K Remaster Dashboard</title>
+
+  <!-- Self-hosted local fonts -->
   <style>
+    @font-face {
+      font-family: 'DisplayFont';
+      src: url('./fonts/display.woff2') format('woff2');
+      font-weight: 600 800;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'TextFont';
+      src: url('./fonts/text.woff2') format('woff2');
+      font-weight: 400 600;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'MonoFont';
+      src: url('./fonts/mono.woff2') format('woff2');
+      font-weight: 400 700;
+      font-display: swap;
+    }
+
     :root {
-      --bg: #0b0d13;
-      --bg-surface: #121622;
-      --bg-surface-hover: #171d2c;
-      --bg-card: #151a28;
-      --bg-card-subtle: #0f131f;
+      /* Steel-Black Muramasa Palette */
+      --bg: #090c13;
+      --bg-surface: #101522;
+      --bg-surface-hover: #161e30;
+      --bg-card: #121826;
+      --bg-card-hover: #182236;
       --border: rgba(255, 255, 255, 0.08);
       --border-light: rgba(255, 255, 255, 0.16);
-      
-      /* Single Accent: Cyan */
+      --border-focus: #00d2ff;
+
+      /* Katana Cold Steel & Cyan Signal */
       --cyan: #00d2ff;
       --cyan-subtle: rgba(0, 210, 255, 0.12);
       --cyan-border: rgba(0, 210, 255, 0.35);
       --cyan-glow: rgba(0, 210, 255, 0.25);
-      
-      /* Semantic Status Only */
-      --status-pass: #22c55e;
-      --status-pass-bg: rgba(34, 197, 94, 0.12);
-      --status-pass-border: rgba(34, 197, 94, 0.35);
 
-      --status-marginal: #eab308;
-      --status-marginal-bg: rgba(234, 179, 8, 0.12);
-      --status-marginal-border: rgba(234, 179, 8, 0.35);
-      
-      --status-warn: #f59e0b;
-      --status-warn-bg: rgba(245, 158, 11, 0.12);
-      --status-warn-border: rgba(245, 158, 11, 0.35);
-      
+      /* Semantic Status Colors */
+      --status-pass: #10b981;
+      --status-pass-bg: rgba(16, 185, 129, 0.14);
+      --status-pass-border: rgba(16, 185, 129, 0.4);
+
+      --status-marginal: #f59e0b;
+      --status-marginal-bg: rgba(245, 158, 11, 0.14);
+      --status-marginal-border: rgba(245, 158, 11, 0.4);
+
+      --status-review: #8b5cf6;
+      --status-review-bg: rgba(139, 92, 246, 0.16);
+      --status-review-border: rgba(139, 92, 246, 0.45);
+
+      --status-warn: #f43f5e;
+      --status-warn-bg: rgba(244, 63, 94, 0.14);
+      --status-warn-border: rgba(244, 63, 94, 0.4);
+
       --status-fail: #ef4444;
-      --status-fail-bg: rgba(239, 68, 68, 0.12);
-      --status-fail-border: rgba(239, 68, 68, 0.35);
+      --status-fail-bg: rgba(239, 68, 68, 0.16);
+      --status-fail-border: rgba(239, 68, 68, 0.45);
 
       --status-flagged: #ec4899;
-      --status-flagged-bg: rgba(236, 72, 153, 0.15);
-      --status-flagged-border: rgba(236, 72, 153, 0.4);
+      --status-flagged-bg: rgba(236, 72, 153, 0.16);
+      --status-flagged-border: rgba(236, 72, 153, 0.45);
 
-      /* High-contrast Text */
-      --text: #f8fafc;
+      /* Typography & Text */
+      --text: #f1f5f9;
       --text-muted: #94a3b8;
       --text-dim: #64748b;
 
+      --font-display: 'DisplayFont', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-text: 'TextFont', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'MonoFont', 'Consolas', 'Courier New', monospace;
+
       --card-min-width: 300px;
-      --radius: 10px;
+      --radius: 8px;
     }
 
     * {
@@ -58,21 +89,23 @@
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: var(--font-text);
+      font-size: 13px;
+      line-height: 1.45;
       background: var(--bg);
       color: var(--text);
-      padding: 22px 30px;
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
-    /* Accessibility Focus State */
+    /* Accessibility focus */
     :focus-visible {
-      outline: 2px solid var(--cyan);
+      outline: 2px solid var(--border-focus);
       outline-offset: 2px;
     }
 
-    /* Reduce motion */
+    /* Motion preferences */
     @media (prefers-reduced-motion: reduce) {
       *, ::before, ::after {
         animation-duration: 0.01ms !important;
@@ -81,294 +114,327 @@
       }
     }
 
-    /* HEADER */
-    header {
+    /* COMPACT HERO BAND (~145px) */
+    .top-command-band {
+      position: relative;
+      background: linear-gradient(180deg, #0e131d 0%, #090c13 100%);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 24px 8px;
+      z-index: 40;
+    }
+
+    /* Row 1: Header + System Chips + Storage + Live Status */
+    .header-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 18px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 20px;
+      gap: 16px;
       flex-wrap: wrap;
-      gap: 14px;
+      min-height: 32px;
     }
 
-    .header-main h1 {
-      font-size: 22px;
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-title {
+      font-family: var(--font-display);
+      font-size: 16px;
       font-weight: 700;
-      letter-spacing: -0.4px;
+      letter-spacing: -0.3px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-katana-icon {
+      color: var(--cyan);
+    }
+
+    .system-chips {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sys-chip {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+      padding: 2px 7px;
+      border-radius: 4px;
+      color: var(--text-muted);
+    }
+    .sys-chip strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .header-right-telemetry {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-left: auto;
+    }
+
+    /* Storage telemetry */
+    .storage-summary {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 3px 9px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+    .storage-summary strong {
       color: var(--text);
     }
 
-    .header-chips {
+    /* Live Status Pill */
+    .live-status-pill {
       display: flex;
-      flex-wrap: wrap;
+      align-items: center;
       gap: 8px;
-      margin-top: 6px;
-    }
-
-    .chip {
-      font-size: 11px;
-      color: var(--text-muted);
-      background: var(--bg-surface);
+      background: rgba(255, 255, 255, 0.04);
       border: 1px solid var(--border);
       padding: 3px 10px;
-      border-radius: 6px;
-    }
-    .chip strong {
-      color: var(--cyan);
-      font-weight: 600;
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .panic-badge {
-      font-size: 11px;
-      color: var(--text-dim);
-      border: 1px dashed var(--border);
-      padding: 4px 8px;
-      border-radius: 6px;
-      background: rgba(0,0,0,0.25);
-    }
-    .panic-badge kbd {
-      background: rgba(255,255,255,0.08);
-      color: var(--text-muted);
-      padding: 1px 4px;
-      border-radius: 3px;
-    }
-
-    .status-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      padding: 6px 14px;
       border-radius: 20px;
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 11px;
+      font-family: var(--font-mono);
     }
+
     .pulse-dot {
-      width: 9px;
-      height: 9px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
-      background: var(--cyan);
-      box-shadow: 0 0 0 0 rgba(0, 210, 255, 0.7);
-      animation: pulseAnim 2s infinite;
+      background: var(--text-dim);
       transition: background 0.3s;
     }
-    .pulse-dot.stalled {
-      background: var(--status-warn);
-      animation: pulseWarn 2s infinite;
+    .pulse-dot.fresh {
+      background: var(--status-pass);
+      box-shadow: 0 0 8px var(--status-pass);
+      animation: pulseGlow 2.5s infinite;
     }
-    .pulse-dot.paused {
-      background: var(--text-dim);
-      animation: none;
+    .pulse-dot.stale {
+      background: var(--status-marginal);
+      box-shadow: 0 0 6px var(--status-marginal);
     }
-    @keyframes pulseAnim {
-      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 210, 255, 0.7); }
-      70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(0, 210, 255, 0); }
-      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 210, 255, 0); }
-    }
-    @keyframes pulseWarn {
-      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
-      70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
-      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+    .pulse-dot.offline {
+      background: var(--status-fail);
     }
 
-    /* 1. PIPELINE CONTROLS & STORAGE BAR */
-    .pipeline-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.55; transform: scale(0.9); }
+    }
+
+    .panic-hint {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+    .panic-hint kbd {
+      background: #19202f;
+      border: 1px solid var(--border-light);
+      padding: 1px 5px;
+      border-radius: 3px;
+      color: var(--text);
+      font-family: var(--font-mono);
+    }
+
+    .drawer-toggle-btn {
       background: var(--bg-surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 10px 18px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .pipeline-controls-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .ctrl-btn {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      color: var(--text);
-      font-size: 12px;
-      font-weight: 600;
-      padding: 6px 14px;
-      border-radius: 6px;
+      color: var(--text-muted);
+      padding: 3px 9px;
+      border-radius: 5px;
+      font-size: 11px;
+      font-weight: 500;
       cursor: pointer;
-      display: inline-flex;
+      display: flex;
       align-items: center;
       gap: 6px;
       transition: all 0.2s;
     }
-    .ctrl-btn:hover {
-      background: var(--bg-surface-hover);
-      border-color: var(--border-light);
+    .drawer-toggle-btn:hover {
+      border-color: var(--cyan);
+      color: var(--text);
     }
-    .ctrl-btn.active {
-      background: var(--status-warn-bg);
-      border-color: var(--status-warn-border);
-      color: var(--status-warn);
+    .drawer-toggle-btn.active {
+      background: var(--cyan-subtle);
+      border-color: var(--cyan);
+      color: var(--cyan);
     }
 
-    .storage-telemetry {
-      display: flex;
+    /* Row 2: Hero Progress + Segmented Bar + Categories */
+    .hero-progress-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
       align-items: center;
       gap: 16px;
+      margin-top: 8px;
+    }
+
+    .hero-metric-group {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .hero-big-percent {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: -0.6px;
+      color: #ffffff;
+      line-height: 1;
+    }
+    .hero-big-percent span.unit {
+      font-size: 16px;
+      color: var(--cyan);
+    }
+
+    .hero-counts-inline {
       font-size: 12px;
       color: var(--text-muted);
-    }
-    .storage-telemetry strong { color: var(--text); }
-    .storage-telemetry span { display: inline-flex; align-items: center; gap: 4px; }
-
-    /* 2. HERO PROGRESS SECTION WITH INLINE CATEGORY BARS */
-    .hero-progress-section {
-      background: var(--bg-surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 22px 26px;
-      margin-bottom: 20px;
-    }
-
-    .hero-progress-header {
       display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 12px;
+      gap: 8px;
+      align-items: center;
     }
-
-    .hero-title-area {
-      display: flex;
-      align-items: baseline;
-      gap: 16px;
+    .hero-counts-inline strong {
+      font-family: var(--font-mono);
+      font-weight: 600;
     }
+    .stat-pass { color: var(--status-pass); }
+    .stat-marginal { color: var(--status-marginal); }
+    .stat-review { color: var(--status-review); }
+    .stat-fail { color: var(--status-fail); }
 
-    .hero-percent {
-      font-size: 42px;
-      font-weight: 800;
-      color: var(--text);
-      line-height: 1;
-      letter-spacing: -1px;
-    }
-    .hero-percent-accent { color: var(--cyan); }
-
-    .hero-stats-line {
-      font-size: 13px;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-    .hero-stats-line strong { font-weight: 600; }
-    .stat-green { color: var(--status-pass) !important; }
-    .stat-amber { color: var(--status-warn) !important; }
-    .stat-marginal { color: var(--status-marginal) !important; }
-    .stat-red { color: var(--status-fail) !important; }
-    .stat-flagged { color: var(--status-flagged) !important; }
-
-    .hero-progress-track {
-      background: rgba(255, 255, 255, 0.06);
-      height: 16px;
-      border-radius: 8px;
+    /* Segmented Progress Track */
+    .segmented-progress-track {
+      height: 8px;
+      background: #181f2d;
+      border-radius: 4px;
       overflow: hidden;
+      display: flex;
       position: relative;
-      margin-bottom: 16px;
-    }
-    .hero-progress-fill {
-      height: 100%;
-      width: 0%;
-      border-radius: 8px;
-      background: linear-gradient(90deg, #0088cc 0%, var(--cyan) 100%);
-      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-      box-shadow: 0 0 12px rgba(0, 210, 255, 0.4);
     }
 
-    /* INLINE PER-CATEGORY PROGRESS BARS */
-    .inline-categories-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 12px;
-      border-top: 1px solid rgba(255, 255, 255, 0.06);
-      padding-top: 14px;
+    .seg-fill {
+      height: 100%;
+      transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .cat-bar-item {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+    .seg-fill.pass { background: var(--status-pass); }
+    .seg-fill.marginal { background: var(--status-marginal); }
+    .seg-fill.review { background: var(--status-review); }
+
+    /* Shimmer effect while fresh */
+    .segmented-progress-track.fresh-shimmer::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%; width: 50%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+      animation: shimmerSweep 3.5s infinite;
     }
-    .cat-bar-header {
+
+    @keyframes shimmerSweep {
+      0% { left: -100%; }
+      50%, 100% { left: 200%; }
+    }
+
+    /* Category Mini Bars */
+    .category-mini-pills {
       display: flex;
-      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      max-width: 440px;
+    }
+
+    .cat-mini-pill {
       font-size: 11px;
+      font-family: var(--font-mono);
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
       color: var(--text-muted);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
-    .cat-bar-header strong { color: var(--text); }
-    .cat-bar-track {
-      background: rgba(255, 255, 255, 0.05);
-      height: 6px;
-      border-radius: 3px;
+    .cat-mini-pill.complete {
+      border-color: rgba(16, 185, 129, 0.4);
+      color: var(--status-pass);
+    }
+
+    /* COLLAPSIBLE TELEMETRY ROW (SPEED · QUALITY · ACTIVITY) */
+    .telemetry-drawer {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      background: #0b0f17;
+      border-bottom: 1px solid var(--border);
       overflow: hidden;
     }
-    .cat-bar-fill {
-      height: 100%;
-      background: var(--cyan);
-      border-radius: 3px;
-      transition: width 0.5s ease;
+    .telemetry-drawer.open {
+      grid-template-rows: 1fr;
     }
-
-    /* 3. TELEMETRY, CHARTS & LIVE LOG GRID */
-    .telemetry-and-logs-grid {
+    .telemetry-drawer-inner {
+      min-height: 0;
+      padding: 0 24px;
       display: grid;
-      grid-template-columns: 280px 320px 1fr 340px;
+      grid-template-columns: 1fr 1fr 1fr;
       gap: 16px;
-      margin-bottom: 22px;
+      transition: padding 0.3s ease;
     }
-    @media (max-width: 1300px) {
-      .telemetry-and-logs-grid { grid-template-columns: 1fr 1fr; }
-    }
-    @media (max-width: 768px) {
-      .telemetry-and-logs-grid { grid-template-columns: 1fr; }
+    .telemetry-drawer.open .telemetry-drawer-inner {
+      padding: 14px 24px 16px;
     }
 
-    .telemetry-panel {
+    .telem-card {
       background: var(--bg-surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 16px;
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      gap: 8px;
     }
-    .panel-title {
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: var(--text-muted);
-      margin-bottom: 10px;
+
+    .telem-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
+    .telem-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .telem-lead-val {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--cyan);
+    }
 
-    /* MINI SVG CHARTS */
-    .chart-svg {
+    .sparkline-svg {
       width: 100%;
-      height: 80px;
+      height: 55px;
       overflow: visible;
     }
     .sparkline-path {
@@ -380,614 +446,702 @@
     }
     .sparkline-area {
       fill: url(#cyan-grad);
-      opacity: 0.25;
     }
 
-    /* HISTOGRAM BARS */
-    .histo-bar {
-      fill: var(--cyan);
-      opacity: 0.85;
-      rx: 2;
-      transition: opacity 0.2s, height 0.3s;
-    }
-    .histo-bar:hover { opacity: 1; }
-    .histo-label {
-      font-size: 9px;
-      fill: var(--text-dim);
-      text-anchor: middle;
-    }
-
-    /* AUDIT METRICS DISPLAY */
-    .audit-stats-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 11px;
-      margin-top: 4px;
-    }
-    .audit-stats-table th {
-      text-align: left;
-      color: var(--text-dim);
-      font-weight: 500;
-      padding-bottom: 4px;
-    }
-    .audit-stats-table td {
-      color: var(--text);
-      font-weight: 600;
-      padding: 2px 0;
-    }
-    .marginal-note {
-      font-size: 10px;
-      color: var(--status-marginal);
-      margin-top: 6px;
-      display: block;
-    }
-
-    /* LIVE ACTIVITY LOG */
-    .activity-log-box {
-      background: #090b10;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      border-radius: 6px;
-      height: 120px;
-      overflow-y: auto;
-      padding: 8px 10px;
-      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-      font-size: 11px;
-      line-height: 1.5;
+    /* Time Histogram & Dynamic Buckets */
+    .time-histo-wrap {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 4px;
+      margin-top: 2px;
     }
-    .log-line {
+    .time-filter-pills {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+    .time-pill-btn {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 1px 6px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .time-pill-btn.active {
+      background: var(--cyan-subtle);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    .histo-svg {
+      width: 100%;
+      height: 55px;
+    }
+    .histo-bar {
+      fill: #1e293b;
+      transition: fill 0.2s, height 0.4s ease-out, y 0.4s ease-out;
+    }
+    .histo-bar:hover {
+      fill: var(--cyan);
+    }
+    .histo-bar.highlight {
+      fill: #334155;
+    }
+    .histo-text {
+      font-size: 9px;
+      font-family: var(--font-mono);
+      fill: var(--text-muted);
+      text-anchor: middle;
+    }
+    .histo-ref-line {
+      stroke: var(--status-marginal);
+      stroke-dasharray: 2 2;
+      stroke-width: 1;
+    }
+    .histo-ref-line.pass {
+      stroke: var(--status-pass);
+    }
+
+    /* Activity Stream */
+    .activity-stream-box {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      height: 120px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding-right: 4px;
+    }
+    .act-line {
       display: flex;
       align-items: baseline;
       gap: 6px;
-      color: #94a3b8;
+      color: var(--text-muted);
+      padding: 2px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      animation: fadeInSlide 0.25s ease-out;
     }
-    .log-time { color: var(--text-dim); font-size: 10px; flex-shrink: 0; }
-    .log-tag-pass { color: var(--status-pass); }
-    .log-tag-warn { color: var(--status-warn); }
-    .log-tag-flag { color: var(--status-flagged); }
+    @keyframes fadeInSlide {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .act-time {
+      color: var(--text-dim);
+      flex-shrink: 0;
+    }
+    .act-tag {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .act-tag.pass { background: var(--status-pass); }
+    .act-tag.review { background: var(--status-review); }
+    .act-tag.marginal { background: var(--status-marginal); }
+    .act-tag.flag { background: var(--status-flagged); }
 
-    /* 4. STICKY TOOLBAR */
+    /* STICKY TOOLBAR */
     .sticky-toolbar {
       position: sticky;
       top: 0;
-      z-index: 50;
-      background: rgba(18, 22, 34, 0.94);
+      background: rgba(9, 12, 19, 0.94);
       backdrop-filter: blur(12px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 10px 16px;
-      margin-bottom: 22px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .toolbar-row-top {
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 24px;
+      z-index: 35;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 12px;
       flex-wrap: wrap;
-      gap: 10px;
     }
 
-    .tabs-list {
+    .toolbar-left {
       display: flex;
-      gap: 6px;
+      align-items: center;
+      gap: 8px;
       flex-wrap: wrap;
     }
-    .tab-btn {
-      background: transparent;
-      border: 1px solid transparent;
-      color: var(--text-muted);
-      font-size: 12px;
-      font-weight: 600;
-      padding: 6px 12px;
+
+    /* Category Tab buttons */
+    .category-tabs-group {
+      display: flex;
+      align-items: center;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
       border-radius: 6px;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .cat-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
       cursor: pointer;
       display: flex;
       align-items: center;
       gap: 6px;
-      transition: all 0.2s;
+      transition: all 0.15s;
     }
-    .tab-btn:hover {
+    .cat-tab-btn:hover {
       color: var(--text);
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.04);
     }
-    .tab-btn.active {
-      color: var(--cyan);
-      background: var(--cyan-subtle);
-      border-color: var(--cyan-border);
-    }
-    .tab-count {
-      font-size: 10px;
+    .cat-tab-btn.active {
+      background: #1b2336;
+      color: #ffffff;
       font-weight: 600;
-      padding: 1px 6px;
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text-muted);
     }
-    .tab-btn.active .tab-count {
-      background: rgba(0, 210, 255, 0.2);
+    .cat-tab-btn .tab-count {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+    .cat-tab-btn.active .tab-count {
       color: var(--cyan);
     }
-
-    .toolbar-row-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    .cat-tab-btn.dimmed {
+      opacity: 0.45;
     }
 
-    .filter-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .search-box {
+    /* Search & Filters */
+    .search-box-wrap {
       position: relative;
       display: flex;
       align-items: center;
     }
-    .search-icon {
+    .search-icon-svg {
       position: absolute;
-      left: 10px;
+      left: 9px;
+      color: var(--text-dim);
       pointer-events: none;
-      color: var(--text-muted);
     }
     .search-input {
-      background: rgba(0, 0, 0, 0.35);
+      background: var(--bg-surface);
       border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 10px 5px 28px;
       color: var(--text);
       font-size: 12px;
-      padding: 6px 12px 6px 28px;
-      border-radius: 6px;
-      outline: none;
-      width: 160px;
-      transition: width 0.2s;
+      width: 170px;
+      transition: border-color 0.2s, width 0.2s;
     }
     .search-input:focus {
-      width: 200px;
       border-color: var(--cyan);
+      width: 210px;
+      outline: none;
     }
-    .search-input::placeholder { color: var(--text-dim); }
 
-    .control-select {
-      background: var(--bg-card);
+    .toolbar-select {
+      background: var(--bg-surface);
       border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 10px;
       color: var(--text);
       font-size: 12px;
-      font-weight: 500;
-      padding: 6px 10px;
-      border-radius: 6px;
+      cursor: pointer;
       outline: none;
+    }
+    .toolbar-select:focus {
+      border-color: var(--cyan);
+    }
+
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    /* Grid snap slider */
+    .grid-snap-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      padding: 3px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .grid-snap-slider {
+      width: 70px;
+      accent-color: var(--cyan);
       cursor: pointer;
     }
 
-    .toggle-pill {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 5px 10px;
-      border-radius: 6px;
-      background: var(--bg-card);
+    .btn-action {
+      background: var(--bg-surface);
       border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 12px;
       color: var(--text-muted);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
+      transition: all 0.15s;
     }
-    .toggle-pill.active {
+    .btn-action:hover {
+      border-color: var(--border-light);
+      color: var(--text);
+    }
+    .btn-action.active {
       background: var(--cyan-subtle);
-      border-color: var(--cyan-border);
+      border-color: var(--cyan);
       color: var(--cyan);
     }
 
-    .slider-control-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 11px;
-      color: var(--text-muted);
+    .btn-rerun-copy {
+      background: rgba(236, 72, 153, 0.12);
+      border: 1px solid var(--status-flagged-border);
+      color: var(--status-flagged);
+      font-weight: 600;
     }
-    .grid-slider {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 80px;
-      height: 4px;
-      border-radius: 2px;
-      background: rgba(255, 255, 255, 0.15);
-      outline: none;
-      cursor: pointer;
-    }
-    .grid-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: var(--cyan);
-      cursor: pointer;
+    .btn-rerun-copy:hover {
+      background: rgba(236, 72, 153, 0.22);
+      color: #ffffff;
     }
 
-    /* 5. CARDS GRID */
-    .items-grid {
+    /* CARDS GRID: HERO OF THE PAGE */
+    main.cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(var(--card-min-width), 1fr));
-      gap: 16px;
-      margin-bottom: 28px;
+      gap: 14px;
+      padding: 16px 24px 40px;
+      min-height: 400px;
     }
 
-    .item-card {
+    /* CARD DESIGN: IMAGE-FIRST, 16:9 FIXED CROP */
+    .asset-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
-      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s;
-      cursor: pointer;
       position: relative;
+      cursor: pointer;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s, box-shadow 0.2s;
+      animation: cardStagger 0.35s ease-out forwards;
+      animation-delay: calc(var(--stagger, 0) * 35ms);
+      opacity: 0;
     }
-    .item-card:hover {
-      transform: translateY(-3px);
-      border-color: var(--border-light);
-    }
-    .item-card.is-flagged {
-      border-color: var(--status-flagged-border);
-      box-shadow: 0 0 12px rgba(236, 72, 153, 0.2);
+    @keyframes cardStagger {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    /* THUMBNAIL & HOLD-TO-PEEK */
-    .item-thumb-wrapper {
+    .asset-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--border-light);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    }
+    .asset-card.is-flagged {
+      border-color: var(--status-flagged);
+    }
+    .asset-card.new-arrival {
+      animation: arrivalPulse 2s ease-out;
+    }
+    @keyframes arrivalPulse {
+      0% { box-shadow: 0 0 0 2px var(--cyan); }
+      100% { box-shadow: none; }
+    }
+
+    /* Checkerboard backdrop for transparency */
+    .checkerboard {
+      background-color: #121620;
+      background-image: 
+        linear-gradient(45deg, #181e2b 25%, transparent 25%),
+        linear-gradient(-45deg, #181e2b 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #181e2b 75%),
+        linear-gradient(-45deg, transparent 75%, #181e2b 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    }
+
+    .card-thumb-wrap {
       position: relative;
       width: 100%;
-      height: 175px;
+      aspect-ratio: 16 / 9;
       overflow: hidden;
-      background: #080a10;
-      border-bottom: 1px solid var(--border);
-      user-select: none;
     }
 
-    .item-thumb {
+    .card-thumb-img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: filter 0.25s ease, transform 0.25s ease;
+      display: block;
+      transition: filter 0.25s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .item-thumb.blurred {
-      filter: blur(14px) brightness(0.7);
-      transform: scale(1.06);
+    .card-thumb-img.blurred {
+      filter: blur(22px) saturate(0.6) brightness(0.65);
     }
-    .item-thumb.peeking {
-      filter: blur(0px) brightness(1) !important;
-      transform: scale(1) !important;
+    .card-thumb-img.peeking {
+      filter: none !important;
+      transform: scale(1.02);
+    }
+    .asset-card:hover .card-thumb-img:not(.blurred) {
+      transform: scale(1.03);
     }
 
-    .spoiler-tag {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      background: rgba(11, 13, 19, 0.85);
-      color: var(--text-muted);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      padding: 2px 6px;
-      border-radius: 4px;
-      pointer-events: none;
-    }
-    .spoiler-tag.hidden { display: none; }
-
-    .thumb-controls {
+    /* Card Overlay Tags */
+    .card-top-overlay {
       position: absolute;
       top: 8px;
+      left: 8px;
       right: 8px;
       display: flex;
-      gap: 6px;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
       z-index: 5;
     }
-
-    .icon-btn-round {
-      background: rgba(11, 13, 19, 0.85);
-      border: 1px solid rgba(255, 255, 255, 0.18);
+    .card-top-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      pointer-events: auto;
+    }
+    .card-cat-tag {
+      font-size: 11px;
+      background: rgba(9, 12, 19, 0.85);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 1px 7px;
+      border-radius: 4px;
       color: var(--text-muted);
-      width: 28px;
-      height: 28px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .cat-dot {
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
+    }
+
+    .badge-tier {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    .badge-tier.review {
+      background: var(--status-review-bg);
+      border: 1px solid var(--status-review-border);
+      color: #c4b5fd;
+    }
+    .badge-tier.marginal {
+      background: var(--status-marginal-bg);
+      border: 1px solid var(--status-marginal-border);
+      color: #fde047;
+    }
+    .badge-tier.warn {
+      background: var(--status-warn-bg);
+      border: 1px solid var(--status-warn-border);
+      color: #fda4af;
+    }
+    .badge-tier.fail {
+      background: var(--status-fail-bg);
+      border: 1px solid var(--status-fail-border);
+      color: #fca5a5;
+    }
+
+    .card-overlay-actions {
+      display: flex;
+      gap: 5px;
+      pointer-events: auto;
+    }
+    .card-icon-btn {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(9, 12, 19, 0.85);
+      backdrop-filter: blur(6px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: var(--text-muted);
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.15s;
     }
-    .icon-btn-round:hover {
-      background: var(--cyan);
-      color: #0b0d13;
+    .card-icon-btn:hover {
       border-color: var(--cyan);
+      color: #ffffff;
+      transform: scale(1.1);
     }
-    .icon-btn-round.flagged {
-      background: var(--status-flagged);
-      color: #fff;
+    .card-icon-btn.is-active-flag {
+      background: rgba(236, 72, 153, 0.3);
       border-color: var(--status-flagged);
+      color: var(--status-flagged);
     }
 
-    /* CARD BODY */
-    .item-body {
-      padding: 12px 14px;
-      flex: 1;
+    /* Card Details Footer */
+    .card-content-area {
+      padding: 10px 12px;
       display: flex;
       flex-direction: column;
+      gap: 6px;
+      background: var(--bg-card);
+    }
+
+    .card-filename-row {
+      display: flex;
       justify-content: space-between;
+      align-items: baseline;
       gap: 8px;
     }
 
-    .card-top-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .badge-status {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 2px 7px;
-      border-radius: 4px;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.4px;
-      text-transform: uppercase;
-    }
-    .badge-pass { background: var(--status-pass-bg); color: var(--status-pass); border: 1px solid var(--status-pass-border); }
-    .badge-marginal { background: var(--status-marginal-bg); color: var(--status-marginal); border: 1px solid var(--status-marginal-border); }
-    .badge-warn { background: var(--status-warn-bg); color: var(--status-warn); border: 1px solid var(--status-warn-border); }
-    .badge-fail { background: var(--status-fail-bg); color: var(--status-fail); border: 1px solid var(--status-fail-border); }
-    .badge-flagged { background: var(--status-flagged-bg); color: var(--status-flagged); border: 1px solid var(--status-flagged-border); }
-
-    .card-time { font-size: 11px; color: var(--text-muted); }
-
-    .item-title {
+    .card-filename {
       font-size: 12px;
       font-weight: 600;
       color: var(--text);
-      word-break: break-all;
-      line-height: 1.4;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 190px;
     }
-    .item-title.obscured {
+    .card-filename.obscured {
       filter: blur(5px);
       user-select: none;
+    }
+
+    .card-time-stat {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      flex-shrink: 0;
     }
 
     .card-meta-line {
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-mono);
       font-size: 11px;
-      color: var(--text-muted);
-      border-top: 1px solid rgba(255, 255, 255, 0.05);
-      padding-top: 6px;
+      color: var(--text-dim);
     }
 
-    .metrics-box {
-      font-size: 11px;
-      color: var(--text-muted);
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 5px 8px;
-      border-radius: 4px;
-      display: flex;
-      justify-content: space-between;
-    }
-    .metrics-box strong { color: var(--text); }
-
-    /* SKELETON PLACEHOLDER CARDS FOR PENDING ASSETS */
-    .skeleton-card {
-      background: var(--bg-card);
-      border: 1px dashed rgba(255, 255, 255, 0.07);
-      border-radius: var(--radius);
-      height: 280px;
+    /* Mini PSNR Meter Bar */
+    .psnr-meter-wrapper {
+      position: relative;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
+      gap: 2px;
+    }
+    .psnr-meter-track {
+      width: 100%;
+      height: 4px;
+      background: #182030;
+      border-radius: 2px;
+      overflow: hidden;
+      display: flex;
+    }
+    .psnr-meter-fill {
+      height: 100%;
+      border-radius: 2px;
+    }
+    .psnr-meter-fill.pass { background: var(--status-pass); }
+    .psnr-meter-fill.marginal { background: var(--status-marginal); }
+    .psnr-meter-fill.review { background: var(--status-review); }
+    .psnr-meter-fill.warn { background: var(--status-warn); }
+
+    .psnr-meter-wrapper:hover .psnr-meter-tooltip {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(-2px);
+    }
+    .psnr-meter-tooltip {
+      position: absolute;
+      bottom: calc(100% + 4px);
+      left: 0;
+      background: #090d16;
+      border: 1px solid var(--border-light);
+      padding: 3px 7px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text);
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: all 0.15s ease;
+      z-index: 20;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    /* Empty state */
+    .empty-state-notice {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+    .empty-state-notice svg {
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    /* Scroll sentinel */
+    #scroll-sentinel {
+      padding: 24px;
+      text-align: center;
       color: var(--text-dim);
       font-size: 12px;
-    }
-    .skeleton-box {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      border: 2px solid rgba(255, 255, 255, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-dim);
+      font-family: var(--font-mono);
     }
 
-    /* 6. ADVANCED LIGHTBOX MODAL */
-    .lightbox-backdrop {
+    /* ADVANCED LIGHTBOX MODAL */
+    .lightbox-modal {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(6, 8, 12, 0.92);
-      backdrop-filter: blur(10px);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
-    }
-    .lightbox-backdrop.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .lightbox-dialog {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-light);
-      border-radius: var(--radius);
-      width: 100%;
-      max-width: 1040px;
-      max-height: 94vh;
-      display: flex;
+      inset: 0;
+      background: rgba(5, 7, 12, 0.94);
+      backdrop-filter: blur(14px);
+      z-index: 100;
+      display: none;
       flex-direction: column;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
-      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .lightbox-modal.active {
+      display: flex;
+      opacity: 1;
     }
 
-    .lightbox-header {
+    .lightbox-bar-top {
+      padding: 12px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding: 12px 18px;
       border-bottom: 1px solid var(--border);
-      flex-wrap: wrap;
+      background: rgba(9, 12, 19, 0.8);
+      gap: 16px;
+    }
+
+    .lightbox-title-area {
+      display: flex;
+      flex-direction: column;
+    }
+    .lightbox-filename {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
       gap: 10px;
+    }
+    .lightbox-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
     }
 
     .lightbox-mode-switches {
       display: flex;
-      gap: 4px;
-      background: rgba(0,0,0,0.3);
-      padding: 3px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
       border-radius: 6px;
+      padding: 2px;
+      gap: 2px;
     }
-    .mode-btn {
+    .lb-mode-btn {
       background: transparent;
       border: none;
       color: var(--text-muted);
-      font-size: 11px;
-      font-weight: 600;
       padding: 4px 10px;
       border-radius: 4px;
+      font-size: 12px;
       cursor: pointer;
     }
-    .mode-btn.active {
+    .lb-mode-btn.active {
       background: var(--cyan-subtle);
       color: var(--cyan);
+      font-weight: 600;
     }
 
-    /* CHECKERBOARD TRANSPARENCY PATTERN */
-    .checkerboard {
-      background-color: #0b0d13;
-      background-image: 
-        linear-gradient(45deg, #151a24 25%, transparent 25%),
-        linear-gradient(-45deg, #151a24 25%, transparent 25%),
-        linear-gradient(45deg, transparent 75%, #151a24 75%),
-        linear-gradient(-45deg, transparent 75%, #151a24 75%);
-      background-size: 16px 16px;
-      background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    .lightbox-close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+    }
+    .lightbox-close-btn:hover {
+      color: #ffffff;
     }
 
-    .lightbox-viewport {
+    /* Lightbox Viewport */
+    .lightbox-stage-viewport {
+      flex: 1;
       position: relative;
-      width: 100%;
-      height: 520px;
-      max-height: 60vh;
       overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: grab;
       user-select: none;
     }
-    .lightbox-viewport:active { cursor: grabbing; }
+    .lightbox-stage-viewport:active {
+      cursor: grabbing;
+    }
 
-    .lightbox-canvas-stage {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
+    .lightbox-canvas-holder {
+      position: relative;
+      max-width: 90vw;
+      max-height: 80vh;
       transform-origin: center center;
       transition: transform 0.05s ease-out;
     }
 
-    /* Comparison Modes */
-    /* 1. SLIDER MODE */
-    .comp-mode-slider .lightbox-after-img {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
+    .lb-img-after {
+      display: block;
+      max-width: 90vw;
+      max-height: 80vh;
+      width: auto;
+      height: auto;
       object-fit: contain;
     }
-    .comp-mode-slider .lightbox-before-wrap {
+
+    .lb-before-clip {
       position: absolute;
       top: 0; left: 0; bottom: 0;
       width: 50%;
       overflow: hidden;
       border-right: 2px solid var(--cyan);
     }
-    .comp-mode-slider .lightbox-before-img {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
+    .lb-img-before {
+      display: block;
+      max-width: none;
+      max-height: 80vh;
+      height: 100%;
       object-fit: contain;
-      filter: blur(1.2px) contrast(0.96);
     }
 
-    /* 2. SIDE BY SIDE MODE */
-    .comp-mode-side .lightbox-canvas-stage {
-      display: flex;
-      width: 100%;
-      height: 100%;
-    }
-    .comp-mode-side .lightbox-before-wrap {
-      position: relative;
-      width: 50%;
-      height: 100%;
-      overflow: hidden;
-      border-right: 1px solid var(--border);
-    }
-    .comp-mode-side .lightbox-after-img {
-      position: relative;
-      width: 50%;
-      height: 100%;
-      object-fit: contain;
-    }
-    .comp-mode-side .lightbox-before-img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      filter: blur(1.2px) contrast(0.96);
-    }
-    .comp-mode-side .slider-divider,
-    .comp-mode-side .lightbox-slider-input {
-      display: none;
-    }
-
-    /* 3. FLICKER MODE */
-    .comp-mode-flicker .lightbox-before-wrap {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      opacity: 0;
-      transition: opacity 0.1s;
-    }
-    .comp-mode-flicker .lightbox-after-img {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      object-fit: contain;
-    }
-    .comp-mode-flicker .lightbox-before-img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-      filter: blur(1.2px) contrast(0.96);
-    }
-    .comp-mode-flicker.flicker-active .lightbox-before-wrap {
-      opacity: 1;
-    }
-    .comp-mode-flicker .slider-divider,
-    .comp-mode-flicker .lightbox-slider-input {
-      display: none;
-    }
-
-    .slider-divider {
+    /* Slider divider handle */
+    .lb-slider-handle {
       position: absolute;
       top: 50%;
       left: 50%;
@@ -995,19 +1149,17 @@
       width: 32px;
       height: 32px;
       border-radius: 50%;
-      background: var(--cyan);
-      color: #0b0d13;
+      background: var(--bg-surface);
+      border: 2px solid var(--cyan);
+      color: var(--cyan);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 13px;
-      font-weight: 800;
-      box-shadow: 0 0 12px var(--cyan);
       pointer-events: none;
-      z-index: 10;
+      box-shadow: 0 0 12px var(--cyan-glow);
+      font-size: 14px;
     }
-
-    .lightbox-slider-input {
+    .lb-range-slider {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
       opacity: 0;
@@ -1015,392 +1167,492 @@
       z-index: 20;
     }
 
-    .lightbox-label {
-      position: absolute;
-      top: 12px;
-      padding: 3px 8px;
-      font-size: 10px;
-      font-weight: 700;
-      border-radius: 4px;
-      background: rgba(11, 13, 19, 0.85);
-      border: 1px solid var(--border);
-      pointer-events: none;
-      z-index: 15;
-    }
-    .lightbox-label-before { left: 12px; color: var(--text-muted); }
-    .lightbox-label-after { right: 12px; color: var(--cyan); }
-
-    .lightbox-footer {
-      padding: 10px 18px;
-      background: var(--bg-surface);
-      border-top: 1px solid var(--border);
+    /* Side-by-side mode */
+    .comp-mode-side .lightbox-canvas-holder {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-      font-size: 12px;
-      color: var(--text-muted);
+      gap: 12px;
+    }
+    .comp-mode-side .lb-before-clip {
+      position: relative;
+      width: auto;
+      overflow: visible;
+      border-right: none;
+    }
+    .comp-mode-side .lb-slider-handle,
+    .comp-mode-side .lb-range-slider {
+      display: none;
     }
 
-    /* NAVIGATION BUTTONS IN LIGHTBOX */
-    .nav-arrow-btn {
+    /* Flicker mode */
+    .comp-mode-flicker .lb-slider-handle,
+    .comp-mode-flicker .lb-range-slider {
+      display: none;
+    }
+    .comp-mode-flicker .lb-before-clip {
+      width: 100%;
+      border-right: none;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+    .lightbox-stage-viewport.flicker-active .lb-before-clip {
+      opacity: 1;
+    }
+
+    /* Navigation Arrows */
+    .lb-nav-btn {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      background: rgba(11, 13, 19, 0.8);
+      background: rgba(9, 12, 19, 0.7);
+      backdrop-filter: blur(8px);
       border: 1px solid var(--border);
-      color: #fff;
-      width: 36px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      color: var(--text);
+      width: 44px;
+      height: 54px;
+      border-radius: 6px;
       cursor: pointer;
-      z-index: 25;
-      border-radius: 4px;
-      transition: background 0.2s;
-    }
-    .nav-arrow-btn:hover { background: var(--cyan); color: #000; }
-    .nav-arrow-prev { left: 12px; }
-    .nav-arrow-next { right: 12px; }
-
-    #scroll-sentinel {
-      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--text-dim);
+      transition: all 0.2s;
+      z-index: 30;
+    }
+    .lb-nav-btn:hover {
+      background: var(--cyan-subtle);
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+    .lb-nav-prev { left: 16px; }
+    .lb-nav-next { right: 16px; }
+
+    /* Lightbox Footer */
+    .lightbox-bar-bottom {
+      padding: 10px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border);
+      background: rgba(9, 12, 19, 0.8);
+      font-family: var(--font-mono);
       font-size: 11px;
+      color: var(--text-muted);
+    }
+    .lightbox-bar-bottom strong {
+      color: var(--text);
+    }
+
+    /* RESPONSIVE MOBILE TWEAKS (< 768px) */
+    @media (max-width: 768px) {
+      body { overflow-x: hidden; }
+      .top-command-band { padding: 8px 12px; }
+      .header-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .brand-group { width: 100%; justify-content: space-between; }
+      .header-right-telemetry { margin-left: 0; width: 100%; flex-wrap: wrap; gap: 6px; }
+      .hero-progress-row { grid-template-columns: 1fr; gap: 6px; }
+      .hero-counts-inline { flex-wrap: wrap; font-size: 11px; }
+      .category-mini-pills { max-width: 100%; overflow-x: auto; padding-bottom: 2px; }
+      .telemetry-drawer-inner { grid-template-columns: 1fr; padding: 10px 12px 14px; }
+      .sticky-toolbar { padding: 8px 12px; gap: 8px; flex-direction: column; align-items: stretch; }
+      .toolbar-left { width: 100%; max-width: 100%; flex-wrap: wrap; gap: 6px; }
+      .category-tabs-group { width: 100%; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .cat-tab-btn { flex-shrink: 0; padding: 4px 8px; font-size: 11px; }
+      .toolbar-right { width: 100%; justify-content: space-between; margin-left: 0; flex-wrap: wrap; gap: 6px; }
+      .search-box-wrap { flex: 1; min-width: 120px; }
+      .search-input { width: 100%; }
+      .search-input:focus { width: 100%; }
+      main.cards-grid { padding: 10px 12px 40px; --card-min-width: 100%; gap: 10px; }
+      .storage-summary { font-size: 10px; }
+      .panic-hint { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <!-- SVG GRADIENTS FOR SPARKLINES -->
+  <!-- SVG DEFS FOR GRADIENTS & GLOWS -->
   <svg style="position: absolute; width: 0; height: 0;" aria-hidden="true">
     <defs>
       <linearGradient id="cyan-grad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#00d2ff" stop-opacity="0.5"/>
+        <stop offset="0%" stop-color="#00d2ff" stop-opacity="0.45"/>
         <stop offset="100%" stop-color="#00d2ff" stop-opacity="0"/>
       </linearGradient>
     </defs>
   </svg>
 
-  <!-- TOP HEADER -->
-  <header role="banner">
-    <div class="header-main">
-      <h1>Full Metal Daemon Muramasa &bull; 2K Remaster</h1>
-      <div class="header-chips">
-        <span class="chip">Model: <strong>4x DAT2 (28k bf16)</strong></span>
-        <span class="chip">Target: <strong>patch005.npk</strong></span>
-        <span class="chip">GPU: <strong>RTX 4060</strong></span>
-        <span class="chip">Host: <strong>GitHub Pages CDN</strong></span>
+  <!-- 1. COMPACT HERO BAND (HEADER + SYSTEM + HERO PROGRESS) -->
+  <header class="top-command-band" role="banner">
+    <!-- Row 1: Brand, System Chips, Storage, Live Telemetry -->
+    <div class="header-row">
+      <div class="brand-group">
+        <div class="brand-title">
+          <svg class="brand-katana-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14.5 17.5 3 6V3h3l11.5 11.5"/>
+            <path d="m13 19 6-6"/>
+            <path d="m16 16 4 4"/>
+            <path d="m19 21 2-2"/>
+          </svg>
+          MURAMASA 2K
+        </div>
+        <div class="system-chips">
+          <span class="sys-chip">Model: <strong>4x DAT2 (28k bf16)</strong></span>
+          <span class="sys-chip">Target: <strong>patch005.npk</strong></span>
+          <span class="sys-chip">GPU: <strong>RTX 4060</strong></span>
+        </div>
+      </div>
+
+      <div class="header-right-telemetry">
+        <!-- Storage Summary -->
+        <div class="storage-summary" id="storage-telemetry-row">
+          <span>Out: <strong id="tel-output-size">-</strong></span> &bull; 
+          <span>Final: <strong id="tel-projected-size">-</strong></span> &bull; 
+          <span>Free: <strong id="tel-free-disk">-</strong></span>
+        </div>
+
+        <!-- Live Status -->
+        <div class="live-status-pill" id="live-status-pill" role="status" aria-live="polite">
+          <div class="pulse-dot" id="live-dot"></div>
+          <span id="live-text">Pipeline reported --</span>
+        </div>
+
+        <!-- Panic Hotkey Hint -->
+        <div class="panic-hint" title="Press P or double-tap Esc to blur all images immediately">
+          Panic: <kbd>P</kbd> or <kbd>Esc</kbd>
+        </div>
+
+        <!-- Telemetry Drawer Toggle -->
+        <button class="drawer-toggle-btn" id="toggle-telemetry-btn" onclick="toggleTelemetryDrawer()" aria-expanded="false" aria-controls="telemetry-drawer">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          Telemetry
+          <svg id="drawer-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
       </div>
     </div>
-    <div class="header-actions">
-      <div class="panic-badge" title="Instant anti-spoiler blur">Panic Hotkey: <kbd>P</kbd> or <kbd>Esc</kbd>&times;2</div>
-      <div class="status-badge" id="live-status-pill" role="status" aria-live="polite">
-        <div class="pulse-dot" id="live-dot"></div>
-        <span id="live-text">Live Telemetry</span>
-        <span style="font-size: 10px; color: var(--text-dim);" id="last-updated-text">(just now)</span>
+
+    <!-- Row 2: Hero Percentage + Segmented Bar + Categories -->
+    <div class="hero-progress-row">
+      <div class="hero-metric-group">
+        <div class="hero-big-percent">
+          <span id="hero-percent-val">0.0</span><span class="unit">%</span>
+        </div>
+        <div class="hero-counts-inline">
+          <span id="hero-finished-cnt">0</span> / <span id="hero-total-cnt">0</span>
+          &bull; <strong class="stat-pass" id="hero-pass-cnt">0 pass</strong>
+          &bull; <strong class="stat-marginal" id="hero-marginal-cnt">0 marginal</strong>
+          &bull; <strong class="stat-review" id="hero-review-cnt">0 review</strong>
+          &bull; <strong class="stat-fail" id="hero-fail-cnt">0 fail</strong>
+        </div>
+      </div>
+
+      <!-- Segmented Bar -->
+      <div class="segmented-progress-track fresh-shimmer" id="segmented-track" aria-label="Pipeline progress">
+        <div class="seg-fill pass" id="bar-fill-pass" style="width: 0%"></div>
+        <div class="seg-fill marginal" id="bar-fill-marginal" style="width: 0%"></div>
+        <div class="seg-fill review" id="bar-fill-review" style="width: 0%"></div>
+      </div>
+
+      <!-- Category Mini Pills -->
+      <div class="category-mini-pills" id="category-mini-pills">
+        <!-- Injected dynamically -->
       </div>
     </div>
   </header>
 
-  <!-- 1. PIPELINE CONTROLS & STORAGE TELEMETRY -->
-  <section class="pipeline-bar" aria-label="Pipeline Controls">
-    <div class="pipeline-controls-group">
-      <button class="ctrl-btn" id="btn-pause-pipeline" onclick="togglePipelinePause()" aria-label="Pause or resume pipeline">
-        <span id="pause-icon">⏸️</span> <span id="pause-label">Pause Pipeline</span>
-      </button>
+  <!-- 2. COLLAPSIBLE TELEMETRY DRAWER (3 PANELS: SPEED · QUALITY · ACTIVITY) -->
+  <section class="telemetry-drawer" id="telemetry-drawer" aria-label="Detailed Telemetry">
+    <div class="telemetry-drawer-inner">
+      
+      <!-- Panel 1: Speed (Throughput + ETA + Time Histo) -->
+      <div class="telem-card">
+        <div class="telem-header">
+          <span class="telem-title">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            Speed &amp; ETA
+          </span>
+          <span class="telem-lead-val" id="sparkline-current-rate">-</span>
+        </div>
+        
+        <svg class="sparkline-svg" id="sparkline-svg" viewBox="0 0 240 55"></svg>
 
-      <button class="ctrl-btn" onclick="retryFailed()" aria-label="Retry failed assets">
-        🔄 Retry Failed (<span id="retry-failed-count">0</span>)
-      </button>
+        <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 11px; color: var(--text-muted);">
+          <span>Rolling Avg: <strong id="tel-throughput-avg" style="color: var(--text);">-</strong></span>
+          <span>ETA: <strong id="tel-eta-val" style="color: var(--cyan);">-</strong></span>
+        </div>
 
-      <button class="ctrl-btn" onclick="openFlaggedQueue()" aria-label="View flagged re-processing queue">
-        🚩 Re-process Queue (<span id="reprocess-queue-count" style="color: var(--status-flagged);">0</span>)
-      </button>
+        <div class="time-histo-wrap">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
+            <span style="font-size: 11px; font-weight: 600; color: var(--text-muted);">Time per asset:</span>
+            <div class="time-filter-pills" id="time-cat-pills">
+              <button class="time-pill-btn active" onclick="setTimeCategory('all', this)">All</button>
+              <button class="time-pill-btn" onclick="setTimeCategory('backgrounds', this)">BG</button>
+              <button class="time-pill-btn" onclick="setTimeCategory('backgrounds_hi', this)">BG Hi</button>
+              <button class="time-pill-btn" onclick="setTimeCategory('event_cg', this)">EV</button>
+            </div>
+          </div>
+          <svg class="histo-svg" id="time-histo-svg" viewBox="0 0 240 55"></svg>
+          <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10px; color: var(--text-dim);">
+            <span id="time-p50-lbl">p50: --</span>
+            <span id="time-p90-lbl">p90: --</span>
+            <span id="time-max-lbl">max: --</span>
+          </div>
+        </div>
+      </div>
 
-      <button class="toggle-pill" id="toggle-hide-filenames" onclick="toggleHideFilenames()" title="Hide asset filenames to avoid textual spoilers">
-        👁️‍🗨️ Obscure Names
-      </button>
-    </div>
+      <!-- Panel 2: Quality (PSNR Distribution Histogram + 45/47dB Lines) -->
+      <div class="telem-card">
+        <div class="telem-header">
+          <span class="telem-title">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Quality &bull; PSNR
+          </span>
+          <span class="telem-lead-val" id="quality-med-psnr">Med: -- dB</span>
+        </div>
 
-    <!-- Storage Telemetry -->
-    <div class="storage-telemetry">
-      <span>Output: <strong id="tel-output-size">2.4 GB</strong></span> &bull; 
-      <span>Projected Final: <strong id="tel-projected-size">16.7 GB</strong></span> &bull; 
-      <span>Free Disk: <strong id="tel-free-disk">820.7 GB Free</strong></span>
+        <svg class="histo-svg" id="psnr-histo-svg" viewBox="0 0 240 70"></svg>
+
+        <div style="display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); margin-top: 2px;">
+          <span>&lt;45 dB: <strong class="stat-review" id="histo-cnt-review">122</strong></span>
+          <span>45-47 dB: <strong class="stat-marginal" id="histo-cnt-marginal">94</strong></span>
+          <span>&ge;47 dB: <strong class="stat-pass" id="histo-cnt-pass">569</strong></span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 6px; font-family: var(--font-mono); font-size: 11px; background: rgba(0,0,0,0.25); padding: 6px; border-radius: 4px;">
+          <div>PSNR: <strong id="audit-psnr-summary">--</strong></div>
+          <div>SSIM: <strong id="audit-ssim-summary">--</strong></div>
+        </div>
+      </div>
+
+      <!-- Panel 3: Activity (Live Pipeline Log) -->
+      <div class="telem-card">
+        <div class="telem-header">
+          <span class="telem-title">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Activity Stream
+          </span>
+          <span style="font-size: 11px; color: var(--status-pass); font-family: var(--font-mono);" id="activity-pulse-tag">&bull; live</span>
+        </div>
+
+        <div class="activity-stream-box" id="activity-log-stream" role="log" aria-live="polite">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
     </div>
   </section>
 
-  <!-- 2. HERO PROGRESS SECTION WITH INLINE PER-CATEGORY PROGRESS BARS -->
-  <section class="hero-progress-section" aria-label="Progress Overview">
-    <div class="hero-progress-header">
-      <div class="hero-title-area">
-        <div class="hero-percent">
-          <span id="hero-percent-val">0.0</span><span class="hero-percent-accent">%</span>
-        </div>
-        <div class="hero-stats-line" id="hero-stats-line">
-          <span id="hero-processed">0</span> / <span id="hero-total">0</span> assets &bull; 
-          <strong class="stat-green" id="hero-passed">0 pass</strong> &bull; 
-          <strong class="stat-marginal" id="hero-marginal">0 marginal</strong> &bull; 
-          <strong class="stat-amber" id="hero-warned">0 warn</strong> &bull; 
-          <strong class="stat-red" id="hero-failed">0 fail</strong>
-        </div>
-      </div>
-    </div>
-    
-    <div class="hero-progress-track">
-      <div class="hero-progress-fill" id="hero-progress-fill"></div>
-    </div>
-
-    <!-- INLINE PER-CATEGORY PROGRESS BARS (Replaces "View Categories" button) -->
-    <div class="inline-categories-grid" id="inline-categories-bars">
-      <!-- Populated dynamically by JS -->
-    </div>
-  </section>
-
-  <!-- 3. TELEMETRY, CHARTS, AUDIT HISTOGRAM & LIVE LOG -->
-  <section class="telemetry-and-logs-grid" aria-label="Telemetry and Performance Metrics">
-    
-    <!-- THROUGHPUT SPARKLINE -->
-    <div class="telemetry-panel">
-      <div class="panel-title">
-        <span>Throughput Velocity</span>
-        <strong style="color: var(--cyan);" id="sparkline-current-rate">147 /hr</strong>
-      </div>
-      <svg class="chart-svg" id="sparkline-svg" viewBox="0 0 240 80"></svg>
-      <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px; display: flex; justify-content: space-between;">
-        <span>Last 24 checks</span>
-        <span>Avg: <strong id="tel-throughput-avg">145 /hr</strong></span>
-      </div>
-    </div>
-
-    <!-- TIME-PER-ASSET HISTOGRAM -->
-    <div class="telemetry-panel">
-      <div class="panel-title">
-        <span>Inference Time Histogram</span>
-        <strong style="color: var(--text);" id="tel-avg-time-lbl">Avg: 24.8s</strong>
-      </div>
-      <svg class="chart-svg" id="time-histo-svg" viewBox="0 0 280 80"></svg>
-      <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px; display: flex; justify-content: space-between;">
-        <span>&lt;15s</span><span>15-20s</span><span>20-25s</span><span>25-30s</span><span>&gt;30s</span>
-      </div>
-    </div>
-
-    <!-- AUDIT METRICS & PSNR HISTOGRAM -->
-    <div class="telemetry-panel">
-      <div class="panel-title">
-        <span>Quality Audit Telemetry</span>
-        <span style="font-size: 10px; color: var(--status-pass);">PSNR &bull; SSIM</span>
-      </div>
-      <table class="audit-stats-table">
-        <thead>
-          <tr>
-            <th>Metric</th>
-            <th>Min</th>
-            <th>Avg</th>
-            <th>Median</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>PSNR</td>
-            <td id="audit-min-psnr">45.2 dB</td>
-            <td id="audit-avg-psnr">51.4 dB</td>
-            <td id="audit-med-psnr">50.8 dB</td>
-          </tr>
-          <tr>
-            <td>SSIM</td>
-            <td id="audit-min-ssim">0.9982</td>
-            <td id="audit-avg-ssim">0.9996</td>
-            <td id="audit-med-ssim">0.9997</td>
-          </tr>
-        </tbody>
-      </table>
-      <span class="marginal-note" id="marginal-desc">&bull; 0 assets marginal (PSNR 45.0 - 47.0 dB)</span>
-    </div>
-
-    <!-- LIVE ACTIVITY LOG -->
-    <div class="telemetry-panel">
-      <div class="panel-title">
-        <span>Live Pipeline Activity</span>
-        <span style="font-size: 10px; color: var(--text-dim);" id="activity-heartbeat">Active</span>
-      </div>
-      <div class="activity-log-box" id="activity-log-stream" role="log" aria-live="polite">
-        <!-- Lines injected by JS -->
-      </div>
-    </div>
-
-  </section>
-
-  <!-- 4. STICKY TOOLBAR -->
-  <nav class="sticky-toolbar" role="toolbar" aria-label="Asset filters and controls">
-    <!-- ROW 1: CATEGORY TABS -->
-    <div class="toolbar-row-top">
-      <div class="tabs-list" id="category-tabs" role="tablist">
-        <button class="tab-btn active" role="tab" aria-selected="true" onclick="setCategoryTab('all', this)">
-          All <span class="tab-count" id="count-all">0</span>
+  <!-- 3. STICKY TOOLBAR -->
+  <nav class="sticky-toolbar" role="toolbar" aria-label="Filters and Controls">
+    <div class="toolbar-left">
+      <!-- Category Tabs with finished / total counts -->
+      <div class="category-tabs-group" role="tablist">
+        <button class="cat-tab-btn active" role="tab" aria-selected="true" onclick="setCategoryTab('all', this)">
+          All <span class="tab-count" id="tab-cnt-all">0 / 0</span>
         </button>
-        <button class="tab-btn" role="tab" aria-selected="false" onclick="setCategoryTab('backgrounds', this)">
-          Backgrounds <span class="tab-count" id="count-backgrounds">0</span>
+        <button class="cat-tab-btn" role="tab" aria-selected="false" onclick="setCategoryTab('backgrounds', this)">
+          Backgrounds <span class="tab-count" id="tab-cnt-backgrounds">0 / 0</span>
         </button>
-        <button class="tab-btn" role="tab" aria-selected="false" onclick="setCategoryTab('event_cg', this)">
-          Event CGs <span class="tab-count" id="count-event_cg">0</span>
+        <button class="cat-tab-btn" role="tab" aria-selected="false" onclick="setCategoryTab('event_cg', this)">
+          Event CG <span class="tab-count" id="tab-cnt-event_cg">0 / 0</span>
         </button>
-        <button class="tab-btn" role="tab" aria-selected="false" onclick="setCategoryTab('sprites', this)">
-          Sprites <span class="tab-count" id="count-sprites">0</span>
+        <button class="cat-tab-btn" role="tab" aria-selected="false" onclick="setCategoryTab('sprites', this)">
+          Sprites <span class="tab-count" id="tab-cnt-sprites">0 / 0</span>
         </button>
-        <button class="tab-btn" role="tab" aria-selected="false" onclick="setCategoryTab('ui', this)">
-          UI <span class="tab-count" id="count-ui">0</span>
+        <button class="cat-tab-btn" role="tab" aria-selected="false" onclick="setCategoryTab('ui', this)">
+          UI <span class="tab-count" id="tab-cnt-ui">0 / 0</span>
         </button>
-        <button class="tab-btn" role="tab" aria-selected="false" onclick="setCategoryTab('effects', this)">
-          Effects <span class="tab-count" id="count-effects">0</span>
+        <button class="cat-tab-btn" role="tab" aria-selected="false" onclick="setCategoryTab('effects', this)">
+          Effects <span class="tab-count" id="tab-cnt-effects">0 / 0</span>
         </button>
       </div>
 
-      <div style="display: flex; gap: 8px;">
-        <button class="ctrl-btn" onclick="blurAll()">🛡️ Blur All</button>
-        <button class="ctrl-btn" onclick="revealAll()">👁️ Reveal All</button>
+      <!-- Search Input -->
+      <div class="search-box-wrap">
+        <svg class="search-icon-svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="search-input" class="search-input" placeholder="Search filenames..." oninput="onSearchChange(this.value)" aria-label="Search filenames">
       </div>
+
+      <!-- Status Tier Filter -->
+      <select class="toolbar-select" id="status-filter" onchange="onStatusFilterChange(this.value)" aria-label="Filter by tier">
+        <option value="all">Status: All Tiers</option>
+        <option value="PASS">Pass (&ge;47 dB)</option>
+        <option value="MARGINAL">Marginal (45-47 dB)</option>
+        <option value="REVIEW">Review Needed (&lt;45 dB)</option>
+        <option value="FLAGGED">Flagged for Rerun</option>
+      </select>
+
+      <!-- Sort Filter -->
+      <select class="toolbar-select" id="sort-select" onchange="onSortChange(this.value)" aria-label="Sort order">
+        <option value="newest">Sort: Newest</option>
+        <option value="slowest">Sort: Slowest Time</option>
+        <option value="lowest_psnr">Sort: Lowest PSNR</option>
+        <option value="highest_psnr">Sort: Highest PSNR</option>
+      </select>
     </div>
 
-    <!-- ROW 2: FILTERS, SORTS, GRID SLIDER -->
-    <div class="toolbar-row-bottom">
-      <div class="filter-group">
-        <div class="search-box">
-          <svg class="search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-          <input type="text" id="search-input" class="search-input" placeholder="Search filenames..." oninput="onSearchChange(this.value)" aria-label="Search filenames">
-        </div>
+    <div class="toolbar-right">
+      <!-- Flagged Rerun Actions (shown when items are flagged) -->
+      <button class="btn-action btn-rerun-copy" id="btn-copy-rerun" onclick="copyRerunList()" style="display: none;" title="Copy newline-separated original paths of flagged items">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+        Copy Re-run List (<span id="btn-flagged-count">0</span>)
+      </button>
 
-        <select class="control-select" id="status-filter" onchange="onStatusFilterChange(this.value)" aria-label="Filter by status">
-          <option value="all">Status: All</option>
-          <option value="PASS">Status: Pass</option>
-          <option value="MARGINAL">Status: Marginal</option>
-          <option value="WARN">Status: Warn / Fail</option>
-          <option value="FLAGGED">Status: Flagged for Rerun</option>
-          <option value="PENDING">Status: Pending (Skeletons)</option>
-        </select>
+      <button class="btn-action" id="btn-download-rerun" onclick="downloadRerunJson()" style="display: none;" title="Download rerun.json manifest of flagged items">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        rerun.json
+      </button>
 
-        <select class="control-select" id="sort-select" onchange="onSortChange(this.value)" aria-label="Sort assets">
-          <option value="newest">Sort: Newest</option>
-          <option value="slowest">Sort: Slowest Time</option>
-          <option value="lowest_psnr">Sort: Lowest PSNR</option>
-          <option value="highest_psnr">Sort: Highest PSNR</option>
-        </select>
+      <!-- Grid Snap Slider -->
+      <div class="grid-snap-control">
+        <span>Grid: <strong id="grid-snap-lbl" style="color: var(--cyan);">Standard</strong></span>
+        <input type="range" class="grid-snap-slider" min="1" max="4" value="2" step="1" id="grid-snap-slider" oninput="onGridSliderChange(this.value)" aria-label="Snap card grid size">
       </div>
 
-      <div class="slider-control-wrap">
-        <span>Grid: <strong id="grid-level-name" style="color: var(--cyan);">Standard</strong></span>
-        <input type="range" class="grid-slider" min="1" max="4" value="2" step="1" list="grid-ticks" id="grid-level-slider" oninput="onGridSliderChange(this.value)" aria-label="Snap card grid size">
-        <datalist id="grid-ticks">
-          <option value="1" label="Compact"></option>
-          <option value="2" label="Standard"></option>
-          <option value="3" label="Large"></option>
-          <option value="4" label="Max"></option>
-        </datalist>
-      </div>
+      <!-- Spoilers & Names -->
+      <button class="btn-action" onclick="blurAll()" title="Blur all asset thumbnails">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+        Blur All
+      </button>
+      <button class="btn-action" onclick="revealAll()" title="Reveal all asset thumbnails">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+        Reveal
+      </button>
+      <button class="btn-action" id="btn-toggle-names" onclick="toggleHideFilenames()" title="Obscure filenames to avoid text spoilers">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg>
+        Obscure Names
+      </button>
     </div>
   </nav>
 
-  <!-- 5. CARDS GRID -->
-  <main class="items-grid" id="items-container" role="region" aria-label="Upscaled Assets">
-    <!-- Populated by JS -->
+  <!-- 4. CARDS GRID (HERO) -->
+  <main class="cards-grid" id="cards-grid" role="region" aria-label="Upscaled Assets Grid">
+    <!-- Cards keyed & rendered by JS -->
   </main>
 
   <div id="scroll-sentinel" aria-hidden="true">Loading assets...</div>
 
-  <!-- 6. ADVANCED LIGHTBOX MODAL (Slider, Side-by-Side, Flicker, Synced Zoom/Pan, Checkerboard) -->
-  <div class="lightbox-backdrop" id="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-filename" onclick="closeLightboxOnBackdrop(event)">
-    <div class="lightbox-dialog" onclick="event.stopPropagation()">
-      
-      <!-- LIGHTBOX HEADER -->
-      <div class="lightbox-header">
-        <div>
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <div style="font-size: 14px; font-weight: 700; color: var(--text);" id="lightbox-filename">filename.png</div>
-            <button class="ctrl-btn" id="lightbox-flag-btn" onclick="toggleLightboxFlag()" style="padding: 2px 8px; font-size: 11px;">
-              🚩 Flag Rerun
-            </button>
-          </div>
-          <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;" id="lightbox-meta">Category &bull; 1024x576 &rarr; 2560x1440</div>
+  <!-- 5. ADVANCED COMPARISON LIGHTBOX -->
+  <div class="lightbox-modal" id="lightbox-modal" role="dialog" aria-modal="true" aria-labelledby="lb-filename" onclick="closeLightboxOnBackdrop(event)">
+    
+    <!-- Top Header -->
+    <div class="lightbox-bar-top" onclick="event.stopPropagation()">
+      <div class="lightbox-title-area">
+        <div class="lightbox-filename" id="lb-filename">
+          filename.png
+          <button class="btn-action btn-rerun-copy" id="lb-flag-toggle" onclick="toggleLightboxFlag()" style="padding: 2px 8px; font-size: 11px;">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            Flag Rerun
+          </button>
         </div>
-
-        <!-- MODE SWITCHES: SLIDER / SIDE-BY-SIDE / FLICKER -->
-        <div class="lightbox-mode-switches">
-          <button class="mode-btn active" id="btn-mode-slider" onclick="setLightboxMode('slider')">Split Slider</button>
-          <button class="mode-btn" id="btn-mode-side" onclick="setLightboxMode('side')">Side-by-Side</button>
-          <button class="mode-btn" id="btn-mode-flicker" onclick="setLightboxMode('flicker')">Flicker Peek</button>
-        </div>
-
-        <button class="ctrl-btn" onclick="closeLightbox()" style="border: none; font-size: 18px; line-height: 1; padding: 4px 8px;">&times;</button>
+        <div class="lightbox-meta" id="lb-meta">Category &bull; 1024x576 &rarr; 2560x1440</div>
       </div>
 
-      <!-- VIEWPORT (CHECKERBOARD FOR TRANSPARENCY) -->
-      <div class="lightbox-viewport checkerboard comp-mode-slider" id="lightbox-viewport" 
-           onwheel="onLightboxWheel(event)" 
-           onmousedown="startPan(event)">
-        
-        <!-- Navigation Arrows -->
-        <button class="nav-arrow-btn nav-arrow-prev" onclick="prevLightbox(event)" aria-label="Previous asset">&#10094;</button>
-        <button class="nav-arrow-btn nav-arrow-next" onclick="nextLightbox(event)" aria-label="Next asset">&#10095;</button>
-
-        <div class="lightbox-canvas-stage" id="lightbox-stage">
-          <!-- AFTER (UPSCALED) -->
-          <img class="lightbox-after-img" id="lightbox-after-img" src="" alt="Upscaled 2K Asset">
-
-          <!-- BEFORE (ORIGINAL) WRAPPER -->
-          <div class="lightbox-before-wrap" id="lightbox-before-wrap">
-            <img class="lightbox-before-img" id="lightbox-before-img" src="" alt="Original Asset">
-          </div>
-
-          <div class="slider-divider" id="slider-handle">&harr;</div>
-          <input type="range" class="lightbox-slider-input" min="0" max="100" value="50" id="lightbox-slider" oninput="updateComparisonSlider(this.value)" aria-label="Comparison split slider">
-        </div>
-
-        <div class="lightbox-label lightbox-label-before" id="lbl-before">BEFORE (Original)</div>
-        <div class="lightbox-label lightbox-label-after" id="lbl-after">AFTER (Upscaled 2K)</div>
+      <!-- Mode switches -->
+      <div class="lightbox-mode-switches">
+        <button class="lb-mode-btn active" id="btn-mode-slider" onclick="setLightboxMode('slider')">Split Slider</button>
+        <button class="lb-mode-btn" id="btn-mode-side" onclick="setLightboxMode('side')">Side-by-Side</button>
+        <button class="lb-mode-btn" id="btn-mode-flicker" onclick="setLightboxMode('flicker')">Flicker Peek</button>
       </div>
 
-      <!-- LIGHTBOX FOOTER -->
-      <div class="lightbox-footer">
-        <div>
-          <span>PSNR: <strong id="lightbox-psnr">--</strong> dB</span> &bull; 
-          <span>SSIM: <strong id="lightbox-ssim">--</strong></span> &bull; 
-          <span>Time: <strong id="lightbox-time">--</strong></span> &bull; 
-          <span>Zoom: <strong id="lightbox-zoom-val">1.0x</strong> (wheel to zoom)</span>
-        </div>
-        <div style="display: flex; gap: 8px; align-items: center;">
-          <span class="badge-status badge-pass" id="lightbox-status-badge">PASS</span>
-          <span style="font-size: 11px; color: var(--text-dim);">Keys: &larr; &rarr; Navigate &bull; Esc Close</span>
-        </div>
-      </div>
-
+      <button class="lightbox-close-btn" onclick="closeLightbox()" aria-label="Close lightbox">&times;</button>
     </div>
+
+    <!-- Viewport Stage -->
+    <div class="lightbox-stage-viewport checkerboard comp-mode-slider" id="lb-viewport"
+         onwheel="onLightboxWheel(event)"
+         onmousedown="startPan(event)">
+      
+      <!-- Nav Arrows -->
+      <button class="lb-nav-btn lb-nav-prev" onclick="prevLightbox(event)" aria-label="Previous asset">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="lb-nav-btn lb-nav-next" onclick="nextLightbox(event)" aria-label="Next asset">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+      <div class="lightbox-canvas-holder" id="lb-canvas-holder">
+        <!-- AFTER (Upscaled) -->
+        <img class="lb-img-after" id="lb-img-after" src="" alt="Upscaled 2K Asset">
+
+        <!-- BEFORE (Original) -->
+        <div class="lb-before-clip" id="lb-before-clip">
+          <img class="lb-img-before" id="lb-img-before" src="" alt="Original Asset">
+        </div>
+
+        <div class="lb-slider-handle" id="lb-slider-handle">&harr;</div>
+        <input type="range" class="lb-range-slider" min="0" max="100" value="50" id="lb-range-slider" oninput="updateLightboxSlider(this.value)" aria-label="Split slider comparison">
+      </div>
+    </div>
+
+    <!-- Lightbox Footer -->
+    <div class="lightbox-bar-bottom" onclick="event.stopPropagation()">
+      <div>
+        <span>PSNR: <strong id="lb-psnr">--</strong> dB</span> &bull; 
+        <span>SSIM: <strong id="lb-ssim">--</strong></span> &bull; 
+        <span>Time: <strong id="lb-time">--</strong></span> &bull; 
+        <span>Tier: <strong id="lb-tier">--</strong></span>
+      </div>
+      <div>
+        <span>Zoom: <strong id="lb-zoom-val">1.0x</strong> (wheel to zoom, drag to pan)</span>
+      </div>
+    </div>
+
   </div>
 
+  <!-- SCRIPT LOGIC -->
   <script>
-    // App State
-    let currentCategory = 'all';
-    let currentSort = 'newest';
-    let currentStatus = 'all';
-    let searchQuery = '';
-    let dataCache = null;
-    let visibleCount = 48;
+    // --- CONSTANTS ---
+    const FRESH_THRESHOLD_MS = 15 * 60 * 1000;  // 15 min -> green
+    const STALE_THRESHOLD_MS = 60 * 60 * 1000;  // 60 min -> amber, >60 min -> red
     const CHUNK_SIZE = 48;
+    const SNAPSHOTS_KEY = 'muramasa_snapshots';
 
-    let isPipelinePaused = false;
-    let hideFilenames = false;
-    let lastPollTime = Date.now();
+    const CATEGORY_LABELS = {
+      'backgrounds': 'Backgrounds',
+      'backgrounds_hi': 'Backgrounds (Hi-Res)',
+      'event_cg': 'Event CG',
+      'event_cg_hi': 'Event CG (Hi-Res)',
+      'sprites': 'Sprites',
+      'sprites/characters': 'Characters',
+      'sprites/characters_hi': 'Characters (Hi-Res)',
+      'sprites/faces': 'Faces',
+      'sprites/mecha_hud': 'Mecha HUD',
+      'effects': 'Effects',
+      'effects/anime': 'Anime FX',
+      'effects/cg': 'CG FX',
+      'effects/cg_hi': 'CG FX (Hi-Res)',
+      'effects/masks': 'Masks',
+      'effects/transitions': 'Transitions',
+      'ui': 'UI',
+      'ui/records': 'Records UI'
+    };
+
+    const CATEGORY_COLORS = {
+      'backgrounds': '#38bdf8',
+      'event_cg': '#f472b6',
+      'sprites': '#a78bfa',
+      'ui': '#fbbf24',
+      'effects': '#34d399'
+    };
+
+    const GRID_LEVELS = {
+      1: { width: '220px', name: 'Compact' },
+      2: { width: '300px', name: 'Standard' },
+      3: { width: '380px', name: 'Large' },
+      4: { width: '480px', name: 'Max' }
+    };
+
+    // --- APPLICATION STATE ---
+    let currentCategory = 'all';
+    let currentStatus = 'all';
+    let currentSort = 'newest';
+    let searchQuery = '';
+    let visibleCount = CHUNK_SIZE;
+
+    let dataCache = null;
     let pollInterval = null;
+    let isDrawerOpen = false;
+    let hideFilenames = false;
+    let activeTimeCat = 'all';
 
-    // Throughput history for sparkline
-    let throughputHistory = [142, 145, 140, 148, 146, 150, 147, 149, 145, 147, 144, 148, 147];
-
-    // LocalStorage keys
+    // LocalStorage persistence
     const KEY_SPOILERS = 'muramasa_revealed_keys';
     const KEY_FLAGGED = 'muramasa_flagged_keys';
     const KEY_HIDE_NAMES = 'muramasa_hide_filenames';
@@ -1409,12 +1661,10 @@
     let flaggedSet = new Set();
 
     try {
-      const sRevealed = localStorage.getItem(KEY_SPOILERS);
-      if (sRevealed) revealedSet = new Set(JSON.parse(sRevealed));
-      
-      const sFlagged = localStorage.getItem(KEY_FLAGGED);
-      if (sFlagged) flaggedSet = new Set(JSON.parse(sFlagged));
-
+      const sRev = localStorage.getItem(KEY_SPOILERS);
+      if (sRev) revealedSet = new Set(JSON.parse(sRev));
+      const sFlag = localStorage.getItem(KEY_FLAGGED);
+      if (sFlag) flaggedSet = new Set(JSON.parse(sFlag));
       hideFilenames = localStorage.getItem(KEY_HIDE_NAMES) === 'true';
     } catch (e) {}
 
@@ -1426,88 +1676,900 @@
       } catch (e) {}
     }
 
-    // SVGs
-    const EYE_OPEN_SVG = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>`;
-    const EYE_OFF_SVG = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>`;
+    // --- TIER FUNCTION (SINGLE SOURCE OF TRUTH) ---
+    function tier(item) {
+      if (!item) return 'PASS';
+      const st = (item.status || '').toUpperCase();
+      if (st === 'FAIL') return 'FAIL';
+      if (st === 'WARN' || (item.metrics && (item.metrics.psnr < 24.0 || item.metrics.ssim < 0.80))) return 'WARN';
+      const psnr = item.metrics?.psnr;
+      if (psnr !== undefined && psnr !== null) {
+        if (psnr < 45.0) return 'REVIEW';
+        if (psnr < 47.0) return 'MARGINAL';
+        return 'PASS';
+      }
+      return st || 'PASS';
+    }
 
-    // --- PIPELINE CONTROLS & ACTIVITY LOG ---
-    function togglePipelinePause() {
-      isPipelinePaused = !isPipelinePaused;
-      const btn = document.getElementById('btn-pause-pipeline');
-      const icon = document.getElementById('pause-icon');
-      const lbl = document.getElementById('pause-label');
+    // --- TIMESTAMP PARSER (ISO-8601 & LEGACY) ---
+    function parseTimestamp(ts) {
+      if (!ts) return null;
+      const d = new Date(ts);
+      if (!isNaN(d.getTime())) return d.getTime();
+      const match = ts.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/);
+      if (match) {
+        const [, yr, mo, dy, hr, min, sec] = match;
+        return new Date(yr, mo - 1, dy, hr, min, sec).getTime();
+      }
+      return null;
+    }
 
-      if (isPipelinePaused) {
-        btn.classList.add('active');
-        icon.textContent = '▶️';
-        lbl.textContent = 'Resume Pipeline';
-        logActivity('Pipeline paused by operator', 'warn');
-      } else {
-        btn.classList.remove('active');
-        icon.textContent = '⏸️';
-        lbl.textContent = 'Pause Pipeline';
-        logActivity('Pipeline resumed by operator', 'pass');
+    // --- DATA FETCHING & TELEMETRY ---
+    async function fetchProgress() {
+      try {
+        const res = await fetch('progress.json?t=' + Date.now());
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+
+        const prevFinished = dataCache?.summary?.finished || 0;
+        const newFinished = data.summary?.finished || 0;
+        dataCache = data;
+
+        updateDashboard(data, newFinished > prevFinished ? (newFinished - prevFinished) : 0);
+      } catch (err) {
+        const dot = document.getElementById('live-dot');
+        const text = document.getElementById('live-text');
+        if (dot) dot.className = 'pulse-dot offline';
+        if (text) text.textContent = 'Feed offline';
       }
     }
 
-    function retryFailed() {
-      logActivity('Triggered retry for failed/warned queue', 'pass');
-      alert('Retry dispatched for failed assets.');
+    function updateDashboard(data, arrivalsCount = 0) {
+      const s = data.summary || {};
+      const total = s.total || 0;
+      const finished = s.finished || 0;
+      const percent = total > 0 ? (finished / total * 100).toFixed(1) : '0.0';
+
+      // 1. Overall progress in Page Title
+      document.title = `(${percent}%) Muramasa HD 2K Remaster Dashboard`;
+
+      // 2. Hero progress count up
+      document.getElementById('hero-percent-val').textContent = percent;
+      document.getElementById('hero-finished-cnt').textContent = finished.toLocaleString();
+      document.getElementById('hero-total-cnt').textContent = total.toLocaleString();
+
+      // 3. Tiers & Metrics
+      const itemsList = data.items ? Object.values(data.items) : [];
+      let passCount = 0, marginalCount = 0, reviewCount = 0, failCount = 0;
+      let psnrList = [], ssimList = [];
+
+      itemsList.forEach(it => {
+        const t = tier(it);
+        if (t === 'PASS') passCount++;
+        else if (t === 'MARGINAL') marginalCount++;
+        else if (t === 'REVIEW') reviewCount++;
+        else failCount++;
+
+        if (it.metrics?.psnr !== undefined) psnrList.push(it.metrics.psnr);
+        if (it.metrics?.ssim !== undefined) ssimList.push(it.metrics.ssim);
+      });
+
+      document.getElementById('hero-pass-cnt').textContent = `${passCount} pass`;
+      document.getElementById('hero-marginal-cnt').textContent = `${marginalCount} marginal`;
+      document.getElementById('hero-review-cnt').textContent = `${reviewCount} review`;
+      document.getElementById('hero-fail-cnt').textContent = `${failCount} fail`;
+
+      // Segmented Progress Bar
+      if (total > 0) {
+        const pPass = (passCount / total) * 100;
+        const pMarginal = (marginalCount / total) * 100;
+        const pReview = (reviewCount / total) * 100;
+        document.getElementById('bar-fill-pass').style.width = pPass + '%';
+        document.getElementById('bar-fill-marginal').style.width = pMarginal + '%';
+        document.getElementById('bar-fill-review').style.width = pReview + '%';
+      }
+
+      // 4. Live indicator from summary.updated_at
+      updateLiveIndicator(s.updated_at);
+
+      // 5. Storage telemetry
+      updateStorageTelemetry(s);
+
+      // 6. Throughput & ETA (rolling window in sessionStorage)
+      updateThroughputAndEta(s);
+
+      // 7. Inline Category mini pills
+      renderCategoryMiniPills(s);
+
+      // 8. Quality histograms & percentiles
+      renderQualityMetrics(psnrList, ssimList, passCount, marginalCount, reviewCount);
+      renderTimeHistogramData(itemsList);
+
+      // 9. Tab Counts
+      updateTabCounts(s);
+      updateFlagCount();
+
+      // 10. Keyed Grid Render
+      renderItemsKeyed(arrivalsCount);
+
+      // Initial activity log seed
+      if (document.getElementById('activity-log-stream').children.length === 0 && itemsList.length) {
+        itemsList.slice(-6).reverse().forEach(it => {
+          const fn = (it.new_path || '').split('/').pop();
+          logActivity(`Completed ${fn} (${(it.elapsed_s || 0).toFixed(1)}s, PSNR ${(it.metrics?.psnr || 0).toFixed(1)} dB)`, tier(it).toLowerCase());
+        });
+      }
     }
 
-    function openFlaggedQueue() {
-      currentStatus = 'FLAGGED';
-      document.getElementById('status-filter').value = 'FLAGGED';
-      renderItems();
+    // --- LIVE INDICATOR ---
+    function updateLiveIndicator(updatedAtStr) {
+      const dot = document.getElementById('live-dot');
+      const text = document.getElementById('live-text');
+      const track = document.getElementById('segmented-track');
+      const ts = parseTimestamp(updatedAtStr);
+
+      if (!ts) {
+        dot.className = 'pulse-dot offline';
+        text.textContent = 'Pipeline reported --';
+        if (track) track.classList.remove('fresh-shimmer');
+        return;
+      }
+
+      const ageMs = Math.max(0, Date.now() - ts);
+      let ageStr = '';
+      if (ageMs < 60000) ageStr = 'just now';
+      else if (ageMs < 3600000) ageStr = `${Math.floor(ageMs / 60000)}m ago`;
+      else if (ageMs < 86400000) ageStr = `${Math.floor(ageMs / 3600000)}h ago`;
+      else ageStr = `${Math.floor(ageMs / 86400000)}d ago`;
+
+      text.textContent = `Pipeline reported ${ageStr}`;
+
+      if (ageMs < FRESH_THRESHOLD_MS) {
+        dot.className = 'pulse-dot fresh';
+        if (track) track.classList.add('fresh-shimmer');
+      } else if (ageMs < STALE_THRESHOLD_MS) {
+        dot.className = 'pulse-dot stale';
+        if (track) track.classList.remove('fresh-shimmer');
+      } else {
+        dot.className = 'pulse-dot offline';
+        if (track) track.classList.remove('fresh-shimmer');
+      }
     }
 
-    function toggleHideFilenames() {
-      hideFilenames = !hideFilenames;
-      const btn = document.getElementById('toggle-hide-filenames');
-      if (hideFilenames) btn.classList.add('active');
-      else btn.classList.remove('active');
-      persistState();
-      renderItems();
+    // --- STORAGE TELEMETRY ---
+    function updateStorageTelemetry(s) {
+      const outEl = document.getElementById('tel-output-size');
+      const projEl = document.getElementById('tel-projected-size');
+      const freeEl = document.getElementById('tel-free-disk');
+
+      if (s.output_bytes && s.free_bytes) {
+        const outGB = (s.output_bytes / (1024 ** 3)).toFixed(1);
+        const freeGB = (s.free_bytes / (1024 ** 3)).toFixed(1);
+        outEl.textContent = `${outGB} GB`;
+        freeEl.textContent = `${freeGB} GB free`;
+        if (s.finished > 0 && s.total > 0) {
+          const projGB = ((s.output_bytes / s.finished) * s.total / (1024 ** 3)).toFixed(1);
+          projEl.textContent = `~${projGB} GB (estimate)`;
+        } else {
+          projEl.textContent = '-';
+        }
+      } else {
+        outEl.textContent = '-';
+        projEl.textContent = '-';
+        freeEl.textContent = '-';
+      }
     }
 
+    // --- ROLLING WINDOW THROUGHPUT & ETA ---
+    function updateThroughputAndEta(s) {
+      const rateEl = document.getElementById('sparkline-current-rate');
+      const avgRateEl = document.getElementById('tel-throughput-avg');
+      const etaEl = document.getElementById('tel-eta-val');
+
+      const currentTs = parseTimestamp(s.updated_at) || Date.now();
+      const currentFinished = s.finished || 0;
+
+      let snapshots = [];
+      try {
+        const raw = sessionStorage.getItem(SNAPSHOTS_KEY);
+        if (raw) snapshots = JSON.parse(raw);
+      } catch (e) {}
+
+      // Push distinct snapshot
+      const lastSnap = snapshots.length ? snapshots[snapshots.length - 1] : null;
+      if (!lastSnap || lastSnap.finished !== currentFinished) {
+        snapshots.push({ finished: currentFinished, timeMs: currentTs });
+        if (snapshots.length > 24) snapshots.shift();
+        try { sessionStorage.setItem(SNAPSHOTS_KEY, JSON.stringify(snapshots)); } catch (e) {}
+      }
+
+      if (snapshots.length < 2) {
+        rateEl.textContent = '-';
+        avgRateEl.textContent = '-';
+        etaEl.textContent = '-';
+        renderSparkline([]);
+        return;
+      }
+
+      const s0 = snapshots[0];
+      const sN = snapshots[snapshots.length - 1];
+      const dFinished = sN.finished - s0.finished;
+      const dSec = (sN.timeMs - s0.timeMs) / 1000;
+
+      if (dSec > 0 && dFinished > 0) {
+        const ratePerSec = dFinished / dSec;
+        const ratePerHour = Math.round(ratePerSec * 3600);
+        rateEl.textContent = `${ratePerHour} /hr`;
+        avgRateEl.textContent = `${ratePerHour} /hr`;
+
+        const remaining = Math.max(0, (s.total || 0) - currentFinished);
+        const etaSec = remaining / ratePerSec;
+        const hrs = Math.floor(etaSec / 3600);
+        const mins = Math.floor((etaSec % 3600) / 60);
+        if (hrs > 24) {
+          const days = Math.floor(hrs / 24);
+          etaEl.textContent = `~${days}d ${hrs % 24}h`;
+        } else {
+          etaEl.textContent = `~${hrs}h ${mins}m`;
+        }
+
+        const rates = [];
+        for (let i = 1; i < snapshots.length; i++) {
+          const df = snapshots[i].finished - snapshots[i - 1].finished;
+          const dt = (snapshots[i].timeMs - snapshots[i - 1].timeMs) / 1000;
+          if (dt > 0) rates.push(Math.round((df / dt) * 3600));
+        }
+        renderSparkline(rates);
+      } else {
+        rateEl.textContent = '-';
+        avgRateEl.textContent = '-';
+        etaEl.textContent = '-';
+        renderSparkline([]);
+      }
+    }
+
+    function renderSparkline(rates) {
+      const svg = document.getElementById('sparkline-svg');
+      if (!rates.length) {
+        svg.innerHTML = '<text x="120" y="30" fill="#64748b" font-size="11" text-anchor="middle" font-family="monospace">Awaiting 2+ snapshots...</text>';
+        return;
+      }
+      const min = Math.min(...rates) * 0.9;
+      const max = Math.max(...rates) * 1.1;
+      const range = (max - min) || 1;
+
+      const pts = rates.map((v, i) => {
+        const x = (i / (rates.length - 1 || 1)) * 230 + 5;
+        const y = 50 - ((v - min) / range) * 42;
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      });
+
+      const pathData = 'M ' + pts.join(' L ');
+      const areaData = `${pathData} L 235,55 L 5,55 Z`;
+
+      svg.innerHTML = `
+        <path class="sparkline-area" d="${areaData}"></path>
+        <path class="sparkline-path" d="${pathData}"></path>
+      `;
+    }
+
+    // --- INLINE CATEGORY MINI PILLS ---
+    function renderCategoryMiniPills(s) {
+      const container = document.getElementById('category-mini-pills');
+      if (!s.categories) return;
+
+      const groups = {
+        'Backgrounds': { total: 0, finished: 0 },
+        'Event CG': { total: 0, finished: 0 },
+        'Sprites': { total: 0, finished: 0 },
+        'UI': { total: 0, finished: 0 },
+        'Effects': { total: 0, finished: 0 }
+      };
+
+      for (const k in s.categories) {
+        const cat = s.categories[k];
+        if (k.startsWith('backgrounds')) {
+          groups['Backgrounds'].total += cat.total || 0;
+          groups['Backgrounds'].finished += cat.finished || 0;
+        } else if (k.startsWith('event_cg')) {
+          groups['Event CG'].total += cat.total || 0;
+          groups['Event CG'].finished += cat.finished || 0;
+        } else if (k.startsWith('sprites')) {
+          groups['Sprites'].total += cat.total || 0;
+          groups['Sprites'].finished += cat.finished || 0;
+        } else if (k.startsWith('ui')) {
+          groups['UI'].total += cat.total || 0;
+          groups['UI'].finished += cat.finished || 0;
+        } else {
+          groups['Effects'].total += cat.total || 0;
+          groups['Effects'].finished += cat.finished || 0;
+        }
+      }
+
+      container.innerHTML = Object.entries(groups).map(([name, v]) => {
+        const isComplete = v.total > 0 && v.finished === v.total;
+        return `
+          <div class="cat-mini-pill ${isComplete ? 'complete' : ''}" title="${name}: ${v.finished}/${v.total}">
+            <span>${name}</span>
+            <strong>${v.finished}/${v.total}</strong>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // --- QUALITY HISTOGRAM & AUDIT METRICS ---
+    function renderQualityMetrics(psnrList, ssimList, passCnt, marginalCnt, reviewCnt) {
+      document.getElementById('histo-cnt-review').textContent = reviewCnt;
+      document.getElementById('histo-cnt-marginal').textContent = marginalCnt;
+      document.getElementById('histo-cnt-pass').textContent = passCnt;
+
+      if (!psnrList.length) return;
+
+      const sortedPsnr = [...psnrList].sort((a, b) => a - b);
+      const minP = sortedPsnr[0];
+      const maxP = sortedPsnr[sortedPsnr.length - 1];
+      const medP = sortedPsnr[Math.floor(sortedPsnr.length / 2)];
+      const avgP = sortedPsnr.reduce((a, b) => a + b, 0) / sortedPsnr.length;
+
+      document.getElementById('quality-med-psnr').textContent = `Med: ${medP.toFixed(1)} dB`;
+      document.getElementById('audit-psnr-summary').textContent = `${minP.toFixed(1)} / ${avgP.toFixed(1)} / ${medP.toFixed(1)} dB`;
+
+      if (ssimList.length) {
+        const sortedSsim = [...ssimList].sort((a, b) => a - b);
+        const minS = sortedSsim[0];
+        const medS = sortedSsim[Math.floor(sortedSsim.length / 2)];
+        document.getElementById('audit-ssim-summary').textContent = `${minS.toFixed(4)} / ${medS.toFixed(4)}`;
+      }
+
+      // Draw PSNR Histogram
+      const svg = document.getElementById('psnr-histo-svg');
+      const buckets = [0, 0, 0, 0, 0, 0, 0, 0]; // 35-40, 40-43, 43-45, 45-47, 47-49, 49-51, 51-53, 53+
+      psnrList.forEach(p => {
+        if (p < 40) buckets[0]++;
+        else if (p < 43) buckets[1]++;
+        else if (p < 45) buckets[2]++;
+        else if (p < 47) buckets[3]++;
+        else if (p < 49) buckets[4]++;
+        else if (p < 51) buckets[5]++;
+        else if (p < 53) buckets[6]++;
+        else buckets[7]++;
+      });
+
+      const maxB = Math.max(...buckets, 1);
+      const barW = 24;
+      const gap = 5;
+
+      svg.innerHTML = `
+        <line x1="88" y1="5" x2="88" y2="60" class="histo-ref-line" />
+        <text x="88" y="68" class="histo-text" fill="var(--status-marginal)">45dB</text>
+        <line x1="117" y1="5" x2="117" y2="60" class="histo-ref-line pass" />
+        <text x="117" y="68" class="histo-text" fill="var(--status-pass)">47dB</text>
+        ${buckets.map((count, i) => {
+          const h = Math.round((count / maxB) * 48);
+          const y = 56 - h;
+          const x = 5 + i * (barW + gap);
+          const fillClass = i < 3 ? 'style="fill: var(--status-review);"' : (i === 3 ? 'style="fill: var(--status-marginal);"' : 'style="fill: var(--status-pass);"');
+          return `
+            <rect class="histo-bar" x="${x}" y="${y}" width="${barW}" height="${h}" ${fillClass} rx="2">
+              <title>Bucket ${i + 1}: ${count} assets</title>
+            </rect>
+          `;
+        }).join('')}
+      `;
+    }
+
+    // --- TIME PER ASSET HISTOGRAM & PERCENTILES ---
+    function setTimeCategory(cat, btn) {
+      activeTimeCat = cat;
+      document.querySelectorAll('.time-pill-btn').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      if (dataCache?.items) renderTimeHistogramData(Object.values(dataCache.items));
+    }
+
+    function renderTimeHistogramData(itemsList) {
+      let filtered = itemsList;
+      if (activeTimeCat !== 'all') {
+        filtered = filtered.filter(it => (it.category || '').startsWith(activeTimeCat));
+      }
+      const times = filtered.map(it => it.elapsed_s).filter(t => t && t > 0);
+      if (!times.length) {
+        document.getElementById('time-p50-lbl').textContent = 'p50: --';
+        document.getElementById('time-p90-lbl').textContent = 'p90: --';
+        document.getElementById('time-max-lbl').textContent = 'max: --';
+        return;
+      }
+
+      const sorted = [...times].sort((a, b) => a - b);
+      const p50 = sorted[Math.floor(sorted.length * 0.5)];
+      const p90 = sorted[Math.floor(sorted.length * 0.9)];
+      const maxVal = sorted[sorted.length - 1];
+
+      document.getElementById('time-p50-lbl').textContent = `p50: ${p50.toFixed(1)}s`;
+      document.getElementById('time-p90-lbl').textContent = `p90: ${p90.toFixed(1)}s`;
+      document.getElementById('time-max-lbl').textContent = `max: ${maxVal.toFixed(1)}s`;
+
+      const minVal = sorted[0];
+      const bucketCount = 6;
+      const step = (maxVal - minVal) / bucketCount || 1;
+      const buckets = new Array(bucketCount).fill(0);
+
+      times.forEach(t => {
+        let idx = Math.floor((t - minVal) / step);
+        if (idx >= bucketCount) idx = bucketCount - 1;
+        buckets[idx]++;
+      });
+
+      const maxB = Math.max(...buckets, 1);
+      const svg = document.getElementById('time-histo-svg');
+      const barW = 32;
+      const gap = 6;
+
+      svg.innerHTML = buckets.map((count, i) => {
+        const h = Math.round((count / maxB) * 44);
+        const y = 48 - h;
+        const x = 5 + i * (barW + gap);
+        const startSec = (minVal + i * step).toFixed(0);
+        return `
+          <g>
+            <rect class="histo-bar" x="${x}" y="${y}" width="${barW}" height="${h}" rx="2">
+              <title>${startSec}s: ${count} assets</title>
+            </rect>
+            <text class="histo-text" x="${x + barW/2}" y="54">${startSec}s</text>
+          </g>
+        `;
+      }).join('');
+    }
+
+    // --- ACTIVITY LOG ---
     function logActivity(msg, type = 'pass') {
       const box = document.getElementById('activity-log-stream');
       const now = new Date();
       const timeStr = now.toTimeString().split(' ')[0];
-      const tagClass = type === 'pass' ? 'log-tag-pass' : (type === 'warn' ? 'log-tag-warn' : 'log-tag-flag');
 
       const line = document.createElement('div');
-      line.className = 'log-line';
-      line.innerHTML = `<span class="log-time">[${timeStr}]</span> <span class="${tagClass}">&bull;</span> <span>${msg}</span>`;
+      line.className = 'act-line';
+      line.innerHTML = `
+        <span class="act-time">[${timeStr}]</span>
+        <span class="act-tag ${type}"></span>
+        <span>${msg}</span>
+      `;
       box.insertBefore(line, box.firstChild);
-      if (box.children.length > 30) box.removeChild(box.lastChild);
+      if (box.children.length > 25) box.removeChild(box.lastChild);
     }
 
-    // --- AUTO-BLUR & PANIC HOTKEY ---
-    window.addEventListener('blur', () => {
-      // Auto-blur on window focus loss
-      blurAll();
-    });
+    // --- TAB COUNTS ---
+    function updateTabCounts(s) {
+      if (!s.categories) return;
+      const counts = {
+        all: { fin: s.finished || 0, tot: s.total || 0 },
+        backgrounds: { fin: 0, tot: 0 },
+        event_cg: { fin: 0, tot: 0 },
+        sprites: { fin: 0, tot: 0 },
+        ui: { fin: 0, tot: 0 },
+        effects: { fin: 0, tot: 0 }
+      };
 
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        blurAll();
-        if (pollInterval) {
-          clearInterval(pollInterval);
-          pollInterval = null;
-        }
-        document.getElementById('live-dot').className = 'pulse-dot paused';
-        document.getElementById('live-text').textContent = 'Polling Paused';
-      } else {
-        if (!pollInterval) {
-          pollInterval = setInterval(fetchProgress, 3000);
-          fetchProgress();
+      for (const k in s.categories) {
+        const c = s.categories[k];
+        if (k.startsWith('backgrounds')) {
+          counts.backgrounds.fin += c.finished || 0;
+          counts.backgrounds.tot += c.total || 0;
+        } else if (k.startsWith('event_cg')) {
+          counts.event_cg.fin += c.finished || 0;
+          counts.event_cg.tot += c.total || 0;
+        } else if (k.startsWith('sprites')) {
+          counts.sprites.fin += c.finished || 0;
+          counts.sprites.tot += c.total || 0;
+        } else if (k.startsWith('ui')) {
+          counts.ui.fin += c.finished || 0;
+          counts.ui.tot += c.total || 0;
+        } else {
+          counts.effects.fin += c.finished || 0;
+          counts.effects.tot += c.total || 0;
         }
       }
-    });
 
+      for (const key in counts) {
+        const el = document.getElementById('tab-cnt-' + key);
+        if (el) {
+          el.textContent = `${counts[key].fin} / ${counts[key].tot}`;
+          const btn = el.closest('.cat-tab-btn');
+          if (btn && key !== 'all') {
+            if (counts[key].fin === 0) btn.classList.add('dimmed');
+            else btn.classList.remove('dimmed');
+          }
+        }
+      }
+    }
+
+    function updateFlagCount() {
+      const cnt = flaggedSet.size;
+      const btnCopy = document.getElementById('btn-copy-rerun');
+      const btnDownload = document.getElementById('btn-download-rerun');
+      const lbl = document.getElementById('btn-flagged-count');
+      if (lbl) lbl.textContent = cnt;
+
+      if (cnt > 0) {
+        if (btnCopy) btnCopy.style.display = 'inline-flex';
+        if (btnDownload) btnDownload.style.display = 'inline-flex';
+      } else {
+        if (btnCopy) btnCopy.style.display = 'none';
+        if (btnDownload) btnDownload.style.display = 'none';
+      }
+    }
+
+    // --- KEYED CARDS GRID RENDERING ---
+    let currentRenderList = [];
+    const renderedCardNodes = new Map(); // path -> DOM Node
+
+    function renderItemsKeyed(arrivalsCount = 0) {
+      if (!dataCache || !dataCache.items) return;
+      const container = document.getElementById('cards-grid');
+      const sentinel = document.getElementById('scroll-sentinel');
+
+      let items = Object.values(dataCache.items);
+
+      // 1. Category Filter
+      if (currentCategory !== 'all') {
+        items = items.filter(it => (it.category || '').startsWith(currentCategory));
+      }
+
+      // 2. Status Tier Filter
+      if (currentStatus !== 'all') {
+        if (currentStatus === 'FLAGGED') {
+          items = items.filter(it => flaggedSet.has(it.new_path));
+        } else {
+          items = items.filter(it => tier(it) === currentStatus);
+        }
+      }
+
+      // 3. Search Filter
+      if (searchQuery) {
+        items = items.filter(it => (it.new_path || '').toLowerCase().includes(searchQuery));
+      }
+
+      // 4. Sort
+      if (currentSort === 'newest') items.reverse();
+      else if (currentSort === 'slowest') items.sort((a, b) => (b.elapsed_s || 0) - (a.elapsed_s || 0));
+      else if (currentSort === 'lowest_psnr') items.sort((a, b) => (a.metrics?.psnr || 999) - (b.metrics?.psnr || 999));
+      else if (currentSort === 'highest_psnr') items.sort((a, b) => (b.metrics?.psnr || 0) - (a.metrics?.psnr || 0));
+
+      currentRenderList = items;
+      const totalMatching = items.length;
+      const visibleItems = items.slice(0, visibleCount);
+
+      if (totalMatching === 0) {
+        container.innerHTML = `
+          <div class="empty-state-notice">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <div style="font-weight: 600; font-size: 14px; color: var(--text);">No assets match active filters</div>
+            <div style="font-size: 12px; margin-top: 4px;">Adjust category, status tier, or search query.</div>
+          </div>
+        `;
+        sentinel.style.display = 'none';
+        renderedCardNodes.clear();
+        return;
+      }
+
+      sentinel.style.display = visibleCount < totalMatching ? 'block' : 'none';
+      sentinel.textContent = `Showing ${visibleItems.length} of ${totalMatching} assets`;
+
+      const visibleKeys = new Set(visibleItems.map(it => it.new_path));
+
+      // Remove untracked card nodes
+      for (const [key, node] of renderedCardNodes.entries()) {
+        if (!visibleKeys.has(key)) {
+          if (node.parentNode === container) container.removeChild(node);
+          renderedCardNodes.delete(key);
+        }
+      }
+
+      // Maintain order & insert nodes
+      visibleItems.forEach((item, index) => {
+        let card = renderedCardNodes.get(item.new_path);
+        if (!card) {
+          card = createCardNode(item, index, index < arrivalsCount);
+          renderedCardNodes.set(item.new_path, card);
+          container.appendChild(card);
+        } else {
+          updateCardNode(card, item);
+          if (container.children[index] !== card) {
+            container.insertBefore(card, container.children[index] || null);
+          }
+        }
+      });
+    }
+
+    function createCardNode(item, index, isNewArrival = false) {
+      const card = document.createElement('div');
+      card.className = `asset-card ${isNewArrival ? 'new-arrival' : ''}`;
+      card.style.setProperty('--stagger', Math.min(index, 24));
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('role', 'button');
+      updateCardNode(card, item);
+      return card;
+    }
+
+    function updateCardNode(card, item) {
+      const itemTier = tier(item);
+      const isRevealed = revealedSet.has(item.new_path);
+      const isFlagged = flaggedSet.has(item.new_path);
+      const filename = (item.new_path || '').split('/').pop();
+      const encodedKey = encodeURIComponent(item.new_path);
+      const catColor = CATEGORY_COLORS[(item.category || '').split('/')[0]] || '#94a3b8';
+      const catLabel = CATEGORY_LABELS[item.category] || item.category || 'Asset';
+
+      if (isFlagged) card.classList.add('is-flagged');
+      else card.classList.remove('is-flagged');
+
+      card.setAttribute('aria-label', `Asset ${filename}, status ${itemTier}`);
+
+      // PSNR meter calculation
+      const psnrVal = item.metrics?.psnr || 0;
+      const ssimVal = item.metrics?.ssim !== undefined ? Number(item.metrics.ssim).toFixed(4) : '--';
+      const timeVal = item.elapsed_s ? `${Number(item.elapsed_s).toFixed(1)}s` : '--';
+      const psnrPct = Math.max(10, Math.min(100, ((psnrVal - 30) / 30) * 100));
+
+      const origDims = item.orig_dims ? `${item.orig_dims[0]}×${item.orig_dims[1]}` : '--';
+      const upDims = item.upscaled_dims ? `${item.upscaled_dims[0]}×${item.upscaled_dims[1]}` : '--';
+
+      // Badge only when tier !== PASS
+      const tierBadgeHtml = itemTier !== 'PASS' 
+        ? `<span class="badge-tier ${itemTier.toLowerCase()}">&bull; ${itemTier}</span>`
+        : '';
+
+      const eyeSvg = isRevealed
+        ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>`
+        : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>`;
+
+      card.innerHTML = `
+        <div class="card-thumb-wrap checkerboard" 
+             onmousedown="onThumbMouseDown('${encodedKey}', event)"
+             onmouseup="onThumbMouseUp(event)"
+             onmouseleave="onThumbMouseUp(event)">
+          <img class="card-thumb-img ${isRevealed ? '' : 'blurred'}" 
+               loading="lazy" 
+               src="thumbs/${encodeURIComponent(item.thumb || '')}" 
+               alt="${filename}" 
+               onerror="this.src='fallback.png'">
+
+          <div class="card-top-overlay">
+            <div class="card-top-left">
+              <span class="card-cat-tag">
+                <span class="cat-dot" style="background: ${catColor};"></span>
+                ${catLabel}
+              </span>
+              ${tierBadgeHtml}
+            </div>
+
+            <div class="card-overlay-actions">
+              <button class="card-icon-btn ${isFlagged ? 'is-active-flag' : ''}" 
+                      title="Flag for Re-Processing" 
+                      onclick="toggleFlag('${encodedKey}', event)"
+                      aria-label="Flag asset for re-processing">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+              </button>
+              <button class="card-icon-btn" 
+                      title="Toggle Spoiler Blur" 
+                      onclick="toggleSpoiler('${encodedKey}', event)"
+                      aria-label="Toggle blur spoiler">
+                ${eyeSvg}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-content-area" onclick="openLightbox('${encodedKey}')">
+          <div class="card-filename-row">
+            <span class="card-filename ${hideFilenames ? 'obscured' : ''}" title="${filename}">${filename}</span>
+            <span class="card-time-stat">${timeVal}</span>
+          </div>
+
+          <div class="card-meta-line">
+            <span>${origDims} &rarr; <strong>${upDims}</strong></span>
+          </div>
+
+          <div class="psnr-meter-wrapper">
+            <div class="psnr-meter-track">
+              <div class="psnr-meter-fill ${itemTier.toLowerCase()}" style="width: ${psnrPct}%"></div>
+            </div>
+            <div class="psnr-meter-tooltip">
+              PSNR: ${psnrVal ? psnrVal.toFixed(2) + ' dB' : '--'} &bull; SSIM: ${ssimVal}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // --- HOLD TO PEEK & SPOILER CONTROLS ---
+    function onThumbMouseDown(encodedKey, e) {
+      if (e.button !== 0) return;
+      const card = e.currentTarget.closest('.asset-card');
+      const img = card?.querySelector('.card-thumb-img');
+      if (img && img.classList.contains('blurred')) {
+        img.classList.add('peeking');
+      }
+    }
+
+    function onThumbMouseUp(e) {
+      const card = e.currentTarget.closest('.asset-card');
+      const img = card?.querySelector('.card-thumb-img');
+      if (img) img.classList.remove('peeking');
+    }
+
+    function toggleSpoiler(encodedKey, e) {
+      if (e) e.stopPropagation();
+      const key = decodeURIComponent(encodedKey);
+      if (revealedSet.has(key)) revealedSet.delete(key);
+      else revealedSet.add(key);
+      persistState();
+      renderItemsKeyed();
+    }
+
+    function blurAll() {
+      revealedSet.clear();
+      persistState();
+      renderItemsKeyed();
+    }
+
+    function revealAll() {
+      if (dataCache?.items) {
+        Object.keys(dataCache.items).forEach(k => revealedSet.add(k));
+        persistState();
+      }
+      renderItemsKeyed();
+    }
+
+    function toggleHideFilenames() {
+      hideFilenames = !hideFilenames;
+      const btn = document.getElementById('btn-toggle-names');
+      if (btn) btn.classList.toggle('active', hideFilenames);
+      persistState();
+      renderItemsKeyed();
+    }
+
+    // --- FLAGGED RE-RUN LIST & RERUN.JSON ---
+    function toggleFlag(encodedKey, e) {
+      if (e) e.stopPropagation();
+      const key = decodeURIComponent(encodedKey);
+      const fn = key.split('/').pop();
+      if (flaggedSet.has(key)) {
+        flaggedSet.delete(key);
+        logActivity(`Unflagged ${fn}`, 'warn');
+      } else {
+        flaggedSet.add(key);
+        logActivity(`Flagged for rerun: ${fn}`, 'flag');
+      }
+      persistState();
+      updateFlagCount();
+      renderItemsKeyed();
+    }
+
+    function copyRerunList() {
+      if (!flaggedSet.size || !dataCache?.items) return;
+      const paths = [];
+      flaggedSet.forEach(k => {
+        const item = dataCache.items[k];
+        if (item?.original_path) paths.push(item.original_path);
+        else paths.push(k);
+      });
+      navigator.clipboard.writeText(paths.join('\n')).then(() => {
+        const btn = document.getElementById('btn-copy-rerun');
+        const oldHtml = btn.innerHTML;
+        btn.innerHTML = `&check; Copied ${paths.length} paths`;
+        setTimeout(() => { btn.innerHTML = oldHtml; }, 2000);
+      });
+    }
+
+    function downloadRerunJson() {
+      if (!flaggedSet.size || !dataCache?.items) return;
+      const list = [];
+      flaggedSet.forEach(k => {
+        const it = dataCache.items[k];
+        if (it) list.push(it);
+      });
+      const blob = new Blob([JSON.stringify(list, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'rerun.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    // --- TOOLBAR HANDLERS ---
+    function setCategoryTab(cat, btn) {
+      currentCategory = cat;
+      visibleCount = CHUNK_SIZE;
+      document.querySelectorAll('.cat-tab-btn').forEach(b => {
+        b.classList.remove('active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      if (btn) {
+        btn.classList.add('active');
+        btn.setAttribute('aria-selected', 'true');
+      }
+      renderItemsKeyed();
+    }
+
+    function onSearchChange(val) {
+      searchQuery = (val || '').toLowerCase().trim();
+      visibleCount = CHUNK_SIZE;
+      renderItemsKeyed();
+    }
+
+    function onStatusFilterChange(val) {
+      currentStatus = val;
+      visibleCount = CHUNK_SIZE;
+      renderItemsKeyed();
+    }
+
+    function onSortChange(val) {
+      currentSort = val;
+      visibleCount = CHUNK_SIZE;
+      renderItemsKeyed();
+    }
+
+    function onGridSliderChange(val) {
+      const lvl = GRID_LEVELS[val] || GRID_LEVELS[2];
+      document.documentElement.style.setProperty('--card-min-width', lvl.width);
+      const lbl = document.getElementById('grid-snap-lbl');
+      if (lbl) lbl.textContent = lvl.name;
+      try { localStorage.setItem('muramasa_grid_level', val); } catch (e) {}
+    }
+
+    // Restore grid level
+    try {
+      const savedLvl = localStorage.getItem('muramasa_grid_level');
+      if (savedLvl && GRID_LEVELS[savedLvl]) {
+        document.addEventListener('DOMContentLoaded', () => {
+          const slider = document.getElementById('grid-snap-slider');
+          if (slider) slider.value = savedLvl;
+          onGridSliderChange(savedLvl);
+        });
+      }
+    } catch (e) {}
+
+    function toggleTelemetryDrawer() {
+      isDrawerOpen = !isDrawerOpen;
+      const drawer = document.getElementById('telemetry-drawer');
+      const btn = document.getElementById('toggle-telemetry-btn');
+      const chevron = document.getElementById('drawer-chevron');
+
+      if (isDrawerOpen) {
+        drawer.classList.add('open');
+        btn.classList.add('active');
+        btn.setAttribute('aria-expanded', 'true');
+        chevron.innerHTML = '<polyline points="18 15 12 9 6 15"/>';
+      } else {
+        drawer.classList.remove('open');
+        btn.classList.remove('active');
+        btn.setAttribute('aria-expanded', 'false');
+        chevron.innerHTML = '<polyline points="6 9 12 15 18 9"/>';
+      }
+    }
+
+    // --- INFINITE SCROLL OBSERVER ---
+    const scrollObserver = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        if (dataCache?.items && visibleCount < currentRenderList.length) {
+          visibleCount += CHUNK_SIZE;
+          renderItemsKeyed();
+        }
+      }
+    }, { rootMargin: '400px' });
+    scrollObserver.observe(document.getElementById('scroll-sentinel'));
+
+    // --- BUG FIX: HOTKEYS (IGNORE P & ESC IN INPUTS) ---
     let lastEscTime = 0;
     window.addEventListener('keydown', (e) => {
+      const activeTag = (document.activeElement?.tagName || '').toLowerCase();
+      if (['input', 'textarea', 'select'].includes(activeTag)) {
+        return; // Ignore P and Esc while user types
+      }
+
       if (e.key === 'p' || e.key === 'P') {
         blurAll();
         closeLightbox();
@@ -1518,554 +2580,33 @@
         }
         lastEscTime = now;
         closeLightbox();
-      } else if (document.getElementById('lightbox').classList.contains('active')) {
+      } else if (document.getElementById('lightbox-modal').classList.contains('active')) {
         if (e.key === 'ArrowLeft') prevLightbox();
         if (e.key === 'ArrowRight') nextLightbox();
       }
     });
 
-    // Hold-to-Peek
-    function onThumbMouseDown(encodedKey, e) {
-      if (e.button !== 0) return;
-      const el = e.currentTarget.querySelector('.item-thumb');
-      if (el && el.classList.contains('blurred')) {
-        el.classList.add('peeking');
-      }
-    }
-    function onThumbMouseUp(e) {
-      const el = e.currentTarget.querySelector('.item-thumb');
-      if (el) el.classList.remove('peeking');
-    }
-
-    function toggleFlag(encodedKey, e) {
-      if (e) e.stopPropagation();
-      const key = decodeURIComponent(encodedKey);
-      if (flaggedSet.has(key)) {
-        flaggedSet.delete(key);
-        logActivity(`Unflagged ${key.split('/').pop()}`, 'warn');
+    // Auto blur on window blur or tab hidden
+    window.addEventListener('blur', () => { blurAll(); });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        blurAll();
+        if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+        const dot = document.getElementById('live-dot');
+        const text = document.getElementById('live-text');
+        if (dot) dot.className = 'pulse-dot offline';
+        if (text) text.textContent = 'Polling Paused';
       } else {
-        flaggedSet.add(key);
-        logActivity(`Flagged for re-run: ${key.split('/').pop()}`, 'flag');
-      }
-      persistState();
-      updateFlagCount();
-      renderItems();
-    }
-
-    function updateFlagCount() {
-      document.getElementById('reprocess-queue-count').textContent = flaggedSet.size;
-    }
-
-    // --- TOOLBAR HANDLERS ---
-    function setCategoryTab(cat, btn) {
-      currentCategory = cat;
-      visibleCount = CHUNK_SIZE;
-      document.querySelectorAll('.tab-btn').forEach(b => {
-        b.classList.remove('active');
-        b.setAttribute('aria-selected', 'false');
-      });
-      if (btn) {
-        btn.classList.add('active');
-        btn.setAttribute('aria-selected', 'true');
-      }
-      renderItems();
-    }
-
-    function onSearchChange(val) {
-      searchQuery = (val || '').toLowerCase().trim();
-      visibleCount = CHUNK_SIZE;
-      renderItems();
-    }
-
-    function onSortChange(val) {
-      currentSort = val;
-      visibleCount = CHUNK_SIZE;
-      renderItems();
-    }
-
-    function onStatusFilterChange(val) {
-      currentStatus = val;
-      visibleCount = CHUNK_SIZE;
-      renderItems();
-    }
-
-    const GRID_LEVELS = {
-      1: { width: '220px', name: 'Compact' },
-      2: { width: '300px', name: 'Standard' },
-      3: { width: '380px', name: 'Large' },
-      4: { width: '480px', name: 'Max' }
-    };
-
-    function onGridSliderChange(val) {
-      const lvl = GRID_LEVELS[val] || GRID_LEVELS[2];
-      document.documentElement.style.setProperty('--card-min-width', lvl.width);
-      const nameEl = document.getElementById('grid-level-name');
-      if (nameEl) nameEl.textContent = lvl.name;
-      try { localStorage.setItem('muramasa_grid_level', val); } catch (e) {}
-    }
-
-    // Restore saved grid level on load
-    try {
-      const savedLvl = localStorage.getItem('muramasa_grid_level');
-      if (savedLvl && GRID_LEVELS[savedLvl]) {
-        document.addEventListener('DOMContentLoaded', () => {
-          const slider = document.getElementById('grid-level-slider');
-          if (slider) slider.value = savedLvl;
-          onGridSliderChange(savedLvl);
-        });
-      }
-    } catch (e) {}
-
-    function toggleSpoiler(encodedKey, e) {
-      if (e) e.stopPropagation();
-      const key = decodeURIComponent(encodedKey);
-      if (revealedSet.has(key)) revealedSet.delete(key);
-      else revealedSet.add(key);
-      persistState();
-      renderItems();
-    }
-
-    function blurAll() {
-      revealedSet.clear();
-      persistState();
-      renderItems();
-    }
-
-    function revealAll() {
-      if (dataCache && dataCache.items) {
-        Object.keys(dataCache.items).forEach(k => revealedSet.add(k));
-        persistState();
-      }
-      renderItems();
-    }
-
-    // --- FETCH & DATA PIPELINE ---
-    async function fetchProgress() {
-      if (isPipelinePaused) return;
-
-      const dot = document.getElementById('live-dot');
-      const text = document.getElementById('live-text');
-
-      try {
-        const res = await fetch('progress.json?t=' + Date.now());
-        if (!res.ok) throw new Error('HTTP ' + res.status);
-        const data = await res.json();
-
-        dot.className = 'pulse-dot';
-        text.textContent = 'Live Telemetry';
-        lastPollTime = Date.now();
-
-        const prevJson = JSON.stringify(dataCache?.summary || {});
-        const nextJson = JSON.stringify(data.summary || {});
-        dataCache = data;
-
-        updateDashboard(data);
-        if (prevJson !== nextJson) {
-          renderItems();
-        }
-      } catch (err) {
-        dot.className = 'pulse-dot stalled';
-        text.textContent = 'Polling Stalled';
-      }
-    }
-
-    // Last updated ticker
-    setInterval(() => {
-      const sec = Math.floor((Date.now() - lastPollTime) / 1000);
-      const el = document.getElementById('last-updated-text');
-      if (sec < 2) el.textContent = '(just now)';
-      else el.textContent = `(${sec}s ago)`;
-    }, 1000);
-
-    // --- DASHBOARD TELEMETRY & CALCULATIONS ---
-    function updateDashboard(data) {
-      const s = data.summary;
-      if (!s) return;
-
-      const total = s.total || 0;
-      const finished = s.finished || 0;
-      const percent = (s.percent !== undefined ? Number(s.percent) : (total ? (finished / total * 100) : 0)).toFixed(1);
-
-      // 1. Overall Progress in Page Title
-      document.title = `(${percent}%) Muramasa HD 2K Remaster Dashboard`;
-
-      // 2. Hero Section
-      document.getElementById('hero-percent-val').textContent = percent;
-      document.getElementById('hero-processed').textContent = finished.toLocaleString();
-      document.getElementById('hero-total').textContent = total.toLocaleString();
-      document.getElementById('hero-progress-fill').style.width = percent + '%';
-
-      let passCount = 0;
-      let warnCount = 0;
-      let failCount = 0;
-      let marginalCount = 0;
-
-      const itemsList = data.items ? Object.values(data.items) : [];
-      let totalElapsed = 0;
-      let elapsedList = [];
-      let psnrList = [];
-      let ssimList = [];
-
-      itemsList.forEach(it => {
-        if (it.elapsed_s && it.elapsed_s > 0) {
-          totalElapsed += it.elapsed_s;
-          elapsedList.push(it.elapsed_s);
-        }
-        if (it.metrics?.psnr) psnrList.push(it.metrics.psnr);
-        if (it.metrics?.ssim) ssimList.push(it.metrics.ssim);
-
-        // Quality check for marginal status
-        if (it.metrics?.psnr && it.metrics.psnr >= 45.0 && it.metrics.psnr < 47.0) {
-          marginalCount++;
-        }
-      });
-
-      if (s.categories) {
-        for (const k in s.categories) {
-          passCount += s.categories[k].passed || 0;
-          warnCount += s.categories[k].warned || 0;
-          failCount += s.categories[k].failed || 0;
+        if (!pollInterval) {
+          pollInterval = setInterval(fetchProgress, 3000);
+          fetchProgress();
         }
       }
+    });
 
-      document.getElementById('hero-passed').textContent = passCount.toLocaleString() + ' pass';
-      document.getElementById('hero-marginal').textContent = marginalCount.toLocaleString() + ' marginal';
-      document.getElementById('hero-warned').textContent = warnCount.toLocaleString() + ' warn';
-      document.getElementById('hero-failed').textContent = failCount.toLocaleString() + ' fail';
-      document.getElementById('retry-failed-count').textContent = failCount + warnCount;
-      document.getElementById('marginal-desc').textContent = `• ${marginalCount} assets near threshold (PSNR 45.0 - 47.0 dB)`;
-
-      // 3. Inline Per-Category Progress Bars
-      renderInlineCategoryBars(s);
-
-      // 4. Audit Statistics (Min, Avg, Median)
-      renderAuditStats(psnrList, ssimList);
-
-      // 5. Histograms & Sparklines
-      const avgSec = elapsedList.length ? (totalElapsed / elapsedList.length) : 24.8;
-      document.getElementById('tel-avg-time-lbl').textContent = `Avg: ${avgSec.toFixed(1)}s`;
-      renderTimeHistogram(elapsedList);
-      renderThroughputSparkline(avgSec);
-
-      // 6. Tab Asset Counts
-      updateTabCounts(s);
-      updateFlagCount();
-
-      // Seed activity log on first load
-      if (document.getElementById('activity-log-stream').children.length === 0 && itemsList.length) {
-        itemsList.slice(-6).reverse().forEach(it => {
-          logActivity(`Completed ${it.new_path.split('/').pop()} (${it.elapsed_s || 24}s, PSNR ${it.metrics?.psnr || 51} dB)`, 'pass');
-        });
-      }
-    }
-
-    // Inline category bars
-    function renderInlineCategoryBars(s) {
-      const container = document.getElementById('inline-categories-bars');
-      if (!s.categories) return;
-
-      const catGroups = {
-        'Backgrounds': { total: 0, finished: 0 },
-        'Event CGs': { total: 0, finished: 0 },
-        'Sprites': { total: 0, finished: 0 },
-        'UI': { total: 0, finished: 0 },
-        'Effects': { total: 0, finished: 0 }
-      };
-
-      for (const k in s.categories) {
-        const item = s.categories[k];
-        if (k.startsWith('backgrounds')) {
-          catGroups['Backgrounds'].total += item.total || 0;
-          catGroups['Backgrounds'].finished += item.finished || 0;
-        } else if (k.startsWith('event_cg')) {
-          catGroups['Event CGs'].total += item.total || 0;
-          catGroups['Event CGs'].finished += item.finished || 0;
-        } else if (k.startsWith('sprites')) {
-          catGroups['Sprites'].total += item.total || 0;
-          catGroups['Sprites'].finished += item.finished || 0;
-        } else if (k.startsWith('ui')) {
-          catGroups['UI'].total += item.total || 0;
-          catGroups['UI'].finished += item.finished || 0;
-        } else {
-          catGroups['Effects'].total += item.total || 0;
-          catGroups['Effects'].finished += item.finished || 0;
-        }
-      }
-
-      container.innerHTML = Object.entries(catGroups).map(([name, val]) => {
-        const pct = val.total ? ((val.finished / val.total) * 100).toFixed(0) : 0;
-        return `
-          <div class="cat-bar-item">
-            <div class="cat-bar-header">
-              <span>${name}</span>
-              <span><strong>${val.finished}</strong> / ${val.total} (${pct}%)</span>
-            </div>
-            <div class="cat-bar-track">
-              <div class="cat-bar-fill" style="width: ${pct}%"></div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    // Min / Avg / Median calculations
-    function getStats(arr) {
-      if (!arr.length) return { min: 0, avg: 0, med: 0 };
-      const sorted = [...arr].sort((a, b) => a - b);
-      const min = sorted[0];
-      const avg = sorted.reduce((sum, n) => sum + n, 0) / sorted.length;
-      const mid = Math.floor(sorted.length / 2);
-      const med = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
-      return { min, avg, med };
-    }
-
-    function renderAuditStats(psnrList, ssimList) {
-      const pStats = getStats(psnrList);
-      const sStats = getStats(ssimList);
-
-      document.getElementById('audit-min-psnr').textContent = pStats.min ? pStats.min.toFixed(1) + ' dB' : '--';
-      document.getElementById('audit-avg-psnr').textContent = pStats.avg ? pStats.avg.toFixed(1) + ' dB' : '--';
-      document.getElementById('audit-med-psnr').textContent = pStats.med ? pStats.med.toFixed(1) + ' dB' : '--';
-
-      document.getElementById('audit-min-ssim').textContent = sStats.min ? sStats.min.toFixed(4) : '--';
-      document.getElementById('audit-avg-ssim').textContent = sStats.avg ? sStats.avg.toFixed(4) : '--';
-      document.getElementById('audit-med-ssim').textContent = sStats.med ? sStats.med.toFixed(4) : '--';
-    }
-
-    // Time-per-asset histogram
-    function renderTimeHistogram(list) {
-      const svg = document.getElementById('time-histo-svg');
-      if (!list.length) return;
-
-      const buckets = [0, 0, 0, 0, 0]; // <15, 15-20, 20-25, 25-30, >30
-      list.forEach(t => {
-        if (t < 15) buckets[0]++;
-        else if (t < 20) buckets[1]++;
-        else if (t < 25) buckets[2]++;
-        else if (t < 30) buckets[3]++;
-        else buckets[4]++;
-      });
-
-      const max = Math.max(...buckets, 1);
-      const barW = 44;
-      const gap = 12;
-
-      svg.innerHTML = buckets.map((count, i) => {
-        const h = Math.round((count / max) * 60);
-        const y = 68 - h;
-        const x = 10 + i * (barW + gap);
-        return `
-          <g>
-            <rect class="histo-bar" x="${x}" y="${y}" width="${barW}" height="${h}"></rect>
-            <text class="histo-label" x="${x + barW/2}" y="${y - 4}">${count}</text>
-          </g>
-        `;
-      }).join('');
-    }
-
-    // Throughput Sparkline
-    function renderThroughputSparkline(avgSec) {
-      const currentRate = Math.round(3600 / avgSec);
-      document.getElementById('sparkline-current-rate').textContent = `${currentRate} /hr`;
-      document.getElementById('tel-throughput-avg').textContent = `${currentRate} /hr`;
-
-      throughputHistory.push(currentRate);
-      if (throughputHistory.length > 20) throughputHistory.shift();
-
-      const svg = document.getElementById('sparkline-svg');
-      const min = Math.min(...throughputHistory) * 0.9;
-      const max = Math.max(...throughputHistory) * 1.1;
-      const range = (max - min) || 1;
-
-      const points = throughputHistory.map((val, idx) => {
-        const x = (idx / (throughputHistory.length - 1)) * 230 + 5;
-        const y = 70 - ((val - min) / range) * 55;
-        return `${x.toFixed(1)},${y.toFixed(1)}`;
-      });
-
-      const pathData = 'M ' + points.join(' L ');
-      const areaData = `${pathData} L 235,75 L 5,75 Z`;
-
-      svg.innerHTML = `
-        <path class="sparkline-area" d="${areaData}"></path>
-        <path class="sparkline-path" d="${pathData}"></path>
-      `;
-    }
-
-    function updateTabCounts(s) {
-      if (!s.categories) return;
-      const counts = { all: s.total || 0, backgrounds: 0, event_cg: 0, sprites: 0, ui: 0, effects: 0 };
-
-      for (const k in s.categories) {
-        const tot = s.categories[k].total || 0;
-        if (k.startsWith('backgrounds')) counts.backgrounds += tot;
-        else if (k.startsWith('event_cg')) counts.event_cg += tot;
-        else if (k.startsWith('sprites')) counts.sprites += tot;
-        else if (k.startsWith('ui')) counts.ui += tot;
-        else counts.effects += tot;
-      }
-
-      for (const k in counts) {
-        const el = document.getElementById('count-' + k);
-        if (el) el.textContent = counts[k].toLocaleString();
-      }
-    }
-
-    // --- CARDS RENDERING WITH SKELETONS ---
-    let currentRenderList = [];
-
-    function renderItems() {
-      if (!dataCache || !dataCache.items) return;
-      const container = document.getElementById('items-container');
-      const sentinel = document.getElementById('scroll-sentinel');
-
-      let items = Object.values(dataCache.items);
-
-      // Category filter
-      if (currentCategory !== 'all') {
-        items = items.filter(it => (it.category || '').startsWith(currentCategory));
-      }
-
-      // Status filter
-      if (currentStatus === 'PASS') {
-        items = items.filter(it => it.status === 'PASS' && (!it.metrics?.psnr || it.metrics.psnr >= 47.0));
-      } else if (currentStatus === 'MARGINAL') {
-        items = items.filter(it => it.metrics?.psnr && it.metrics.psnr >= 45.0 && it.metrics.psnr < 47.0);
-      } else if (currentStatus === 'WARN') {
-        items = items.filter(it => it.status === 'WARN' || it.status === 'FAIL');
-      } else if (currentStatus === 'FLAGGED') {
-        items = items.filter(it => flaggedSet.has(it.new_path));
-      }
-
-      // Search filter
-      if (searchQuery) {
-        items = items.filter(it => (it.new_path || '').toLowerCase().includes(searchQuery));
-      }
-
-      // Sort
-      if (currentSort === 'newest') items.reverse();
-      else if (currentSort === 'slowest') items.sort((a, b) => (b.elapsed_s || 0) - (a.elapsed_s || 0));
-      else if (currentSort === 'lowest_psnr') items.sort((a, b) => (a.metrics?.psnr || 999) - (b.metrics?.psnr || 999));
-      else if (currentSort === 'highest_psnr') items.sort((a, b) => (b.metrics?.psnr || 0) - (a.metrics?.psnr || 0));
-
-      currentRenderList = items;
-
-      // Pending skeleton cards mode
-      if (currentStatus === 'PENDING') {
-        renderSkeletonCards(container);
-        sentinel.style.display = 'none';
-        return;
-      }
-
-      const totalMatching = items.length;
-      const visibleItems = items.slice(0, visibleCount);
-
-      if (totalMatching === 0) {
-        container.innerHTML = `
-          <div style="grid-column: 1 / -1; text-align: center; padding: 48px; color: var(--text-muted);">
-            <div style="font-size: 32px; margin-bottom: 6px;">🔍</div>
-            <div style="font-weight: 600; color: var(--text);">No matching assets</div>
-            <div style="font-size: 12px; margin-top: 4px;">Try adjusting search query or active filter.</div>
-          </div>
-        `;
-        sentinel.style.display = 'none';
-        return;
-      }
-
-      sentinel.style.display = visibleCount < totalMatching ? 'flex' : 'none';
-      sentinel.textContent = `Showing ${visibleItems.length} of ${totalMatching} assets`;
-
-      container.innerHTML = visibleItems.map(item => {
-        const isMarginal = item.metrics?.psnr && item.metrics.psnr >= 45.0 && item.metrics.psnr < 47.0;
-        const status = isMarginal ? 'MARGINAL' : (item.status || 'PASS');
-        const statusClass = status === 'PASS' ? 'badge-pass' : (status === 'MARGINAL' ? 'badge-marginal' : (status === 'WARN' ? 'badge-warn' : 'badge-fail'));
-        
-        const isRevealed = revealedSet.has(item.new_path);
-        const blurClass = isRevealed ? '' : 'blurred';
-        const spoilerTagClass = isRevealed ? 'hidden' : '';
-        const isFlagged = flaggedSet.has(item.new_path);
-        const flagClass = isFlagged ? 'flagged' : '';
-        const titleClass = hideFilenames ? 'item-title obscured' : 'item-title';
-
-        const filename = (item.new_path || '').split('/').pop();
-        const origDimsStr = item.orig_dims ? `${item.orig_dims[0]}×${item.orig_dims[1]}` : '--';
-        const upDimsStr = item.upscaled_dims ? `${item.upscaled_dims[0]}×${item.upscaled_dims[1]}` : '--';
-        const encodedKey = encodeURIComponent(item.new_path);
-
-        return `
-          <div class="item-card ${isFlagged ? 'is-flagged' : ''}" 
-               onclick="openLightbox('${encodedKey}')"
-               onmousedown="onThumbMouseDown('${encodedKey}', event)"
-               onmouseup="onThumbMouseUp(event)"
-               onmouseleave="onThumbMouseUp(event)"
-               tabindex="0"
-               role="button"
-               aria-label="View comparison for ${filename}">
-            
-            <div class="item-thumb-wrapper checkerboard">
-              <img class="item-thumb ${blurClass}" loading="lazy" src="thumbs/${encodeURIComponent(item.thumb || '')}" alt="${filename}" onerror="this.src='fallback.png'">
-              <div class="spoiler-tag ${spoilerTagClass}">SPOILER (Hold to Peek)</div>
-              
-              <div class="thumb-controls">
-                <button class="icon-btn-round ${flagClass}" title="Flag for Re-Processing" onclick="toggleFlag('${encodedKey}', event)" aria-label="Flag asset">
-                  🚩
-                </button>
-                <button class="icon-btn-round" title="Toggle Spoiler Blur" onclick="toggleSpoiler('${encodedKey}', event)" aria-label="Toggle blur">
-                  ${isRevealed ? EYE_OFF_SVG : EYE_OPEN_SVG}
-                </button>
-              </div>
-            </div>
-
-            <div class="item-body">
-              <div>
-                <div class="card-top-row">
-                  <span class="badge-status ${statusClass}">● ${status}</span>
-                  <span class="card-time">Time: <strong>${item.elapsed_s ? item.elapsed_s + 's' : '--'}</strong></span>
-                </div>
-                <div class="${titleClass}" title="${item.new_path}" style="margin-top: 6px;">${filename}</div>
-              </div>
-
-              <div>
-                <div class="card-meta-line">
-                  <span>${origDimsStr} &rarr; <strong>${upDimsStr}</strong></span>
-                  <span style="text-transform: capitalize;">${item.category || ''}</span>
-                </div>
-                <div class="metrics-box" style="margin-top: 6px;">
-                  <span>PSNR: <strong>${item.metrics?.psnr !== undefined ? item.metrics.psnr + ' dB' : '--'}</strong></span>
-                  <span>SSIM: <strong>${item.metrics?.ssim !== undefined ? item.metrics.ssim : '--'}</strong></span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        `;
-      }).join('');
-    }
-
-    function renderSkeletonCards(container) {
-      container.innerHTML = Array.from({ length: 12 }).map((_, i) => `
-        <div class="skeleton-card">
-          <div class="skeleton-box">⏳</div>
-          <div style="font-weight: 600;">Pending Asset #${i + 1}</div>
-          <div style="font-size: 11px;">Queued for GPU upscaling</div>
-        </div>
-      `).join('');
-    }
-
-    // Infinite scroll
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting) {
-        if (dataCache && dataCache.items && currentStatus !== 'PENDING') {
-          visibleCount += CHUNK_SIZE;
-          renderItems();
-        }
-      }
-    }, { rootMargin: '400px' });
-    observer.observe(document.getElementById('scroll-sentinel'));
-
-    // --- 6. ADVANCED LIGHTBOX: MODES, SYNCED ZOOM/PAN, ARROWS ---
+    // --- 5. ADVANCED LIGHTBOX MODAL ---
     let activeLightboxIndex = -1;
-    let lightboxMode = 'slider'; // 'slider', 'side', 'flicker'
+    let lbMode = 'slider';
     let zoomLevel = 1.0;
     let panX = 0, panY = 0;
     let isPanning = false;
@@ -2078,58 +2619,54 @@
 
       zoomLevel = 1.0;
       panX = 0; panY = 0;
-      updateLightboxStageTransform();
+      updateLightboxTransform();
 
-      loadLightboxData(currentRenderList[activeLightboxIndex]);
-      document.getElementById('lightbox').classList.add('active');
+      loadLightboxItem(currentRenderList[activeLightboxIndex]);
+      document.getElementById('lightbox-modal').classList.add('active');
     }
 
-    function loadLightboxData(item) {
-      const filename = (item.new_path || '').split('/').pop();
-      document.getElementById('lightbox-filename').textContent = filename;
-
-      const origDimsStr = item.orig_dims ? `${item.orig_dims[0]}×${item.orig_dims[1]}` : '--';
-      const upDimsStr = item.upscaled_dims ? `${item.upscaled_dims[0]}×${item.upscaled_dims[1]}` : '--';
-      document.getElementById('lightbox-meta').textContent = `${item.category || ''} · ${origDimsStr} → ${upDimsStr}`;
+    function loadLightboxItem(item) {
+      const fn = (item.new_path || '').split('/').pop();
+      document.getElementById('lb-filename').childNodes[0].nodeValue = fn + ' ';
+      
+      const orig = item.orig_dims ? `${item.orig_dims[0]}×${item.orig_dims[1]}` : '--';
+      const up = item.upscaled_dims ? `${item.upscaled_dims[0]}×${item.upscaled_dims[1]}` : '--';
+      const catLabel = CATEGORY_LABELS[item.category] || item.category || '';
+      document.getElementById('lb-meta').textContent = `${catLabel} · ${orig} → ${up}`;
 
       const thumbUrl = `thumbs/${encodeURIComponent(item.thumb || '')}`;
-      document.getElementById('lightbox-after-img').src = thumbUrl;
-      document.getElementById('lightbox-before-img').src = thumbUrl;
+      document.getElementById('lb-img-after').src = thumbUrl;
+      document.getElementById('lb-img-before').src = thumbUrl;
 
       const m = item.metrics || {};
-      document.getElementById('lightbox-psnr').textContent = m.psnr !== undefined ? m.psnr : '--';
-      document.getElementById('lightbox-ssim').textContent = m.ssim !== undefined ? m.ssim : '--';
-      document.getElementById('lightbox-time').textContent = item.elapsed_s ? item.elapsed_s + 's' : '--';
+      document.getElementById('lb-psnr').textContent = m.psnr !== undefined ? Number(m.psnr).toFixed(2) : '--';
+      document.getElementById('lb-ssim').textContent = m.ssim !== undefined ? Number(m.ssim).toFixed(4) : '--';
+      document.getElementById('lb-time').textContent = item.elapsed_s ? `${Number(item.elapsed_s).toFixed(1)}s` : '--';
+      document.getElementById('lb-tier').textContent = tier(item);
 
-      const isMarginal = m.psnr && m.psnr >= 45.0 && m.psnr < 47.0;
-      const status = isMarginal ? 'MARGINAL' : (item.status || 'PASS');
-      const badge = document.getElementById('lightbox-status-badge');
-      badge.textContent = status;
-      badge.className = 'badge-status ' + (status === 'PASS' ? 'badge-pass' : (status === 'MARGINAL' ? 'badge-marginal' : 'badge-warn'));
-
-      // Flag button in lightbox
       const isFlagged = flaggedSet.has(item.new_path);
-      const flagBtn = document.getElementById('lightbox-flag-btn');
-      flagBtn.textContent = isFlagged ? '🚩 Flagged (Click to remove)' : '🚩 Flag Rerun';
-      flagBtn.style.color = isFlagged ? 'var(--status-flagged)' : '';
+      const flagBtn = document.getElementById('lb-flag-toggle');
+      flagBtn.innerHTML = `
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+        ${isFlagged ? 'Flagged (Remove)' : 'Flag Rerun'}
+      `;
 
-      // Slider reset
-      document.getElementById('lightbox-slider').value = 50;
-      updateComparisonSlider(50);
+      document.getElementById('lb-range-slider').value = 50;
+      updateLightboxSlider(50);
     }
 
     function toggleLightboxFlag() {
       if (activeLightboxIndex < 0) return;
       const item = currentRenderList[activeLightboxIndex];
       toggleFlag(encodeURIComponent(item.new_path));
-      loadLightboxData(item);
+      loadLightboxItem(item);
     }
 
     function prevLightbox(e) {
       if (e) e.stopPropagation();
       if (activeLightboxIndex > 0) {
         activeLightboxIndex--;
-        loadLightboxData(currentRenderList[activeLightboxIndex]);
+        loadLightboxItem(currentRenderList[activeLightboxIndex]);
       }
     }
 
@@ -2137,16 +2674,16 @@
       if (e) e.stopPropagation();
       if (activeLightboxIndex < currentRenderList.length - 1) {
         activeLightboxIndex++;
-        loadLightboxData(currentRenderList[activeLightboxIndex]);
+        loadLightboxItem(currentRenderList[activeLightboxIndex]);
       }
     }
 
     function setLightboxMode(mode) {
-      lightboxMode = mode;
-      const vp = document.getElementById('lightbox-viewport');
-      vp.className = `lightbox-viewport checkerboard comp-mode-${mode}`;
+      lbMode = mode;
+      const vp = document.getElementById('lb-viewport');
+      vp.className = `lightbox-stage-viewport checkerboard comp-mode-${mode}`;
 
-      document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.lb-mode-btn').forEach(b => b.classList.remove('active'));
       document.getElementById(`btn-mode-${mode}`).classList.add('active');
 
       if (mode === 'flicker') {
@@ -2159,23 +2696,22 @@
       }
     }
 
-    function updateComparisonSlider(val) {
-      document.getElementById('lightbox-before-wrap').style.width = val + '%';
-      document.getElementById('slider-handle').style.left = val + '%';
+    function updateLightboxSlider(val) {
+      document.getElementById('lb-before-clip').style.width = val + '%';
+      document.getElementById('lb-slider-handle').style.left = val + '%';
     }
 
-    // Synced Zoom & Pan
     function onLightboxWheel(e) {
       e.preventDefault();
       const delta = e.deltaY > 0 ? -0.2 : 0.2;
       zoomLevel = Math.max(1.0, Math.min(4.0, zoomLevel + delta));
       if (zoomLevel === 1.0) { panX = 0; panY = 0; }
-      document.getElementById('lightbox-zoom-val').textContent = zoomLevel.toFixed(1) + 'x';
-      updateLightboxStageTransform();
+      document.getElementById('lb-zoom-val').textContent = zoomLevel.toFixed(1) + 'x';
+      updateLightboxTransform();
     }
 
     function startPan(e) {
-      if (zoomLevel <= 1.0 || e.target.classList.contains('lightbox-slider-input')) return;
+      if (zoomLevel <= 1.0 || e.target.classList.contains('lb-range-slider')) return;
       isPanning = true;
       startX = e.clientX - panX;
       startY = e.clientY - panY;
@@ -2187,7 +2723,7 @@
       if (!isPanning) return;
       panX = e.clientX - startX;
       panY = e.clientY - startY;
-      updateLightboxStageTransform();
+      updateLightboxTransform();
     }
 
     function stopPan() {
@@ -2196,21 +2732,20 @@
       window.removeEventListener('mouseup', stopPan);
     }
 
-    function updateLightboxStageTransform() {
-      document.getElementById('lightbox-stage').style.transform = 
-        `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
+    function updateLightboxTransform() {
+      document.getElementById('lb-canvas-holder').style.transform = `translate(${panX}px, ${panY}px) scale(${zoomLevel})`;
     }
 
     function closeLightbox() {
-      document.getElementById('lightbox').classList.remove('active');
+      document.getElementById('lightbox-modal').classList.remove('active');
       activeLightboxIndex = -1;
     }
 
     function closeLightboxOnBackdrop(e) {
-      if (e.target === document.getElementById('lightbox')) closeLightbox();
+      if (e.target === document.getElementById('lightbox-modal')) closeLightbox();
     }
 
-    // Start Polling
+    // Initialize Polling
     fetchProgress();
     pollInterval = setInterval(fetchProgress, 3000);
   </script>
