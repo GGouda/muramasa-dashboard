@@ -40425,13 +40425,158 @@
         ]
       },
       "thumb": "evex一条_正義.png"
+    },
+    "sprites/characters/3dアスカロン_立ち_抜刀.png": {
+      "category": "sprites/characters",
+      "original_path": "media/cg/st/3dアスカロン_立ち_抜刀.png",
+      "new_path": "sprites/characters/3dアスカロン_立ち_抜刀.png",
+      "orig_dims": [
+        1000,
+        680
+      ],
+      "upscaled_dims": [
+        2500,
+        1700
+      ],
+      "elapsed_s": 37.1,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 32.93,
+        "ssim": 0.9981,
+        "orig_size": [
+          1000,
+          680
+        ],
+        "upscaled_size": [
+          2500,
+          1700
+        ]
+      },
+      "thumb": "3dアスカロン_立ち_抜刀.png"
+    },
+    "sprites/characters/3dアベンジ_立ち_通常.png": {
+      "category": "sprites/characters",
+      "original_path": "media/cg/st/3dアベンジ_立ち_通常.png",
+      "new_path": "sprites/characters/3dアベンジ_立ち_通常.png",
+      "orig_dims": [
+        1600,
+        618
+      ],
+      "upscaled_dims": [
+        4000,
+        1545
+      ],
+      "elapsed_s": 46.7,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 32.6,
+        "ssim": 0.998,
+        "orig_size": [
+          1600,
+          618
+        ],
+        "upscaled_size": [
+          4000,
+          1545
+        ]
+      },
+      "thumb": "3dアベンジ_立ち_通常.png"
+    },
+    "sprites/characters/3dアベンジ_騎航_通常.png": {
+      "category": "sprites/characters",
+      "original_path": "media/cg/st/3dアベンジ_騎航_通常.png",
+      "new_path": "sprites/characters/3dアベンジ_騎航_通常.png",
+      "orig_dims": [
+        1400,
+        1000
+      ],
+      "upscaled_dims": [
+        3500,
+        2500
+      ],
+      "elapsed_s": 51.0,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 32.64,
+        "ssim": 0.9979,
+        "orig_size": [
+          1400,
+          1000
+        ],
+        "upscaled_size": [
+          3500,
+          2500
+        ]
+      },
+      "thumb": "3dアベンジ_騎航_通常.png"
+    },
+    "sprites/characters/3dアベンジ_騎航_通常_b.png": {
+      "category": "sprites/characters",
+      "original_path": "media/cg/st/3dアベンジ_騎航_通常_b.png",
+      "new_path": "sprites/characters/3dアベンジ_騎航_通常_b.png",
+      "orig_dims": [
+        1400,
+        1000
+      ],
+      "upscaled_dims": [
+        3500,
+        2500
+      ],
+      "elapsed_s": 53.61,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 30.17,
+        "ssim": 0.9962,
+        "orig_size": [
+          1400,
+          1000
+        ],
+        "upscaled_size": [
+          3500,
+          2500
+        ]
+      },
+      "thumb": "3dアベンジ_騎航_通常_b.png"
+    },
+    "sprites/characters/3dアベンジ_騎航_通常_b2.png": {
+      "category": "sprites/characters",
+      "original_path": "media/cg/st/3dアベンジ_騎航_通常_b2.png",
+      "new_path": "sprites/characters/3dアベンジ_騎航_通常_b2.png",
+      "orig_dims": [
+        1400,
+        1000
+      ],
+      "upscaled_dims": [
+        3500,
+        2500
+      ],
+      "elapsed_s": 53.87,
+      "status": "PASS",
+      "metrics": {
+        "verdict": "PASS",
+        "psnr": 31.9,
+        "ssim": 0.9971,
+        "orig_size": [
+          1400,
+          1000
+        ],
+        "upscaled_size": [
+          3500,
+          2500
+        ]
+      },
+      "thumb": "3dアベンジ_騎航_通常_b2.png"
     }
   },
   "categories": {},
   "summary": {
     "total": 5464,
-    "finished": 1394,
-    "percent": 25.5,
+    "finished": 1399,
+    "percent": 25.6,
     "categories": {
       "effects/anime": {
         "total": 176,
@@ -40519,8 +40664,8 @@
       },
       "sprites/characters": {
         "total": 384,
-        "finished": 0,
-        "passed": 0,
+        "finished": 5,
+        "passed": 5,
         "warned": 0,
         "failed": 0
       },
@@ -40539,8 +40684,8 @@
         "failed": 0
       }
     },
-    "updated_at": "2026-11-05T18:23:52.454235+02:00",
-    "output_bytes": 5551543064,
-    "free_bytes": 874092687360
+    "updated_at": "2026-11-05T18:36:59.791420+02:00",
+    "output_bytes": 5558811058,
+    "free_bytes": 874052833280
   }
 }
